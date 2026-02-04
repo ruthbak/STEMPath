@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Choose a Role • STEMPath{% endblock %}
+
+{% block content %}
+<section class="card" aria-labelledby="roles-title">
+  <h2 id="roles-title">Choose a target role</h2>
+  <p class="muted">
+    Based on your profile ({{ profile.degree }} • {{ profile.location }}), choose a role to see skill gaps and recommendations.
+  </p>
+
+  <form method="get" action="{{ url_for('roles') }}" class="form" aria-label="Role search form">
+    <fieldset>
+      <legend>Search</legend>
+
+      <div class="field">
+        <label for="q">Search roles</label>
+        <input id="q" name="q" type="text" value="{{ q }}" placeholder="e.g., data, software, cybersecurity">
+      </div>
+
+      <div class="field">
+        <label for="cat">Category</label>
+        <select id="cat" name="cat">
+          <option value="">All categories</option>
+          {% for c in categories %}
+            <option value="{{ c }}" {% if cat == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="submit">Search</button>
+        <a class="btn btn-ghost" href="{{ url_for('roles') }}">Clear</a>
+      </div>
+    </fieldset>
+  </form>
+
+  <hr>
+
+  {% if roles %}
+    <h3>Available roles</h3>
+    <ul class="grid-cards" aria-label="Role results list">
+      {% for r in roles %}
+        <li class="role-card">
+          <h4 class="role-title">{{ r.title }}</h4>
+          <p class="muted">{{ r.category }} • {{ r.description }}</p>
+
+          <p class="muted"><strong>Top skills:</strong></p>
+          <ul class="tag-list" aria-label="Top skills for {{ r.title }}">
+            {% for s in r.top_skills %}
+              <li class="tag">{{ s }}</li>
+            {% endfor %}
+          </ul>
+
+          <form method="post" action="{{ url_for('select_role') }}">
+            <input type="hidden" name="role_id" value="{{ r.id }}">
+            <button class="btn" type="submit">Select role</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No roles match your search. Try a different keyword.</p>
+  {% endif %}
+
+  <div class="actions">
+    <a class="btn btn-ghost" href="{{ url_for('profile') }}">Edit Profile</a>
+  </div>
+</section>
+{% endblock %}

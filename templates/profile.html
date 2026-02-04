@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Build Profile • STEMPath{% endblock %}
+
+{% block content %}
+<section class="card" aria-labelledby="profile-title">
+  <h2 id="profile-title">Build your profile</h2>
+  <p class="muted">
+    Tip: Separate skills with commas (e.g., Python, Excel, Communication).
+  </p>
+
+  <form method="post" action="{{ url_for('profile') }}" class="form">
+    <fieldset>
+      <legend>Academic background</legend>
+
+      <div class="field">
+        <label for="degree">Degree / Major</label>
+        <input id="degree" name="degree" type="text" required autocomplete="organization-title"
+               placeholder="e.g., BSc Computer Science">
+      </div>
+
+      <div class="field">
+        <label for="location">Preferred job location</label>
+        <select id="location" name="location" required>
+          <option value="">Select a location</option>
+          <option>Jamaica</option>
+          <option>Caribbean</option>
+          <option>Canada</option>
+          <option>United States</option>
+          <option>Remote</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Current skills</legend>
+
+      <div class="field">
+        <label for="skills">Skills (comma-separated)</label>
+        <textarea id="skills" name="skills" rows="4" required
+                  placeholder="e.g., Python, Excel, Customer Service"></textarea>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button class="btn" type="submit">Generate Recommendations</button>
+      <a class="btn btn-ghost" href="{{ url_for('home') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

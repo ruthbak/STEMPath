@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Home • STEMPath{% endblock %}
+
+{% block content %}
+<section class="page-banner">
+  <h2>Welcome to STEMPath</h2>
+  <p>
+    A personalized career planning platform that helps STEM graduates
+    understand their skill gaps, certifications, and next steps into the workforce.
+  </p>
+</section>
+
+<section class="hero" aria-labelledby="hero-title">
+  <h2 id="hero-title">Launch your career with a clear, personalized plan.</h2>
+
+  <p>
+    STEMPath matches your current skills to real job roles, highlights what you’re missing,
+    and recommends certifications and learning steps to help you get hired faster.
+  </p>
+
+  <div class="hero-actions">
+    <a class="btn" href="{{ url_for('profile') }}">Get Started</a>
+    <a class="btn btn-ghost" href="{{ url_for('roles') }}">Browse Roles</a>
+  </div>
+
+  <div class="kpi-row" aria-label="Platform highlights">
+    <div class="kpi">
+      <strong>Skill-gap analysis</strong>
+      <span>Know exactly what to learn next.</span>
+    </div>
+    <div class="kpi">
+      <strong>Certification guidance</strong>
+      <span>Boost employability with targeted certs.</span>
+    </div>
+    <div class="kpi">
+      <strong>Accessible by design</strong>
+      <span>Keyboard-friendly + readability controls.</span>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="how-title" class="card">
+  <h2 id="how-title">How it works</h2>
+  <ol>
+    <li>Create your profile (degree, location, skills).</li>
+    <li>Choose a target role you want to pursue.</li>
+    <li>Get your match score, missing skills, certifications, and learning plan.</li>
+  </ol>
+</section>
+
+<section aria-labelledby="why-title" class="card">
+  <h2 id="why-title">Built for graduates</h2>
+  <ul>
+    <li>Clear guidance for entry-level transitions</li>
+    <li>Personalized recommendations (not generic lists)</li>
+    <li>Future-ready for job APIs and real-time listings</li>
+  </ul>
+</section>
+
+{% endblock %}
