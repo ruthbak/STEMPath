@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Your Recommendations • STEMPath{% endblock %}
+
+{% block content %}
+<section class="card" aria-labelledby="results-title">
+  <div class="results-header">
+    <div>
+      <h2 id="results-title">Your recommendations</h2>
+      <p class="muted">
+        Profile: <strong>{{ results.degree or "—" }}</strong> •
+        <strong>{{ results.location or "—" }}</strong>
+      </p>
+    </div>
+
+    <div class="badge-stack" aria-label="Match summary">
+      <div class="pill pill-strong">
+        Target role: <strong>{{ results.selected_role }}</strong>
+      </div>
+      <div class="pill">
+        Match: <strong>{{ results.match_score }}%</strong>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- SKILLS -->
+  <div class="grid-2">
+    <div class="panel" aria-labelledby="have-title">
+      <h3 id="have-title">Skills you already have</h3>
+      {% if results.user_skills %}
+        <ul class="tag-list" aria-label="Skills you have">
+          {% for s in results.user_skills %}
+            <li class="tag tag-good">{{ s }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">No skills entered yet. Edit your profile to add skills.</p>
+      {% endif %}
+    </div>
+
+    <div class="panel" aria-labelledby="gap-title">
+      <h3 id="gap-title">Skills to build next</h3>
+      {% if results.missing_skills %}
+        <p class="muted">These are commonly required for your selected role.</p>
+        <ul class="tag-list" aria-label="Skills you are missing">
+          {% for s in results.missing_skills %}
+            <li class="tag tag-warn">{{ s }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted"><strong>Great news:</strong> Your skills already align strongly with this role.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- CERTIFICATIONS -->
+  <section class="panel" aria-labelledby="cert-title">
+    <div class="panel-head">
+      <h3 id="cert-title">Recommended certifications (personalized)</h3>
+      <p class="muted">
+        Suggested based on your target role + your current skill gaps.
+      </p>
+    </div>
+
+    {% if results.recommended_certs and results.recommended_certs|length > 0 %}
+      <ul class="grid-cards" aria-label="Recommended certifications">
+        {% for c in results.recommended_certs %}
+          <li class="role-card">
+            <h4 class="role-title">{{ c.name }}</h4>
+            <p class="muted">{{ c.reason }}</p>
+
+            <div class="meta-row">
+              <span class="meta"><strong>Provider:</strong> {{ c.provider }}</span>
+              <span class="meta"><strong>Level:</strong> {{ c.level }}</span>
+            </div>
+
+            {% if c.skills and c.skills|length > 0 %}
+              <p class="muted" style="margin-top:10px;"><strong>Covers:</strong></p>
+              <ul class="tag-list" aria-label="Skills covered by {{ c.name }}">
+                {% for s in c.skills %}
+                  <li class="tag">{{ s }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            {% if c.link %}
+              <a class="btn btn-ghost" href="{{ c.link }}" target="_blank" rel="noopener">View details</a>
+            {% else %}
+              <button class="btn btn-ghost" type="button" disabled aria-disabled="true">Link (coming soon)</button>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No certification recommendations generated yet. Try another role or add more skills.</p>
+    {% endif %}
+  </section>
+
+  <hr>
+
+  <!-- LEARNING PATH -->
+  <section class="panel" aria-labelledby="learn-title">
+    <div class="panel-head">
+      <h3 id="learn-title">Learning path</h3>
+      <p class="muted">Quick courses to close your most important gaps first.</p>
+    </div>
+
+    {% if results.recommended_learning and results.recommended_learning|length > 0 %}
+      <ul class="grid-cards" aria-label="Recommended learning resources">
+        {% for item in results.recommended_learning %}
+          <li class="role-card">
+            <h4 class="role-title">{{ item.title }}</h4>
+            <p class="muted">Skill focus: <strong>{{ item.skill }}</strong></p>
+            <div class="meta-row">
+              <span class="meta"><strong>Provider:</strong> {{ item.provider }}</span>
+              <span class="meta"><strong>Format:</strong> {{ item.format }}</span>
+            </div>
+            <div class="actions">
+              {% if item.link %}
+                <a class="btn" href="{{ item.link }}" target="_blank" rel="noopener">Open</a>
+              {% else %}
+                <button class="btn" type="button" disabled aria-disabled="true">Open (coming soon)</button>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No learning items yet. (Backend/API integration will populate this.)</p>
+    {% endif %}
+  </section>
+
+  <hr>
+
+  <!-- JOB LISTINGS SNAPSHOT -->
+  <section class="panel" aria-labelledby="jobs-title">
+    <div class="panel-head">
+      <h3 id="jobs-title">Job listings snapshot</h3>
+      <p class="muted">Sample listings to show what employers typically ask for (API integration later).</p>
+    </div>
+
+    {% if results.job_listings and results.job_listings|length > 0 %}
+      <ul class="grid-cards" aria-label="Job listings snapshot">
+        {% for j in results.job_listings %}
+          <li class="role-card">
+            <h4 class="role-title">{{ j.title }}</h4>
+            <p class="muted">{{ j.company }} • {{ j.location }}</p>
+
+            {% if j.skills %}
+              <ul class="tag-list" aria-label="Skills required for {{ j.title }}">
+                {% for s in j.skills %}
+                  <li class="tag">{{ s }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <div class="actions">
+              {% if j.link %}
+                <a class="btn" href="{{ j.link }}" target="_blank" rel="noopener">View</a>
+              {% else %}
+                <button class="btn" type="button" disabled aria-disabled="true">View (coming soon)</button>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No job listings loaded yet.</p>
+    {% endif %}
+  </section>
+
+  <hr>
+
+  <div class="actions">
+    <a class="btn btn-ghost" href="{{ url_for('roles') }}">Choose a different role</a>
+    <a class="btn btn-ghost" href="{{ url_for('profile') }}">Edit profile</a>
+    <button class="btn" type="button" onclick="window.print()">Download plan (Print)</button>
+  </div>
+</section>
+{% endblock %}

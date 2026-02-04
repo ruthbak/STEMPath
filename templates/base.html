@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}STEMPath{% endblock %}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+  <!-- Skip link helps keyboard/screen reader users jump to content -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <div>
+        <h1 class="site-title">STEMPath</h1>
+        <p class="site-tagline">Graduate-to-job matching, skill gaps, and upskilling recommendations.</p>
+      </div>
+
+      <!-- Accessibility controls: user-controlled (no disability detection) -->
+      <div class="a11y-controls" aria-label="Accessibility controls">
+        <button type="button" class="btn btn-ghost" id="toggle-contrast">
+          High Contrast
+        </button>
+        <button type="button" class="btn btn-ghost" id="toggle-text">
+          Large Text
+        </button>
+      </div>
+    </div>
+
+    <nav class="site-nav" aria-label="Primary navigation">
+      <div class="container nav-row">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('profile') }}">Build Profile</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="site-main">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© {{ 2026 }} STEMPath • Capstone Prototype</p>
+    </div>
+  </footer>
+
+  <!-- Minimal JS only for toggles (optional, small, controlled) -->
+  <script>
+    const toggleContrast = document.getElementById("toggle-contrast");
+    const toggleText = document.getElementById("toggle-text");
+
+    toggleContrast?.addEventListener("click", () => {
+      document.body.classList.toggle("high-contrast");
+      try { localStorage.setItem("fsp_high_contrast", document.body.classList.contains("high-contrast")); } catch (e) {}
+    });
+
+    toggleText?.addEventListener("click", () => {
+      document.body.classList.toggle("large-text");
+      try { localStorage.setItem("fsp_large_text", document.body.classList.contains("large-text")); } catch (e) {}
+    });
+
+    // Load saved preferences
+    try {
+      if (localStorage.getItem("fsp_high_contrast") === "true") document.body.classList.add("high-contrast");
+      if (localStorage.getItem("fsp_large_text") === "true") document.body.classList.add("large-text");
+    } catch (e) {}
+  </script>
+</body>
+</html>

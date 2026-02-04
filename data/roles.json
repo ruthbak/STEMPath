@@ -1,0 +1,37 @@
+[
+  {
+    "id": "data_analyst",
+    "title": "Data Analyst",
+    "category": "Data",
+    "description": "Analyze datasets, build dashboards, and support decision-making.",
+    "top_skills": ["SQL", "Excel", "Python", "Data Visualization"]
+  },
+  {
+    "id": "junior_software_dev",
+    "title": "Junior Software Developer",
+    "category": "Software",
+    "description": "Build and maintain software applications with a team.",
+    "top_skills": ["Python", "Git", "Problem-solving", "APIs"]
+  },
+  {
+    "id": "cybersecurity_analyst",
+    "title": "Cybersecurity Analyst",
+    "category": "Security",
+    "description": "Monitor systems, analyze threats, and improve security posture.",
+    "top_skills": ["Networking", "Linux", "Security Basics", "Incident Response"]
+  },
+    {
+        "id": "medical_physicist",
+        "title": "Medical Physicist",
+        "category": "Healthcare",
+        "description": "Apply physics principles to medical imaging and radiation therapy.",
+        "top_skills": ["Radiation Physics", "Medical Imaging", "Dosimetry", "Patient Safety"]
+    },
+    {   
+        "id": "marine_biologist",
+        "title": "Marine Biologist",
+        "category": "Science",
+        "description": "Study marine ecosystems, organisms, and their interactions.",
+        "top_skills": ["Oceanography", "Research Methods", "Data Analysis", "Biology"]
+}
+]
