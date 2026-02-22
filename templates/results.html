@@ -3,6 +3,7 @@
 
 {% block content %}
 <section class="card" aria-labelledby="results-title">
+  <!-- HEADER -->
   <div class="results-header">
     <div>
       <h2 id="results-title">Your recommendations</h2>
@@ -21,6 +22,38 @@
       </div>
     </div>
   </div>
+
+  <hr>
+
+  <!-- LINK OUT TO REAL JOB SEARCHES -->
+  <section class="panel" aria-labelledby="search-title">
+    <div class="panel-head">
+      <h3 id="search-title">Search real job listings</h3>
+      <p class="muted">
+        These buttons open external job searches using your target role and preferred location.
+      </p>
+    </div>
+
+    {% set role_query = (results.selected_role or '') | replace(' ', '+') %}
+    {% set loc_query = (results.location or '') | replace(' ', '+') %}
+
+    <div class="actions">
+      <a class="btn" target="_blank" rel="noopener"
+         href="https://www.linkedin.com/jobs/search/?keywords={{ role_query }}&location={{ loc_query }}">
+        Search LinkedIn
+      </a>
+
+      <a class="btn btn-ghost" target="_blank" rel="noopener"
+         href="https://www.adzuna.com/search?q={{ role_query }}&loc={{ loc_query }}">
+        Search Adzuna
+      </a>
+
+      <a class="btn btn-ghost" target="_blank" rel="noopener"
+         href="https://www.indeed.com/jobs?q={{ role_query }}&l={{ loc_query }}">
+        Search Indeed
+      </a>
+    </div>
+  </section>
 
   <hr>
 
@@ -174,9 +207,11 @@
 
   <hr>
 
+  <!-- ACTIONS -->
   <div class="actions">
     <a class="btn btn-ghost" href="{{ url_for('roles') }}">Choose a different role</a>
     <a class="btn btn-ghost" href="{{ url_for('profile') }}">Edit profile</a>
+    <a class="btn" href="{{ url_for('progress') }}">Track my progress</a>
     <button class="btn" type="button" onclick="window.print()">Download plan (Print)</button>
   </div>
 </section>

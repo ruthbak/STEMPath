@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Progress • STEMPath{% endblock %}
+
+{% block content %}
+<section class="card" aria-labelledby="progress-title">
+  <h2 id="progress-title">Track your progress</h2>
+  <p class="muted">Check off skills as you learn them. Your progress is saved for this session.</p>
+
+  {% if progress and progress.skills %}
+    <form method="post" action="{{ url_for('progress') }}" class="form">
+      <fieldset>
+        <legend>Skills checklist</legend>
+
+        <ul class="checklist">
+          {% for s in progress.skills %}
+            <li class="check-item">
+              <label>
+                <input type="checkbox" name="completed" value="{{ s }}"
+                       {% if s in progress.completed %}checked{% endif %}>
+                {{ s }}
+              </label>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div class="actions">
+          <button class="btn" type="submit">Save progress</button>
+          <a class="btn btn-ghost" href="{{ url_for('results') }}">Back to recommendations</a>
+        </div>
+      </fieldset>
+    </form>
+
+    <hr>
+
+    {% set total = progress.skills|length %}
+    {% set done = progress.completed|length %}
+    {% set pct = (done * 100 // total) if total > 0 else 0 %}
+
+    <div class="panel">
+      <h3>Progress summary</h3>
+      <p class="muted">
+        Completed: <strong>{{ done }}</strong> / <strong>{{ total }}</strong> ({{ pct }}%)
+      </p>
+
+      <div class="progress-bar" aria-label="Progress bar">
+        <div class="progress-fill" style="width: {{ pct }}%"></div>
+      </div>
+    </div>
+
+  {% else %}
+    <p class="muted">
+      No checklist loaded yet. Choose a role and generate recommendations first.
+    </p>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('roles') }}">Choose a role</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
