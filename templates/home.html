@@ -1,60 +1,147 @@
 {% extends "base.html" %}
-{% block title %}Home • STEMPath{% endblock %}
+{% block title %}STEMPath — Plan Your STEM Career{% endblock %}
 
 {% block content %}
-<section class="page-banner">
-  <h2>Welcome to STEMPath</h2>
-  <p>
-    A personalized career planning platform that helps STEM graduates
-    understand their skill gaps, certifications, and next steps into the workforce.
-  </p>
-</section>
 
-<section class="hero" aria-labelledby="hero-title">
-  <h2 id="hero-title">Launch your career with a clear, personalized plan.</h2>
+<!-- ══════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════ -->
+<section class="hero-section" aria-labelledby="hero-heading">
 
-  <p>
-    STEMPath matches your current skills to real job roles, highlights what you’re missing,
-    and recommends certifications and learning steps to help you get hired faster.
-  </p>
-
-  <div class="hero-actions">
-    <a class="btn" href="{{ url_for('profile') }}">Get Started</a>
-    <a class="btn btn-ghost" href="{{ url_for('roles') }}">Browse Roles</a>
-  </div>
-
-  <div class="kpi-row" aria-label="Platform highlights">
-    <div class="kpi">
-      <strong>Skill-gap analysis</strong>
-      <span>Know exactly what to learn next.</span>
+  <div class="hero-text">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Career Intelligence Platform
     </div>
-    <div class="kpi">
-      <strong>Certification guidance</strong>
-      <span>Boost employability with targeted certs.</span>
-    </div>
-    <div class="kpi">
-      <strong>Accessible by design</strong>
-      <span>Keyboard-friendly + readability controls.</span>
+
+    <h1 id="hero-heading">
+      Plan your STEM career
+      <span class="gradient-word">pathway —</span>
+      step by step.
+    </h1>
+
+    <p>
+      STEMPath is a web-based career optimization platform that helps Caribbean
+      early-career STEM individuals identify skill gaps and generate personalized,
+      algorithm-driven learning pathways based on their desired career aspirations.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('profile') }}">Get Started</a>
+      <a class="btn btn-ghost" href="#how-it-works">See How It Works</a>
     </div>
   </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <img
+      class="hero-img"
+      src="{{ url_for('static', filename='images/hero-staircase.png') }}"
+      alt="A person climbing glowing purple stairs labelled Skill, Course, Certification, Target Career"
+    />
+  </div>
+
 </section>
 
-<section aria-labelledby="how-title" class="card">
-  <h2 id="how-title">How it works</h2>
-  <ol>
-    <li>Create your profile (degree, location, skills).</li>
-    <li>Choose a target role you want to pursue.</li>
-    <li>Get your match score, missing skills, certifications, and learning plan.</li>
-  </ol>
+
+<!-- ══════════════════════════════════════════════════════
+     WHAT YOU CAN DO
+══════════════════════════════════════════════════════ -->
+<section class="features-section" aria-labelledby="features-heading">
+
+  <div class="section-header">
+    <p class="section-label">Features</p>
+    <h2 id="features-heading" class="section-title">What You Can Do With STEMPath</h2>
+  </div>
+
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">📋</div>
+      <h3>Build Your Academic Profile</h3>
+      <p>
+        Create a structured representation of your skills, certifications, and coursework
+        so STEMPath knows exactly where you stand.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">🔭</div>
+      <h3>Explore STEM Careers</h3>
+      <p>
+        Browse roles in Computing, Engineering, Data Science, and more — each mapped
+        to verified competencies using O*NET occupational data.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">⚡</div>
+      <h3>Generate an Optimized Pathway</h3>
+      <p>
+        Receive a personalized roadmap based on time, cost, and prerequisites — powered
+        by Dijkstra's shortest-path algorithm.
+      </p>
+    </div>
+
+  </div>
+
 </section>
 
-<section aria-labelledby="why-title" class="card">
-  <h2 id="why-title">Built for graduates</h2>
-  <ul>
-    <li>Clear guidance for entry-level transitions</li>
-    <li>Personalized recommendations (not generic lists)</li>
-    <li>Future-ready for job APIs and real-time listings</li>
-  </ul>
+
+<!-- ══════════════════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════════════════ -->
+<section class="how-section" id="how-it-works" aria-labelledby="how-heading">
+
+  <div class="section-header">
+    <p class="section-label">Process</p>
+    <h2 id="how-heading" class="section-title">How It Works</h2>
+  </div>
+
+  <div class="steps-track" role="list">
+
+    <div class="step" role="listitem">
+      <div class="step-number" aria-hidden="true">1</div>
+      <h4>Create an Account</h4>
+      <p>Enter your academic background, skills, and certifications.</p>
+    </div>
+
+    <div class="step" role="listitem">
+      <div class="step-number" aria-hidden="true">2</div>
+      <h4>Select a Career Goal</h4>
+      <p>Choose a target STEM role from our O*NET-powered catalog.</p>
+    </div>
+
+    <div class="step" role="listitem">
+      <div class="step-number" aria-hidden="true">3</div>
+      <h4>Analyze Skill Gaps</h4>
+      <p>See exactly which skills and certifications you're missing.</p>
+    </div>
+
+    <div class="step" role="listitem">
+      <div class="step-number" aria-hidden="true">4</div>
+      <h4>Generate Your Pathway</h4>
+      <p>Get an optimized, step-by-step learning roadmap instantly.</p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════════════ -->
+<section class="cta-section" aria-labelledby="cta-heading">
+  <div class="cta-box">
+    <h2 id="cta-heading">Ready to map your next move?</h2>
+    <p>
+      Join other Caribbean STEM students using data-driven guidance to get hired faster.
+    </p>
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('profile') }}">Let's go</a>
+      <a class="btn btn-ghost" href="{{ url_for('roles') }}">Browse Roles</a>
+    </div>
+  </div>
 </section>
 
 {% endblock %}

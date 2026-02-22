@@ -4,40 +4,171 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}STEMPath{% endblock %}</title>
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 
 <body>
-  <!-- Skip link helps keyboard/screen reader users jump to content -->
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
+  <!-- ══════════════════════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════════════════════ -->
   <header class="site-header">
     <div class="container header-row">
+
+      <!-- Logo -->
       <div>
         <h1 class="site-title">STEMPath</h1>
-        <p class="site-tagline">Graduate-to-job matching, skill gaps, and upskilling recommendations.</p>
+        <p class="site-tagline">Career intelligence for STEM students.</p>
       </div>
 
-      <!-- Accessibility controls: user-controlled (no disability detection) -->
-      <div class="a11y-controls" aria-label="Accessibility controls">
-        <button type="button" class="btn btn-ghost" id="toggle-contrast">
-          High Contrast
+      <!-- Right: theme toggle + accessibility -->
+      <div class="header-controls">
+        <!-- Dark / Light toggle -->
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark mode">
+          <span class="icon-moon">🌙</span>
+          <span class="icon-sun">☀️</span>
         </button>
-        <button type="button" class="btn btn-ghost" id="toggle-text">
-          Large Text
+
+        <!-- Large text toggle -->
+        <button type="button" class="btn btn-ghost btn-sm" id="toggle-text">
+          A+
         </button>
       </div>
+
     </div>
 
+    <!-- Nav -->
     <nav class="site-nav" aria-label="Primary navigation">
       <div class="container nav-row">
-        <a href="{{ url_for('home') }}">Home</a>
-        <a href="{{ url_for('profile') }}">Build Profile</a>
+
+        <div class="nav-links">
+          <a href="{{ url_for('home') }}"   class="nav-link">Home</a>
+          <a href="#how-it-works"           class="nav-link">How It Works</a>
+          <a href="{{ url_for('roles') }}"  class="nav-link">Browse Roles</a>
+        </div>
+
+        <div class="nav-spacer"></div>
+
+        <!-- Auth buttons -->
+        <div class="nav-auth">
+          <button type="button" class="btn btn-ghost btn-sm" id="open-login">
+            Sign In
+          </button>
+          <button type="button" class="btn btn-sm" id="open-register">
+            Create Account
+          </button>
+        </div>
+
       </div>
     </nav>
   </header>
 
+
+  <!-- ══════════════════════════════════════════════════════
+       AUTH MODAL
+  ══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+
+      <!-- Close -->
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+
+      <!-- Logo inside modal -->
+      <div class="modal-logo">
+        <span>STEMPath</span>
+      </div>
+
+      <!-- Title changes based on tab -->
+      <h2 id="modal-title">Welcome back</h2>
+      <p class="modal-sub" id="modal-sub">Sign in to continue your career journey.</p>
+
+      <!-- Google button -->
+      <a href="{{ url_for('profile') }}" class="btn-google" id="google-btn">
+        <!-- Google SVG icon -->
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </a>
+
+      <!-- Divider -->
+      <div class="modal-divider">or</div>
+
+      <!-- Tabs: Sign In / Register -->
+      <div class="modal-tabs" role="tablist">
+        <button class="modal-tab active" id="tab-signin" role="tab" aria-selected="true"  onclick="switchTab('signin')">Sign In</button>
+        <button class="modal-tab"        id="tab-register" role="tab" aria-selected="false" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- Sign In panel -->
+      <div class="modal-panel active" id="panel-signin">
+        <form class="modal-form" onsubmit="handleAuth(event)">
+          <div class="modal-field">
+            <label for="signin-email">Email</label>
+            <input id="signin-email" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="modal-field">
+            <label for="signin-password">Password</label>
+            <input id="signin-password" type="password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn modal-submit">Sign In &rarr;</button>
+        </form>
+        <p class="modal-footer-text">
+          No account? <a href="#" onclick="switchTab('register'); return false;">Create one free</a>
+        </p>
+      </div>
+
+      <!-- Register panel -->
+<div class="modal-panel" id="panel-register">
+  <form class="modal-form" onsubmit="handleAuth(event)">
+
+    <div class="modal-field">
+      <label for="reg-name">Full Name</label>
+      <input id="reg-name" type="text" placeholder="Your full name" required />
+    </div>
+
+    <div class="modal-field">
+      <label for="reg-username">Username</label>
+      <input id="reg-username" type="text" placeholder="Choose a username" required />
+    </div>
+
+    <div class="modal-field">
+      <label for="reg-password">Password</label>
+      <input id="reg-password" type="password" placeholder="Min. 8 characters" required />
+    </div>
+
+    <div class="modal-field">
+      <label>I am a...</label>
+      <div class="user-type-toggle">
+        <label class="type-option">
+          <input type="radio" name="user_type" value="student" checked />
+          <span>🎓 University Student</span>
+        </label>
+        <label class="type-option">
+          <input type="radio" name="user_type" value="professional" />
+          <span>💼 Working Professional</span>
+        </label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn modal-submit">Create Account &rarr;</button>
+  </form>
+  <p class="modal-footer-text">
+    Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in</a>
+  </p>
+</div>
+
+    </div><!-- /.modal -->
+  </div><!-- /.modal-overlay -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════════════════ -->
   <main id="main-content" class="site-main">
     <div class="container">
       {% block content %}{% endblock %}
@@ -46,30 +177,111 @@
 
   <footer class="site-footer">
     <div class="container">
-      <p>© {{ 2026 }} STEMPath • Capstone Prototype</p>
+      <p>© 2026 STEMPath • Capstone Prototype</p>
     </div>
   </footer>
 
-  <!-- Minimal JS only for toggles (optional, small, controlled) -->
+
+  <!-- ══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════════════════ -->
   <script>
-    const toggleContrast = document.getElementById("toggle-contrast");
-    const toggleText = document.getElementById("toggle-text");
+    /* ── Theme toggle ─────────────────────────────── */
+    const themeBtn = document.getElementById('theme-toggle');
 
-    toggleContrast?.addEventListener("click", () => {
-      document.body.classList.toggle("high-contrast");
-      try { localStorage.setItem("fsp_high_contrast", document.body.classList.contains("high-contrast")); } catch (e) {}
-    });
+    function applyTheme(isLight) {
+      document.body.classList.toggle('light', isLight);
+      try { localStorage.setItem('sp_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+    }
 
-    toggleText?.addEventListener("click", () => {
-      document.body.classList.toggle("large-text");
-      try { localStorage.setItem("fsp_large_text", document.body.classList.contains("large-text")); } catch (e) {}
-    });
-
-    // Load saved preferences
+    // Load saved theme on page load
     try {
-      if (localStorage.getItem("fsp_high_contrast") === "true") document.body.classList.add("high-contrast");
-      if (localStorage.getItem("fsp_large_text") === "true") document.body.classList.add("large-text");
-    } catch (e) {}
+      const saved = localStorage.getItem('sp_theme');
+      if (saved === 'light') applyTheme(true);
+    } catch(e) {}
+
+    themeBtn?.addEventListener('click', () => {
+      applyTheme(!document.body.classList.contains('light'));
+    });
+
+    /* ── Large text toggle ────────────────────────── */
+    const textBtn = document.getElementById('toggle-text');
+    try {
+      if (localStorage.getItem('sp_large_text') === 'true') document.body.classList.add('large-text');
+    } catch(e) {}
+    textBtn?.addEventListener('click', () => {
+      document.body.classList.toggle('large-text');
+      try { localStorage.setItem('sp_large_text', document.body.classList.contains('large-text')); } catch(e) {}
+    });
+
+    /* ── Auth modal ───────────────────────────────── */
+    const modal   = document.getElementById('auth-modal');
+    const closeBtn = document.getElementById('modal-close');
+    const openLogin    = document.getElementById('open-login');
+    const openRegister = document.getElementById('open-register');
+
+    function openModal(tab) {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      switchTab(tab);
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    openLogin?.addEventListener('click',    () => openModal('signin'));
+    openRegister?.addEventListener('click', () => openModal('register'));
+    closeBtn?.addEventListener('click', closeModal);
+
+    // Close on overlay click
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    /* ── Tab switcher ─────────────────────────────── */
+    function switchTab(tab) {
+      const isSignin = tab === 'signin';
+
+      document.getElementById('tab-signin').classList.toggle('active', isSignin);
+      document.getElementById('tab-register').classList.toggle('active', !isSignin);
+      document.getElementById('panel-signin').classList.toggle('active', isSignin);
+      document.getElementById('panel-register').classList.toggle('active', !isSignin);
+
+      document.getElementById('tab-signin').setAttribute('aria-selected', isSignin);
+      document.getElementById('tab-register').setAttribute('aria-selected', !isSignin);
+
+      document.getElementById('modal-title').textContent = isSignin ? 'Welcome back' : 'Create your account';
+      document.getElementById('modal-sub').textContent   = isSignin
+        ? 'Sign in to continue your career journey.'
+        : 'Free forever. No credit card required.';
+      document.getElementById('google-btn').textContent  = ''; // rebuild below
+      // Rebuild google button text (SVG stays intact via innerHTML approach)
+      const gBtn = document.getElementById('google-btn');
+      gBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+          <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+        </svg>
+        ${isSignin ? 'Continue with Google' : 'Sign up with Google'}
+      `;
+    }
+
+    /* ── Auth form submit ─────────────────────────── */
+    // For now: closes modal and redirects to /profile (the "Get Started" page)
+    // Replace this with real Firebase/backend auth when ready
+    function handleAuth(e) {
+      e.preventDefault();
+      closeModal();
+      window.location.href = "{{ url_for('profile') }}";
+    }
   </script>
+
 </body>
 </html>
