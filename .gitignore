@@ -1,0 +1,8 @@
+# env/secrets
+.env
+
+# macOS
+.DS_Store
+
+# runtime uploads / user files
+uploads/
