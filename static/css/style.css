@@ -670,3 +670,47 @@ legend { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transf
   border-color: var(--purple-border);
   color: var(--purple-light);
 }
+
+/* ── Survey ──────────────────────────── */
+.scale-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.scale-option input[type="radio"] {
+  display: none;
+}
+
+.scale-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .95rem;
+  transition: all .15s;
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+.scale-option input:checked + .scale-btn {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.scale-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: .4rem;
+}

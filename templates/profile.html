@@ -31,21 +31,36 @@
         <select id="location" name="location" required>
           {% set loc = profile.get('location','') %}
           <option value="">Select a location</option>
-          <option value="Jamaica" {{ 'selected' if loc=='Jamaica' else '' }}>Jamaica</option>
-          <option value="Caribbean" {{ 'selected' if loc=='Caribbean' else '' }}>Caribbean</option>
-          <option value="Canada" {{ 'selected' if loc=='Canada' else '' }}>Canada</option>
+          <option value="Jamaica"       {{ 'selected' if loc=='Jamaica'       else '' }}>Jamaica</option>
+          <option value="Caribbean"     {{ 'selected' if loc=='Caribbean'     else '' }}>Caribbean</option>
+          <option value="Canada"        {{ 'selected' if loc=='Canada'        else '' }}>Canada</option>
           <option value="United States" {{ 'selected' if loc=='United States' else '' }}>United States</option>
-          <option value="Remote" {{ 'selected' if loc=='Remote' else '' }}>Remote</option>
+          <option value="Remote"        {{ 'selected' if loc=='Remote'        else '' }}>Remote</option>
         </select>
       </div>
 
-      <div class="field">
-        <label for="gpa">GPA (optional)</label>
-        <input id="gpa" name="gpa" type="text"
-               value="{{ profile.get('gpa','') }}"
-               placeholder="e.g., 3.4">
-        <small class="muted">You can leave this blank.</small>
-      </div>
+      {% if session.get('user_type') == 'professional' %}
+        <div class="field">
+          <label for="job_title">Current Job Title</label>
+          <input id="job_title" name="job_title" type="text"
+                 value="{{ profile.get('job_title','') }}"
+                 placeholder="e.g., Junior Developer">
+        </div>
+      {% else %}
+        <div class="field">
+          <label for="gpa">GPA (optional)</label>
+          <input id="gpa" name="gpa" type="text"
+                 value="{{ profile.get('gpa','') }}"
+                 placeholder="e.g., 3.4">
+          <small class="muted">You can leave this blank.</small>
+        </div>
+        <div class="field">
+          <label for="courses">Completed courses (comma-separated)</label>
+          <input id="courses" name="courses" type="text"
+                 value="{{ (profile.get('courses', [])|join(', ')) }}"
+                 placeholder="e.g., Data Structures, Algorithms, Databases">
+        </div>
+      {% endif %}
     </fieldset>
 
     <fieldset>
@@ -63,13 +78,6 @@
                value="{{ (profile.get('certifications', [])|join(', ')) }}"
                placeholder="e.g., Google Data Analytics, AWS CCP">
       </div>
-
-      <div class="field">
-        <label for="courses">Completed courses (comma-separated)</label>
-        <input id="courses" name="courses" type="text"
-               value="{{ (profile.get('courses', [])|join(', ')) }}"
-               placeholder="e.g., Data Structures, Algorithms, Databases">
-      </div>
     </fieldset>
 
     <fieldset>
@@ -79,13 +87,46 @@
         <label for="resume">Upload resume (PDF or DOCX)</label>
         <input id="resume" name="resume" type="file" accept=".pdf,.docx">
         <small class="muted">
-          If uploaded, we’ll extract skills and merge them with what you typed.
+          If uploaded, we'll extract skills and merge them with what you typed.
         </small>
       </div>
 
       {% if resume_notice %}
         <p class="muted" style="margin-top:.5rem;">{{ resume_notice }}</p>
       {% endif %}
+    </fieldset>
+
+    <fieldset>
+      <legend>Pathway preference</legend>
+      <p class="muted" style="margin-bottom:16px;">
+        Tell STEMPath what matters most — it adjusts the Dijkstra weights to find your ideal route.
+      </p>
+
+      <div class="field">
+        <label>Optimize my pathway for:</label>
+        <div class="user-type-toggle">
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="time"
+              {{ 'checked' if profile.get('optimize_for') == 'time' else '' }}>
+            <span>⏱ Shortest time</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="cost"
+              {{ 'checked' if profile.get('optimize_for') == 'cost' else '' }}>
+            <span>💰 Lowest cost</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="balanced"
+              {{ 'checked' if profile.get('optimize_for') != 'time' and profile.get('optimize_for') != 'cost' and profile.get('optimize_for') != 'easy' else '' }}>
+            <span>⚖️ Balanced</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="easy"
+              {{ 'checked' if profile.get('optimize_for') == 'easy' else '' }}>
+            <span>🎓 Easiest first</span>
+          </label>
+        </div>
+      </div>
     </fieldset>
 
     <div class="actions">

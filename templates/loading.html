@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% block title %}Computing your pathway… • STEMPath{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&display=swap');
+
+  .loading-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+    position: relative;
+  }
+
+  #graph-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .loading-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .loading-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    color: #a78bfa;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    font-weight: 600;
+  }
+
+  .badge-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #8b5cf6;
+    animation: pulse 1.2s ease infinite;
+  }
+
+  .loading-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    color: #7c3aed;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .loading-title span {
+    color: #a78bfa;
+  }
+
+  .loading-sub {
+    font-size: 15px;
+    color: #8b8580;
+    margin-bottom: 48px;
+    max-width: 380px;
+  }
+
+  /* Steps */
+  .steps-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 48px;
+    text-align: left;
+    min-width: 300px;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+    color: #6b6560;
+    transition: color 0.3s;
+  }
+
+  .step-item.active { color: #f1f0ee; }
+  .step-item.done { color: #6ee7b7; }
+
+  .step-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #3a3530;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    background: #1a1612;
+  }
+
+  .step-item.active .step-icon {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.15);
+    animation: spin-border 1.5s linear infinite;
+  }
+
+  .step-item.done .step-icon {
+    border-color: #6ee7b7;
+    background: rgba(110, 231, 183, 0.1);
+    color: #6ee7b7;
+  }
+
+  /* Progress bar */
+  .progress-track {
+    width: 300px;
+    height: 3px;
+    background: #2a2520;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  @keyframes spin-border {
+    0% { box-shadow: 0 0 0 1.5px transparent, 2px 0 0 1.5px #8b5cf6; }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<div class="loading-wrap">
+  <canvas id="graph-canvas"></canvas>
+
+  <div class="loading-content">
+    <div class="loading-badge">
+      <div class="badge-pulse"></div>
+      Dijkstra's Algorithm Running
+    </div>
+
+    <h1 class="loading-title">Building your<br><span>optimal pathway</span></h1>
+    <p class="loading-sub">Mapping skill nodes, computing shortest paths, and curating your learning plan.</p>
+
+    <ul class="steps-list" id="stepsList">
+      <li class="step-item" id="s1">
+        <div class="step-icon">⬡</div>
+        Constructing skill graph
+      </li>
+      <li class="step-item" id="s2">
+        <div class="step-icon">⬡</div>
+        Identifying gap nodes
+      </li>
+      <li class="step-item" id="s3">
+        <div class="step-icon">⬡</div>
+        Running shortest-path algorithm
+      </li>
+      <li class="step-item" id="s4">
+        <div class="step-icon">⬡</div>
+        Matching courses &amp; certifications
+      </li>
+    </ul>
+
+    <div class="progress-track">
+      <div class="progress-bar-fill" id="progBar"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Graph canvas animation ─────────────────────── */
+  const canvas = document.getElementById('graph-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const NODE_COUNT = 28;
+  const nodes = [];
+
+  for (let i = 0; i < NODE_COUNT; i++) {
+    nodes.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 3 + 2,
+      lit: false,
+      litTime: 0
+    });
+  }
+
+  // Randomly light up nodes over time
+  let litCount = 0;
+  function lightNext() {
+    const dark = nodes.filter(n => !n.lit);
+    if (dark.length === 0) return;
+    const pick = dark[Math.floor(Math.random() * dark.length)];
+    pick.lit = true;
+    pick.litTime = Date.now();
+    litCount++;
+    if (litCount < NODE_COUNT) setTimeout(lightNext, 180);
+  }
+  setTimeout(lightNext, 400);
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Move nodes
+    nodes.forEach(n => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+      if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+    });
+
+    // Draw edges between lit nodes within range
+    const litNodes = nodes.filter(n => n.lit);
+    for (let i = 0; i < litNodes.length; i++) {
+      for (let j = i + 1; j < litNodes.length; j++) {
+        const dx = litNodes[i].x - litNodes[j].x;
+        const dy = litNodes[i].y - litNodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 160) {
+          const alpha = (1 - dist / 160) * 0.6;
+          ctx.beginPath();
+          ctx.moveTo(litNodes[i].x, litNodes[i].y);
+          ctx.lineTo(litNodes[j].x, litNodes[j].y);
+          ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      if (n.lit) {
+        const age = (Date.now() - n.litTime) / 1000;
+        const glow = Math.min(1, age * 3);
+        ctx.fillStyle = `rgba(167, 139, 250, ${0.4 + glow * 0.6})`;
+        ctx.shadowColor = '#8b5cf6';
+        ctx.shadowBlur = 8 * glow;
+      } else {
+        ctx.fillStyle = 'rgba(80, 70, 60, 0.5)';
+        ctx.shadowBlur = 0;
+      }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  /* ── Step sequencer ─────────────────────────────── */
+  const steps = ['s1', 's2', 's3', 's4'];
+  const progBar = document.getElementById('progBar');
+  let currentStep = 0;
+
+  function activateStep(i) {
+    if (i > 0) {
+      const prev = document.getElementById(steps[i - 1]);
+      prev.classList.remove('active');
+      prev.classList.add('done');
+      prev.querySelector('.step-icon').textContent = '✓';
+    }
+    if (i < steps.length) {
+      const curr = document.getElementById(steps[i]);
+      curr.classList.add('active');
+      curr.querySelector('.step-icon').textContent = '◌';
+      progBar.style.width = ((i + 1) / steps.length * 100) + '%';
+    }
+  }
+
+  activateStep(0);
+
+  const intervals = [900, 1700, 2600, 3300];
+  intervals.forEach((delay, i) => {
+    setTimeout(() => activateStep(i), delay);
+  });
+
+  // Mark last step done and redirect
+  setTimeout(() => {
+    const last = document.getElementById(steps[steps.length - 1]);
+    last.classList.remove('active');
+    last.classList.add('done');
+    last.querySelector('.step-icon').textContent = '✓';
+    progBar.style.width = '100%';
+  }, 4000);
+
+  setTimeout(() => {
+    window.location.href = "{{ url_for('results') }}";
+  }, 4600);
+</script>
+{% endblock %}
