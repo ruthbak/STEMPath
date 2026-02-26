@@ -50,7 +50,7 @@
 
         <div class="nav-spacer"></div>
 
-        <!-- Auth buttons -->
+        <!-- FIX: Added correct ids so the modal open listeners work -->
         <div class="nav-auth">
           <button type="button" class="btn btn-ghost btn-sm" id="open-login">
             Sign In
@@ -84,7 +84,7 @@
       <p class="modal-sub" id="modal-sub">Sign in to continue your career journey.</p>
 
       <!-- Google button -->
-      <a href="{{ url_for('profile') }}" class="btn-google" id="google-btn">
+      <button class="btn-google" id="google-btn">
         <!-- Google SVG icon -->
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
@@ -93,14 +93,14 @@
           <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
         </svg>
         Continue with Google
-      </a>
+      </button>
 
       <!-- Divider -->
       <div class="modal-divider">or</div>
 
       <!-- Tabs: Sign In / Register -->
       <div class="modal-tabs" role="tablist">
-        <button class="modal-tab active" id="tab-signin" role="tab" aria-selected="true"  onclick="switchTab('signin')">Sign In</button>
+        <button class="modal-tab active" id="tab-signin"   role="tab" aria-selected="true"  onclick="switchTab('signin')">Sign In</button>
         <button class="modal-tab"        id="tab-register" role="tab" aria-selected="false" onclick="switchTab('register')">Create Account</button>
       </div>
 
@@ -123,44 +123,50 @@
       </div>
 
       <!-- Register panel -->
-<div class="modal-panel" id="panel-register">
-  <form class="modal-form" onsubmit="handleAuth(event)">
+      <div class="modal-panel" id="panel-register">
+        <form class="modal-form" onsubmit="handleAuth(event)">
 
-    <div class="modal-field">
-      <label for="reg-name">Full Name</label>
-      <input id="reg-name" type="text" placeholder="Your full name" required />
-    </div>
+          <div class="modal-field">
+            <label for="reg-name">Full Name</label>
+            <input id="reg-name" type="text" placeholder="Your full name" required />
+          </div>
 
-    <div class="modal-field">
-      <label for="reg-username">Username</label>
-      <input id="reg-username" type="text" placeholder="Choose a username" required />
-    </div>
+          <div class="modal-field">
+            <label for="reg-username">Username</label>
+            <input id="reg-username" type="text" placeholder="Choose a username" required />
+          </div>
 
-    <div class="modal-field">
-      <label for="reg-password">Password</label>
-      <input id="reg-password" type="password" placeholder="Min. 8 characters" required />
-    </div>
+          <!-- FIX: Added missing email field for registration -->
+          <div class="modal-field">
+            <label for="reg-email">Email</label>
+            <input id="reg-email" type="email" placeholder="you@example.com" required />
+          </div>
 
-    <div class="modal-field">
-      <label>I am a...</label>
-      <div class="user-type-toggle">
-        <label class="type-option">
-          <input type="radio" name="user_type" value="student" checked />
-          <span>🎓 University Student</span>
-        </label>
-        <label class="type-option">
-          <input type="radio" name="user_type" value="professional" />
-          <span>💼 Working Professional</span>
-        </label>
+          <div class="modal-field">
+            <label for="reg-password">Password</label>
+            <input id="reg-password" type="password" placeholder="Min. 8 characters" required />
+          </div>
+
+          <div class="modal-field">
+            <label>I am a...</label>
+            <div class="user-type-toggle">
+              <label class="type-option">
+                <input type="radio" name="user_type" value="student" checked />
+                <span>🎓 University Student</span>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="user_type" value="professional" />
+                <span>💼 Working Professional</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn modal-submit">Create Account &rarr;</button>
+        </form>
+        <p class="modal-footer-text">
+          Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in</a>
+        </p>
       </div>
-    </div>
-
-    <button type="submit" class="btn modal-submit">Create Account &rarr;</button>
-  </form>
-  <p class="modal-footer-text">
-    Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in</a>
-  </p>
-</div>
 
     </div><!-- /.modal -->
   </div><!-- /.modal-overlay -->
@@ -185,111 +191,185 @@
   <!-- ══════════════════════════════════════════════════════
        JAVASCRIPT
   ══════════════════════════════════════════════════════ -->
-  <script>
-    /* ── Theme toggle ─────────────────────────────── */
-    const themeBtn = document.getElementById('theme-toggle');
+  <script type="module">
+  import { initializeApp }       from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-    function applyTheme(isLight) {
-      document.body.classList.toggle('light', isLight);
-      try { localStorage.setItem('sp_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+  // ── Your Firebase config ──────────────────────────────
+  const firebaseConfig = {
+    apiKey:            "AIzaSyBygpbv2rZ9TwXRhP8dX_i4sDHsAiIU9is",
+    authDomain:        "stempath-f714a.firebaseapp.com",
+    projectId:         "stempath-f714a",
+    storageBucket:     "stempath-f714a.firebasestorage.app",
+    messagingSenderId: "21937197854",
+    appId:             "1:21937197854:web:6e4eb9808dd7645c7aef0f",
+    measurementId:     "G-D8S87R85TD"
+  };
+  // ─────────────────────────────────────────────────────
+
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  /* ── Theme toggle ─────────────────────────────── */
+  const themeBtn = document.getElementById('theme-toggle');
+
+  function applyTheme(isLight) {
+    document.body.classList.toggle('light', isLight);
+    try { localStorage.setItem('sp_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+  }
+
+  try {
+    if (localStorage.getItem('sp_theme') === 'light') applyTheme(true);
+  } catch(e) {}
+
+  themeBtn?.addEventListener('click', () => {
+    applyTheme(!document.body.classList.contains('light'));
+  });
+
+  /* ── Large text toggle ────────────────────────── */
+  const textBtn = document.getElementById('toggle-text');
+
+  try {
+    if (localStorage.getItem('sp_large_text') === 'true') document.body.classList.add('large-text');
+  } catch(e) {}
+
+  textBtn?.addEventListener('click', () => {
+    document.body.classList.toggle('large-text');
+    try { localStorage.setItem('sp_large_text', document.body.classList.contains('large-text')); } catch(e) {}
+  });
+
+  /* ── Modal open/close ─────────────────────────── */
+  const modal        = document.getElementById('auth-modal');
+  const closeBtn     = document.getElementById('modal-close');
+  const openLogin    = document.getElementById('open-login');
+  const openRegister = document.getElementById('open-register');
+
+  function openModal(tab) {
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    switchTab(tab);
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  openLogin?.addEventListener('click',    () => openModal('signin'));
+  openRegister?.addEventListener('click', () => openModal('register'));
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* ── Tab switcher ─────────────────────────────── */
+  window.switchTab = function(tab) {
+    const isSignin = tab === 'signin';
+
+    document.getElementById('tab-signin').classList.toggle('active', isSignin);
+    document.getElementById('tab-register').classList.toggle('active', !isSignin);
+    document.getElementById('panel-signin').classList.toggle('active', isSignin);
+    document.getElementById('panel-register').classList.toggle('active', !isSignin);
+    document.getElementById('tab-signin').setAttribute('aria-selected', isSignin);
+    document.getElementById('tab-register').setAttribute('aria-selected', !isSignin);
+    document.getElementById('modal-title').textContent = isSignin ? 'Welcome back' : 'Create your account';
+    document.getElementById('modal-sub').textContent   = isSignin
+      ? 'Sign in to continue your career journey.'
+      : 'Free forever. No credit card required.';
+
+    const gBtn = document.getElementById('google-btn');
+    gBtn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      ${isSignin ? 'Continue with Google' : 'Sign up with Google'}`;
+  }
+
+  /* ── Show error in modal ──────────────────────── */
+  function showError(msg) {
+    let el = document.getElementById('auth-error');
+    if (!el) {
+      el = document.createElement('p');
+      el.id = 'auth-error';
+      el.style.cssText = 'color:#f87171;font-size:.8rem;text-align:center;margin-top:.5rem;';
+      document.querySelector('.modal').appendChild(el);
     }
+    el.textContent = msg;
+    setTimeout(() => { el.textContent = ''; }, 4000);
+  }
 
-    // Load saved theme on page load
+  /* ── Update nav after login ───────────────────── */
+  function setLoggedIn(displayName) {
+    const navAuth = document.querySelector('.nav-auth');
+    if (navAuth) {
+      navAuth.innerHTML = `
+        <span style="font-size:.82rem;color:var(--muted-light);">Hi, ${displayName.split(' ')[0]} 👋</span>
+        <button type="button" class="btn btn-ghost btn-sm" id="sign-out-btn">Sign Out</button>`;
+      document.getElementById('sign-out-btn')?.addEventListener('click', () => {
+        signOut(auth).then(() => location.reload());
+      });
+    }
+  }
+
+  /* ── Watch auth state on every page ──────────── */
+  onAuthStateChanged(auth, user => {
+    if (user) setLoggedIn(user.displayName || user.email);
+  });
+
+  /* ── Google sign-in button ────────────────────── */
+  document.getElementById('google-btn')?.addEventListener('click', async () => {
     try {
-      const saved = localStorage.getItem('sp_theme');
-      if (saved === 'light') applyTheme(true);
-    } catch(e) {}
-
-    themeBtn?.addEventListener('click', () => {
-      applyTheme(!document.body.classList.contains('light'));
-    });
-
-    /* ── Large text toggle ────────────────────────── */
-    const textBtn = document.getElementById('toggle-text');
-    try {
-      if (localStorage.getItem('sp_large_text') === 'true') document.body.classList.add('large-text');
-    } catch(e) {}
-    textBtn?.addEventListener('click', () => {
-      document.body.classList.toggle('large-text');
-      try { localStorage.setItem('sp_large_text', document.body.classList.contains('large-text')); } catch(e) {}
-    });
-
-    /* ── Auth modal ───────────────────────────────── */
-    const modal   = document.getElementById('auth-modal');
-    const closeBtn = document.getElementById('modal-close');
-    const openLogin    = document.getElementById('open-login');
-    const openRegister = document.getElementById('open-register');
-
-    function openModal(tab) {
-      modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      switchTab(tab);
+      const result = await signInWithPopup(auth, provider);
+      closeModal();
+      setLoggedIn(result.user.displayName || result.user.email);
+      window.location.href = "{{ url_for('profile') }}";
+    } catch(err) {
+      showError('Google sign-in failed. Please try again.');
+      console.error(err);
     }
-    function closeModal() {
-      modal.classList.remove('open');
-      document.body.style.overflow = '';
-    }
+  });
 
-    openLogin?.addEventListener('click',    () => openModal('signin'));
-    openRegister?.addEventListener('click', () => openModal('register'));
-    closeBtn?.addEventListener('click', closeModal);
-
-    // Close on overlay click
-    modal?.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-
-    /* ── Tab switcher ─────────────────────────────── */
-    function switchTab(tab) {
-      const isSignin = tab === 'signin';
-
-      document.getElementById('tab-signin').classList.toggle('active', isSignin);
-      document.getElementById('tab-register').classList.toggle('active', !isSignin);
-      document.getElementById('panel-signin').classList.toggle('active', isSignin);
-      document.getElementById('panel-register').classList.toggle('active', !isSignin);
-
-      document.getElementById('tab-signin').setAttribute('aria-selected', isSignin);
-      document.getElementById('tab-register').setAttribute('aria-selected', !isSignin);
-
-      document.getElementById('modal-title').textContent = isSignin ? 'Welcome back' : 'Create your account';
-      document.getElementById('modal-sub').textContent   = isSignin
-        ? 'Sign in to continue your career journey.'
-        : 'Free forever. No credit card required.';
-      document.getElementById('google-btn').textContent  = ''; // rebuild below
-      // Rebuild google button text (SVG stays intact via innerHTML approach)
-      const gBtn = document.getElementById('google-btn');
-      gBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-          <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-        </svg>
-        ${isSignin ? 'Continue with Google' : 'Sign up with Google'}
-      `;
-    }
-
-    /* ── Auth form submit ─────────────────────────── */
-    // For now: closes modal and redirects to /profile (the "Get Started" page)
-    // Replace this with real Firebase/backend auth when ready
-    function handleAuth(e) {
+  /* ── Email/password forms ─────────────────────── */
+  // FIX: Properly structured try/catch — catch block was missing entirely
+  window.handleAuth = async function(e) {
     e.preventDefault();
-    const userType = document.querySelector('input[name="user_type"]:checked')?.value || "student";
-    
-    fetch("/set-usertype", {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: `user_type=${userType}`
-    }).then(() => {
-        closeModal();
-        window.location.href = "{{ url_for('roles') }}";
-    });
-}
-  </script>
+    const isSignin = document.getElementById('panel-signin').classList.contains('active');
 
+    try {
+      if (isSignin) {
+        const email    = document.getElementById('signin-email').value;
+        const password = document.getElementById('signin-password').value;
+        const result   = await signInWithEmailAndPassword(auth, email, password);
+        closeModal();
+        setLoggedIn(result.user.displayName || result.user.email);
+        window.location.href = "{{ url_for('profile') }}";
+
+      } else {
+        const name     = document.getElementById('reg-name').value;
+        const email    = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const result   = await createUserWithEmailAndPassword(auth, email, password);
+        closeModal();
+        setLoggedIn(name || result.user.email);
+        window.location.href = "{{ url_for('profile') }}";
+      }
+
+    } catch (err) {
+      const messages = {
+        'auth/email-already-in-use': 'That email is already registered. Try signing in.',
+        'auth/wrong-password':       'Incorrect password. Please try again.',
+        'auth/user-not-found':       'No account found with that email.',
+        'auth/weak-password':        'Password must be at least 6 characters.',
+        'auth/invalid-email':        'Please enter a valid email address.',
+      };
+      showError(messages[err.code] || 'Something went wrong. Please try again.');
+    }
+  };
+
+  </script>
 </body>
 </html>
