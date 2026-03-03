@@ -308,7 +308,31 @@
     if (navAuth) {
       navAuth.innerHTML = `
         <span style="font-size:.82rem;color:var(--muted-light);">Hi, ${displayName.split(' ')[0]} 👋</span>
-        <button type="button" class="btn btn-ghost btn-sm" id="sign-out-btn">Sign Out</button>`;
+        <div class="dots-menu-wrap">
+          <button type="button" class="dots-btn" id="dots-btn" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="dots-dropdown" id="dots-dropdown">
+            <a href="{{ url_for('progress') }}" class="dots-item">📊 Track Progress</a>
+            <a href="{{ url_for('profile') }}"  class="dots-item">👤 My Profile</a>
+            <a href="#"                          class="dots-item">⚙️ Settings</a>
+            <div class="dots-divider"></div>
+            <button type="button" class="dots-item dots-signout" id="sign-out-btn">🚪 Sign Out</button>
+          </div>
+        </div>`;
+
+      // Toggle dropdown
+      document.getElementById('dots-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('dots-dropdown').classList.toggle('open');
+      });
+
+      // Close when clicking anywhere else
+      document.addEventListener('click', () => {
+        document.getElementById('dots-dropdown')?.classList.remove('open');
+      });
+
+      // Sign out
       document.getElementById('sign-out-btn')?.addEventListener('click', () => {
         signOut(auth).then(() => location.reload());
       });

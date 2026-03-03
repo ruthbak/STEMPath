@@ -714,3 +714,128 @@ legend { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transf
   justify-content: space-between;
   margin-top: .4rem;
 }
+
+/* ── Three-dot dropdown menu ────────────────────── */
+.dots-menu-wrap {
+  position: relative;
+}
+
+.dots-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--purple-glow);
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  transition: all var(--transition);
+  padding: 0;
+}
+
+.dots-btn:hover {
+  border-color: var(--purple-border);
+  background: rgba(155,89,245,0.25);
+}
+
+.dots-btn span {
+  display: block;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--purple-light);
+}
+
+.dots-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--purple-border);
+  border-radius: var(--radius-sm);
+  min-width: 190px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(155,89,245,0.1);
+  overflow: hidden;
+  opacity: 0; pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 300;
+}
+
+.dots-dropdown.open {
+  opacity: 1; pointer-events: all;
+  transform: translateY(0);
+}
+
+.dots-item {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .65rem 1rem;
+  font-size: .84rem; font-weight: 500;
+  color: var(--muted-light);
+  text-decoration: none;
+  background: none; border: none;
+  width: 100%; text-align: left;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background var(--transition), color var(--transition);
+}
+
+.dots-item:hover {
+  background: var(--purple-glow);
+  color: var(--purple-light);
+}
+
+.dots-signout {
+  color: #fca5a5;
+}
+
+.dots-signout:hover {
+  background: rgba(248,113,113,0.1);
+  color: #f87171;
+}
+
+.dots-divider {
+  height: 1px;
+  background: var(--border);
+  margin: .25rem 0;
+}
+
+/* ── Mini profile cards (progress page) ─────────── */
+.profile-cards-row {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.mini-profile-card {
+  display: flex; align-items: center; gap: .85rem;
+  background: rgba(155,89,245,0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1.1rem;
+  flex: 1; min-width: 220px;
+  transition: border-color var(--transition), background var(--transition);
+  text-decoration: none; color: inherit;
+}
+
+.mini-profile-card:hover {
+  border-color: var(--purple-border);
+  background: var(--purple-glow);
+}
+
+.mini-profile-add {
+  border-style: dashed;
+  border-color: rgba(155,89,245,0.2);
+}
+
+.mini-profile-add:hover {
+  border-color: var(--purple-border);
+  border-style: solid;
+}
+
+.mini-profile-icon {
+  font-size: 1.4rem; flex-shrink: 0;
+}
+
+.mini-profile-info {
+  display: flex; flex-direction: column; gap: .15rem; flex: 1;
+}
+
+.mini-profile-info strong {
+  font-size: .9rem; font-weight: 600; color: var(--text);
+}

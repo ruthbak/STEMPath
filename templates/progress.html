@@ -2,6 +2,39 @@
 {% block title %}Progress • STEMPath{% endblock %}
 
 {% block content %}
+
+<!-- ── Profile Panel ───────────────────────────────── -->
+<section class="card" aria-labelledby="profile-panel-title" style="margin-bottom:1.25rem;">
+  <h2 id="profile-panel-title">Your Profiles</h2>
+  <p class="muted">Manage your academic and professional profiles.</p>
+
+  <div class="profile-cards-row">
+
+    <!-- My Profile (existing) -->
+    {% if progress and progress.skills %}
+    <div class="mini-profile-card">
+      <div class="mini-profile-icon">🎓</div>
+      <div class="mini-profile-info">
+        <strong>My Profile</strong>
+        <span class="muted">{{ session.get('profile', {}).get('degree', 'Your current profile') }}</span>
+      </div>
+      <a href="{{ url_for('profile') }}" class="btn btn-ghost btn-sm">Edit</a>
+    </div>
+    {% endif %}
+
+    <!-- Add Profile -->
+    <a href="{{ url_for('profile') }}" class="mini-profile-card mini-profile-add">
+      <div class="mini-profile-icon">➕</div>
+      <div class="mini-profile-info">
+        <strong>Add Profile</strong>
+        <span class="muted">Set up a new academic or professional profile</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── Progress Checklist ──────────────────────────── -->
 <section class="card" aria-labelledby="progress-title">
   <h2 id="progress-title">Track your progress</h2>
   <p class="muted">Check off skills as you learn them. Your progress is saved for this session.</p>
@@ -10,7 +43,6 @@
     <form method="post" action="{{ url_for('progress') }}" class="form">
       <fieldset>
         <legend>Skills checklist</legend>
-
         <ul class="checklist">
           {% for s in progress.skills %}
             <li class="check-item">
@@ -22,7 +54,6 @@
             </li>
           {% endfor %}
         </ul>
-
         <div class="actions">
           <button class="btn" type="submit">Save progress</button>
           <a class="btn btn-ghost" href="{{ url_for('results') }}">Back to recommendations</a>
@@ -33,27 +64,23 @@
     <hr>
 
     {% set total = progress.skills|length %}
-    {% set done = progress.completed|length %}
-    {% set pct = (done * 100 // total) if total > 0 else 0 %}
+    {% set done  = progress.completed|length %}
+    {% set pct   = (done * 100 // total) if total > 0 else 0 %}
 
     <div class="panel">
       <h3>Progress summary</h3>
-      <p class="muted">
-        Completed: <strong>{{ done }}</strong> / <strong>{{ total }}</strong> ({{ pct }}%)
-      </p>
-
+      <p class="muted">Completed: <strong>{{ done }}</strong> / <strong>{{ total }}</strong> ({{ pct }}%)</p>
       <div class="progress-bar" aria-label="Progress bar">
         <div class="progress-fill" style="width: {{ pct }}%"></div>
       </div>
     </div>
 
   {% else %}
-    <p class="muted">
-      No checklist loaded yet. Choose a role and generate recommendations first.
-    </p>
+    <p class="muted">No checklist loaded yet. Choose a role and generate recommendations first.</p>
     <div class="actions">
       <a class="btn" href="{{ url_for('roles') }}">Choose a role</a>
     </div>
   {% endif %}
 </section>
+
 {% endblock %}
