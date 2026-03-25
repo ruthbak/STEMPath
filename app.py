@@ -567,6 +567,8 @@ def results():
             if s in missing_skills
         ]
 
+    recommended_learning = []
+
     results_obj = {
         "degree":            profile_data.get("degree", ""),
         "location":          profile_data.get("location", ""),
@@ -579,6 +581,7 @@ def results():
         "recommended_certs": recommended_certs,
         "learning_paths":    learning_paths,
         "skill_videos":      skill_videos,
+        "recommended_learning": recommended_learning,
         "job_listings":      job_listings,
     }
 

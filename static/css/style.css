@@ -839,3 +839,439 @@ legend { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transf
 .mini-profile-info strong {
   font-size: .9rem; font-weight: 600; color: var(--text);
 }
+
+/* ══════════════════════════════════════════════════════════
+   TAG PICKER — profile page skills / certs / courses
+══════════════════════════════════════════════════════════ */
+
+.tag-picker {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .5rem .65rem;
+  display: flex; flex-wrap: wrap; gap: .4rem;
+  cursor: text;
+  transition: border-color var(--transition), background var(--transition);
+  min-height: 48px;
+  align-items: flex-start;
+}
+
+.tag-picker:focus-within {
+  border-color: var(--purple);
+  background: var(--input-focus-bg);
+}
+
+/* Tags row inside picker */
+.tag-picker-tags {
+  display: flex; flex-wrap: wrap; gap: .4rem;
+  align-items: center;
+}
+
+/* Individual tag bubble */
+.tp-tag {
+  display: inline-flex; align-items: center; gap: .3rem;
+  background: var(--purple-glow);
+  border: 1px solid var(--purple-border);
+  border-radius: 99px;
+  padding: .22rem .55rem .22rem .7rem;
+  font-size: .8rem; font-weight: 500;
+  color: var(--purple-light);
+  white-space: nowrap;
+  animation: tagIn .15s ease both;
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.tp-tag-new {
+  animation: tagIn .18s ease both;
+}
+
+.tp-tag-removing {
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+@keyframes tagIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Remove button inside tag */
+.tp-remove {
+  background: none; border: none;
+  color: var(--purple-light); opacity: .6;
+  cursor: pointer; font-size: .75rem;
+  padding: 0; line-height: 1;
+  display: flex; align-items: center;
+  transition: opacity var(--transition), color var(--transition);
+}
+.tp-remove:hover { opacity: 1; color: #f87171; }
+
+/* Input inside picker */
+.tag-picker-input-wrap {
+  position: relative; flex: 1; min-width: 140px;
+}
+
+.tag-picker-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  padding: .25rem .3rem;
+  width: 100%;
+  min-width: 120px;
+}
+
+.tag-picker-input::placeholder { color: var(--muted); }
+
+/* Dropdown */
+.tag-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--purple-border);
+  border-radius: var(--radius-sm);
+  min-width: 220px; max-width: 320px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.5), 0 0 16px rgba(155,89,245,0.1);
+  list-style: none; padding: .3rem 0;
+  z-index: 400;
+  opacity: 0; pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.tag-dropdown.open {
+  opacity: 1; pointer-events: all;
+  transform: translateY(0);
+}
+
+.tp-option {
+  padding: .55rem 1rem;
+  font-size: .84rem; color: var(--muted-light);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.tp-option:hover {
+  background: var(--purple-glow);
+  color: var(--purple-light);
+}
+
+.tp-option strong {
+  color: var(--purple-light);
+  font-weight: 700;
+}
+
+.tp-option-custom {
+  color: var(--cyan);
+  font-style: italic;
+  border-top: 1px solid var(--border);
+  margin-top: .2rem;
+}
+
+.tp-option-custom:hover {
+  background: rgba(34,211,238,0.08);
+  color: var(--cyan);
+}
+
+/* Light mode overrides */
+body.light .tp-tag {
+  background: rgba(124,58,237,0.1);
+  border-color: rgba(124,58,237,0.3);
+  color: var(--purple-dim);
+}
+body.light .tp-remove { color: var(--purple-dim); }
+body.light .tag-dropdown { background: #ffffff; }
+
+/* ══════════════════════════════════════════════════════════
+   ROADMAP PAGE — results.html
+══════════════════════════════════════════════════════════ */
+
+/* ── Page header ─────────────────────────────────────────── */
+.rm-page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.5rem; flex-wrap: wrap;
+  padding: 2rem 0 1.25rem;
+  animation: fadeUp .4s ease both;
+}
+
+.rm-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800; color: var(--text);
+  line-height: 1.1; margin-bottom: .3rem;
+}
+
+.rm-subtitle { font-size: .85rem; color: var(--muted-light); }
+
+/* Score ring */
+.rm-score-ring {
+  position: relative; flex-shrink: 0;
+  width: 80px; height: 80px;
+}
+.rm-score-ring svg { transform: rotate(0deg); }
+.rm-score-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  line-height: 1;
+}
+.rm-score-num {
+  font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+  background: linear-gradient(110deg, var(--purple-light), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.rm-score-lbl { font-size: .65rem; color: var(--muted); margin-top: .1rem; }
+
+/* ── Legend ─────────────────────────────────────────────── */
+.rm-legend {
+  display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
+  padding: .6rem 1rem;
+  background: rgba(155,89,245,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 2rem;
+  animation: fadeUp .4s .1s ease both;
+}
+.rm-legend-item {
+  display: flex; align-items: center; gap: .4rem;
+  font-size: .75rem; color: var(--muted-light);
+}
+
+/* Pin dots in legend */
+.rm-pin {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+  display: inline-block;
+}
+.rm-pin-have    { background: #22d3ee; box-shadow: 0 0 6px rgba(34,211,238,0.6); }
+.rm-pin-missing { background: #f87171; box-shadow: 0 0 6px rgba(248,113,113,0.6); }
+.rm-pin-cert    { background: #f5c542; box-shadow: 0 0 6px rgba(245,197,66,0.6); }
+.rm-pin-job     { background: #a78bfa; box-shadow: 0 0 6px rgba(167,139,250,0.6); }
+.rm-pin-goal    { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.6); }
+
+/* ── Road wrap ──────────────────────────────────────────── */
+.rm-road-wrap {
+  position: relative;
+  min-height: 600px;
+  padding: 1rem 0 3rem;
+}
+
+/* SVG road sits behind everything */
+.rm-road-svg {
+  position: absolute; top: 0; left: 0;
+  width: 100%; pointer-events: none;
+  z-index: 0;
+}
+.rm-road-svg path { stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+/* Stops container */
+#rm-stops {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 2.5rem;
+  padding: 0 1rem;
+}
+
+/* ── Individual stop ─────────────────────────────────────── */
+.rm-stop {
+  display: flex; align-items: flex-start; gap: 1rem;
+  max-width: 420px;
+  opacity: 0; transform: translateY(28px);
+  transition: opacity .5s ease var(--stop-delay), transform .5s ease var(--stop-delay);
+}
+.rm-stop.rm-stop-visible {
+  opacity: 1; transform: translateY(0);
+}
+
+/* Alternate left/right */
+.rm-stop-left  { align-self: flex-start; margin-left: 2%; }
+.rm-stop-right { align-self: flex-end;   margin-right: 2%; flex-direction: row-reverse; }
+
+/* Connector line from card to road */
+.rm-connector {
+  width: 40px; height: 2px; flex-shrink: 0;
+  background: linear-gradient(90deg, var(--purple-border), transparent);
+  margin-top: 22px;
+}
+.rm-stop-right .rm-connector {
+  background: linear-gradient(270deg, var(--purple-border), transparent);
+}
+
+/* ── Location pin ───────────────────────────────────────── */
+.rm-pin-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+
+.rm-pin-head {
+  width: 44px; height: 44px; border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+.rm-pin-icon {
+  transform: rotate(45deg); font-size: 1.1rem; line-height: 1;
+}
+
+/* Pin tail (triangle) */
+.rm-pin-tail {
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+}
+
+/* Pin colour variants */
+.rm-pin-have    { background: linear-gradient(135deg, #0891b2, #22d3ee); }
+.rm-pin-have-tail    { border-top: 10px solid #22d3ee; }
+
+.rm-pin-missing { background: linear-gradient(135deg, #dc2626, #f87171); }
+.rm-pin-missing-tail { border-top: 10px solid #f87171; }
+
+.rm-pin-cert    { background: linear-gradient(135deg, #b45309, #f5c542); }
+.rm-pin-cert-tail    { border-top: 10px solid #f5c542; }
+
+.rm-pin-job     { background: linear-gradient(135deg, #6d28d9, #a78bfa); }
+.rm-pin-job-tail     { border-top: 10px solid #a78bfa; }
+
+.rm-pin-goal    { background: linear-gradient(135deg, #15803d, #4ade80); }
+.rm-pin-goal-tail    { border-top: 10px solid #4ade80; }
+
+/* ── Stop card ──────────────────────────────────────────── */
+.rm-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+  flex: 1; min-width: 0;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.rm-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-purple);
+}
+
+.rm-card-label {
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--purple-light); margin-bottom: .3rem;
+}
+.rm-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  color: var(--text); line-height: 1.25; margin-bottom: .65rem;
+}
+.rm-card-body { font-size: .84rem; }
+
+/* ── Skill tags inside cards ────────────────────────────── */
+.rm-stop-skills { display: flex; flex-wrap: wrap; gap: .35rem; }
+.rm-skill-tag {
+  display: inline-block; padding: .2rem .6rem;
+  border-radius: 99px; font-size: .74rem; font-weight: 500;
+  background: rgba(155,89,245,0.1); color: var(--off-white);
+  border: 1px solid var(--border);
+}
+.rm-skill-have   { background: rgba(34,211,238,0.12);  color: #22d3ee; border-color: rgba(34,211,238,0.3); }
+.rm-skill-prereq { background: rgba(155,89,245,0.1);   color: var(--purple-light); border-color: var(--purple-border); }
+
+.rm-stop-meta { font-size: .8rem; color: var(--muted-light); margin-bottom: .5rem; line-height: 1.5; }
+.rm-stop-empty { font-size: .8rem; color: var(--muted); }
+.rm-stop-empty a { color: var(--purple-light); }
+
+/* ── Resource card inside stop ──────────────────────────── */
+.rm-resource-card {
+  background: rgba(155,89,245,0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .75rem .9rem; margin-top: .5rem;
+}
+.rm-resource-course {
+  font-weight: 600; color: var(--text); font-size: .84rem;
+  margin-bottom: .2rem;
+}
+.rm-resource-provider {
+  font-size: .76rem; color: var(--muted-light); margin-bottom: .6rem;
+}
+.rm-resource-btn {
+  display: inline-flex; align-items: center;
+  padding: .32rem .85rem; border-radius: 99px;
+  background: linear-gradient(135deg, var(--purple-dim), var(--purple));
+  color: #fff; font-size: .78rem; font-weight: 600;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: all var(--transition);
+}
+.rm-resource-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.rm-resource-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--purple-border);
+  color: var(--purple-light);
+}
+.rm-resource-btn-dim {
+  background: rgba(155,89,245,0.1); color: var(--muted);
+  pointer-events: none;
+}
+
+/* ── Jobs inside stop ───────────────────────────────────── */
+.rm-jobs-list { display: flex; flex-direction: column; gap: .6rem; margin-bottom: .75rem; }
+.rm-job-card {
+  background: rgba(167,139,250,0.07);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: var(--radius-sm); padding: .65rem .85rem;
+}
+.rm-job-title { font-weight: 600; font-size: .84rem; color: var(--text); margin-bottom: .15rem; }
+.rm-job-meta  { font-size: .74rem; color: var(--muted-light); margin-bottom: .4rem; }
+
+.rm-search-links { display: flex; flex-wrap: wrap; gap: .4rem; }
+.rm-search-btn {
+  padding: .28rem .75rem; border-radius: 99px;
+  border: 1px solid rgba(167,139,250,0.3);
+  background: rgba(167,139,250,0.08);
+  color: #a78bfa; font-size: .75rem; font-weight: 500;
+  text-decoration: none; transition: all var(--transition);
+}
+.rm-search-btn:hover {
+  background: rgba(167,139,250,0.18); border-color: #a78bfa;
+}
+
+/* ── Goal stop ──────────────────────────────────────────── */
+.rm-goal-content { text-align: center; padding: .5rem 0; }
+.rm-goal-score {
+  font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800;
+  background: linear-gradient(110deg, #4ade80, #22d3ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: .35rem;
+}
+
+/* ── Bottom actions ─────────────────────────────────────── */
+.rm-bottom-actions {
+  display: flex; gap: .75rem; flex-wrap: wrap;
+  padding: 2rem 0 1rem;
+  animation: fadeUp .4s ease both;
+}
+
+/* ── Light mode overrides ───────────────────────────────── */
+body.light .rm-road-svg #rm-road-path-body {
+  stroke: #d1d5db;
+}
+body.light .rm-card {
+  background: rgba(255,255,255,0.9);
+}
+
+/* ── Print ──────────────────────────────────────────────── */
+@media print {
+  .rm-road-svg, .rm-legend, .rm-bottom-actions { display: none; }
+  .rm-stop { opacity: 1 !important; transform: none !important; break-inside: avoid; }
+  .rm-stop-left, .rm-stop-right { align-self: auto; margin: 0 0 1.5rem 0; }
+  #rm-stops { gap: 1.5rem; }
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .rm-stop-left, .rm-stop-right {
+    align-self: stretch; flex-direction: row;
+    margin-left: 0; margin-right: 0; max-width: 100%;
+  }
+  .rm-connector { display: none; }
+  .rm-road-svg  { display: none; }
+}

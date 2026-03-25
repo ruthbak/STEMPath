@@ -1,3 +1,5 @@
+<!--This is the home page i.e. the landing page with the hero, features,
+how it works, CTA-->
 {% extends "base.html" %}
 {% block title %}STEMPath — Plan Your STEM Career{% endblock %}
 
@@ -27,7 +29,7 @@
     </p>
 
     <div class="hero-actions">
-      <a class="btn" href="{{ url_for('reset') }}">Get Started</a>
+      <a class="btn" href="#" onclick="requireAuth(event, '{{ url_for('reset') }}')">Get Started</a>
       <a class="btn btn-ghost" href="#how-it-works">See How It Works</a>
     </div>
   </div>
@@ -138,8 +140,8 @@
       Join other Caribbean STEM students using data-driven guidance to get hired faster.
     </p>
     <div class="hero-actions">
-      <a class="btn" href="{{ url_for('reset') }}">Let's go</a>
-      <a class="btn btn-ghost" href="{{ url_for('roles') }}">Browse Roles</a>
+      <a class="btn" href="#" onclick="requireAuth(event, '{{ url_for('reset') }}')">Let's go</a>
+      <a class="btn btn-ghost" href="#" onclick="requireAuth(event, '{{ url_for('roles') }}')">Browse Roles</a>
     </div>
   </div>
 </section>

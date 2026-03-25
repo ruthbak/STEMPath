@@ -1,3 +1,5 @@
+<!--This is the profile page that has the build academic profile form-->
+
 {% extends "base.html" %}
 {% block title %}Build Profile • STEMPath{% endblock %}
 
@@ -8,7 +10,7 @@
     Add what you already have — then upload a resume if you want. STEMPath will merge everything.
   </p>
 
-  <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data" class="form">
+  <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data" class="form" id="profile-form">
     <fieldset>
       <legend>Academic background</legend>
 
@@ -32,101 +34,104 @@
           {% set loc = profile.get('location','') %}
           <option value="">Select a location</option>
           <option value="Jamaica"       {{ 'selected' if loc=='Jamaica'       else '' }}>Jamaica</option>
-          <option value="Caribbean"     {{ 'selected' if loc=='Caribbean'     else '' }}>Caribbean</option>
+          <option value="Trinidad"      {{ 'selected' if loc=='Trinidad'      else '' }}>Trinidad & Tobago</option>
+          <option value="Barbados"      {{ 'selected' if loc=='Barbados'      else '' }}>Barbados</option>
+          <option value="Caribbean"     {{ 'selected' if loc=='Caribbean'     else '' }}>Caribbean (General)</option>
           <option value="Canada"        {{ 'selected' if loc=='Canada'        else '' }}>Canada</option>
           <option value="United States" {{ 'selected' if loc=='United States' else '' }}>United States</option>
           <option value="Remote"        {{ 'selected' if loc=='Remote'        else '' }}>Remote</option>
         </select>
       </div>
 
-      {% if session.get('user_type') == 'professional' %}
-        <div class="field">
-          <label for="job_title">Current Job Title</label>
-          <input id="job_title" name="job_title" type="text"
-                 value="{{ profile.get('job_title','') }}"
-                 placeholder="e.g., Junior Developer">
-        </div>
-      {% else %}
-        <div class="field">
-          <label for="gpa">GPA (optional)</label>
-          <input id="gpa" name="gpa" type="text"
-                 value="{{ profile.get('gpa','') }}"
-                 placeholder="e.g., 3.4">
-          <small class="muted">You can leave this blank.</small>
-        </div>
-        <div class="field">
-          <label for="courses">Completed courses (comma-separated)</label>
-          <input id="courses" name="courses" type="text"
-                 value="{{ (profile.get('courses', [])|join(', ')) }}"
-                 placeholder="e.g., Data Structures, Algorithms, Databases">
-        </div>
-      {% endif %}
+      <div class="field">
+        <label for="gpa">GPA (optional)</label>
+        <input id="gpa" name="gpa" type="text"
+               value="{{ profile.get('gpa','') }}"
+               placeholder="e.g., 3.4">
+        <small class="muted">You can leave this blank.</small>
+      </div>
     </fieldset>
 
     <fieldset>
       <legend>What you already have</legend>
 
+      <!-- ── Skills tag picker ── -->
       <div class="field">
-        <label for="skills">Current skills (comma-separated)</label>
-        <textarea id="skills" name="skills" rows="3"
-                  placeholder="e.g., Python, Git, SQL, Communication">{{ (profile.get('skills', [])|join(', ')) }}</textarea>
+        <label>Current skills</label>
+        <div class="tag-picker" id="skills-picker">
+          <div class="tag-picker-tags" id="skills-tags"></div>
+          <div class="tag-picker-input-wrap">
+            <input
+              type="text"
+              class="tag-picker-input"
+              id="skills-input"
+              placeholder="Type a skill, e.g. Python…"
+              autocomplete="off"
+            />
+            <ul class="tag-dropdown" id="skills-dropdown"></ul>
+          </div>
+        </div>
+        <!-- Hidden input carries the final value to Flask -->
+        <input type="hidden" name="skills" id="skills-hidden"
+               value="{{ (profile.get('skills', [])|join(', ')) }}">
+        <small class="muted">Type to search, click to add. Press ✕ to remove a tag.</small>
       </div>
 
+      <!-- ── Certifications tag picker ── -->
       <div class="field">
-        <label for="certifications">Certifications (comma-separated)</label>
-        <input id="certifications" name="certifications" type="text"
-               value="{{ (profile.get('certifications', [])|join(', ')) }}"
-               placeholder="e.g., Google Data Analytics, AWS CCP">
+        <label>Certifications</label>
+        <div class="tag-picker" id="certs-picker">
+          <div class="tag-picker-tags" id="certs-tags"></div>
+          <div class="tag-picker-input-wrap">
+            <input
+              type="text"
+              class="tag-picker-input"
+              id="certs-input"
+              placeholder="Type a cert, e.g. AWS CCP…"
+              autocomplete="off"
+            />
+            <ul class="tag-dropdown" id="certs-dropdown"></ul>
+          </div>
+        </div>
+        <input type="hidden" name="certifications" id="certs-hidden"
+               value="{{ (profile.get('certifications', [])|join(', ')) }}">
+        <small class="muted">Type to search or add your own certification.</small>
+      </div>
+
+      <!-- ── Courses tag picker ── -->
+      <div class="field">
+        <label>Completed courses</label>
+        <div class="tag-picker" id="courses-picker">
+          <div class="tag-picker-tags" id="courses-tags"></div>
+          <div class="tag-picker-input-wrap">
+            <input
+              type="text"
+              class="tag-picker-input"
+              id="courses-input"
+              placeholder="Type a course, e.g. Data Structures…"
+              autocomplete="off"
+            />
+            <ul class="tag-dropdown" id="courses-dropdown"></ul>
+          </div>
+        </div>
+        <input type="hidden" name="courses" id="courses-hidden"
+               value="{{ (profile.get('courses', [])|join(', ')) }}">
+        <small class="muted">Type to search or add your own course.</small>
       </div>
     </fieldset>
 
     <fieldset>
       <legend>Resume upload (optional)</legend>
-
       <div class="field">
         <label for="resume">Upload resume (PDF or DOCX)</label>
         <input id="resume" name="resume" type="file" accept=".pdf,.docx">
         <small class="muted">
-          If uploaded, we'll extract skills and merge them with what you typed.
+          If uploaded, we'll extract skills and merge them with what you selected.
         </small>
       </div>
-
       {% if resume_notice %}
         <p class="muted" style="margin-top:.5rem;">{{ resume_notice }}</p>
       {% endif %}
-    </fieldset>
-
-    <fieldset>
-      <legend>Pathway preference</legend>
-      <p class="muted" style="margin-bottom:16px;">
-        Tell STEMPath what matters most — it adjusts the Dijkstra weights to find your ideal route.
-      </p>
-
-      <div class="field">
-        <label>Optimize my pathway for:</label>
-        <div class="user-type-toggle">
-          <label class="type-option">
-            <input type="radio" name="optimize_for" value="time"
-              {{ 'checked' if profile.get('optimize_for') == 'time' else '' }}>
-            <span>⏱ Shortest time</span>
-          </label>
-          <label class="type-option">
-            <input type="radio" name="optimize_for" value="cost"
-              {{ 'checked' if profile.get('optimize_for') == 'cost' else '' }}>
-            <span>💰 Lowest cost</span>
-          </label>
-          <label class="type-option">
-            <input type="radio" name="optimize_for" value="balanced"
-              {{ 'checked' if profile.get('optimize_for') != 'time' and profile.get('optimize_for') != 'cost' and profile.get('optimize_for') != 'easy' else '' }}>
-            <span>⚖️ Balanced</span>
-          </label>
-          <label class="type-option">
-            <input type="radio" name="optimize_for" value="easy"
-              {{ 'checked' if profile.get('optimize_for') == 'easy' else '' }}>
-            <span>🎓 Easiest first</span>
-          </label>
-        </div>
-      </div>
     </fieldset>
 
     <div class="actions">
@@ -135,4 +140,169 @@
     </div>
   </form>
 </section>
+
+
+<script>
+// ── Master skill list from SKILL_TAXONOMY ─────────────────────
+const SKILL_OPTIONS = [
+  "Python Basics","Python","JavaScript","Java","C++","HTML","CSS","HTML/CSS","React",
+  "Database Fundamentals","SQL","NoSQL","MongoDB","PostgreSQL",
+  "NumPy","Pandas","NumPy / Pandas","Data Wrangling",
+  "Basic Statistics","Statistics","Probability","Linear Algebra","Calculus",
+  "Version Control","Git","OOP Design","Data Structures","Algorithms",
+  "REST APIs","API Design","Software Architecture","Systems Analysis","Testing","Agile / Scrum",
+  "Scikit-Learn","Machine Learning","Deep Learning","TensorFlow","PyTorch","TensorFlow/PyTorch",
+  "Data Visualization","Matplotlib/Seaborn","Big Data","ML Deployment",
+  "Linux CLI","Networking Basics","Cloud Fundamentals","AWS","Azure","Docker","Kubernetes",
+  "Network Security","Cryptography","CompTIA Security+","Ethical Hacking","Penetration Testing",
+  "SIEM Tools","Incident Response","Forensics","Threat Intelligence","Security Architecture",
+  "AutoCAD","MATLAB","Circuit Analysis","Thermodynamics","Structural Analysis",
+  "Communication","Problem Solving","Teamwork","Project Management","Critical Thinking",
+];
+
+const CERT_OPTIONS = [
+  "Google Data Analytics","AWS Cloud Practitioner","AWS Solutions Architect",
+  "Microsoft AZ-900","Microsoft AZ-104","CompTIA A+","CompTIA Security+","CompTIA Network+",
+  "Google IT Support","IBM Data Science","Meta Front-End Developer",
+  "Cisco CCNA","Certified Ethical Hacker (CEH)","OSCP",
+  "PMP","Scrum Master","Google UX Design","TensorFlow Developer Certificate",
+];
+
+const COURSE_OPTIONS = [
+  "Data Structures","Algorithms","Operating Systems","Computer Networks",
+  "Database Systems","Software Engineering","Computer Architecture",
+  "Discrete Mathematics","Linear Algebra","Statistics",
+  "Machine Learning","Deep Learning","Computer Vision","Natural Language Processing",
+  "Web Development","Mobile Development","Cloud Computing","Cybersecurity Fundamentals",
+  "Introduction to Python","Introduction to Java","Introduction to C++",
+  "Data Analysis","Data Visualization","Big Data Analytics",
+  "Object-Oriented Programming","Functional Programming","Design Patterns",
+  "Agile Methodologies","Project Management","Technical Writing",
+];
+
+// ── Tag picker factory ────────────────────────────────────────
+function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
+  const input    = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  const tagsWrap = document.getElementById(tagsId);
+  const hidden   = document.getElementById(hiddenId);
+
+  // Load existing values from hidden input (pre-filled by Flask)
+  let selected = hidden.value
+    ? hidden.value.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
+
+  // Render all existing tags on page load
+  selected.forEach(skill => renderTag(skill, false));
+  syncHidden();
+
+  function syncHidden() {
+    hidden.value = selected.join(', ');
+  }
+
+  function renderTag(skill, animate = true) {
+    const tag = document.createElement('div');
+    tag.className = 'tp-tag' + (animate ? ' tp-tag-new' : '');
+    tag.innerHTML = `
+      <span>${skill}</span>
+      <button type="button" class="tp-remove" aria-label="Remove ${skill}">✕</button>
+    `;
+    tag.querySelector('.tp-remove').addEventListener('click', () => {
+      tag.classList.add('tp-tag-removing');
+      setTimeout(() => {
+        tag.remove();
+        selected = selected.filter(s => s !== skill);
+        syncHidden();
+      }, 180);
+    });
+    tagsWrap.appendChild(tag);
+  }
+
+  function addTag(skill) {
+    const trimmed = skill.trim();
+    if (!trimmed || selected.includes(trimmed)) return;
+    selected.push(trimmed);
+    renderTag(trimmed, true);
+    syncHidden();
+    input.value = '';
+    closeDropdown();
+  }
+
+  function showDropdown(query) {
+    const q = query.toLowerCase();
+    const matches = options
+      .filter(o => o.toLowerCase().includes(q) && !selected.includes(o))
+      .slice(0, 8);
+
+    dropdown.innerHTML = '';
+
+    if (matches.length === 0 && query.length >= 2) {
+      // Allow adding custom entry
+      const li = document.createElement('li');
+      li.className = 'tp-option tp-option-custom';
+      li.textContent = `Add "${query}"`;
+      li.addEventListener('mousedown', e => { e.preventDefault(); addTag(query); });
+      dropdown.appendChild(li);
+      dropdown.classList.add('open');
+      return;
+    }
+
+    matches.forEach(match => {
+      const li = document.createElement('li');
+      li.className = 'tp-option';
+      // Bold the matching part
+      const idx   = match.toLowerCase().indexOf(q);
+      const before = match.slice(0, idx);
+      const bold   = match.slice(idx, idx + q.length);
+      const after  = match.slice(idx + q.length);
+      li.innerHTML = `${before}<strong>${bold}</strong>${after}`;
+      li.addEventListener('mousedown', e => { e.preventDefault(); addTag(match); });
+      dropdown.appendChild(li);
+    });
+
+    dropdown.classList.toggle('open', matches.length > 0);
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+    dropdown.innerHTML = '';
+  }
+
+  input.addEventListener('input', () => {
+    if (input.value.length >= 1) showDropdown(input.value);
+    else closeDropdown();
+  });
+
+  input.addEventListener('keydown', e => {
+    // Add on Enter or comma
+    if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+      e.preventDefault();
+      // If dropdown has a highlighted item use that, else use typed value
+      const first = dropdown.querySelector('.tp-option');
+      if (first) addTag(first.textContent.replace('Add "', '').replace('"', ''));
+      else addTag(input.value);
+    }
+    if (e.key === 'Escape') closeDropdown();
+    // Backspace on empty input removes last tag
+    if (e.key === 'Backspace' && !input.value && selected.length > 0) {
+      const last = tagsWrap.lastElementChild;
+      if (last) last.querySelector('.tp-remove')?.click();
+    }
+  });
+
+  input.addEventListener('focus', () => {
+    if (input.value.length >= 1) showDropdown(input.value);
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(closeDropdown, 150);
+  });
+}
+
+// ── Initialise all three pickers ─────────────────────────────
+createTagPicker('skills-input',  'skills-dropdown',  'skills-tags',  'skills-hidden',  SKILL_OPTIONS);
+createTagPicker('certs-input',   'certs-dropdown',   'certs-tags',   'certs-hidden',   CERT_OPTIONS);
+createTagPicker('courses-input', 'courses-dropdown', 'courses-tags', 'courses-hidden', COURSE_OPTIONS);
+</script>
+
 {% endblock %}
