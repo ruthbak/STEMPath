@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 from flask import Flask, render_template, request, redirect, url_for, session
+from functools import wraps
 import os
 import re
 import pdfplumber
@@ -25,6 +26,15 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_FILE_DIR"] = tempfile.gettempdir()
 app.config["SESSION_PERMANENT"] = False
 Session(app)
+
+# ── Auth decorator ────────────────────────────────────────────
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("user_id"):
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return decorated
 
 BROAD_SKILL_TAXONOMY = {
     "Python": ["python"],
@@ -194,6 +204,7 @@ import os
 ALLOWED_RESUME_EXTS = {".pdf", ".docx"}
 
 @app.route("/profile", methods=["GET", "POST"])
+@login_required
 def profile():
     resume_notice = None
 
@@ -267,9 +278,9 @@ def profile():
             "optimize_for": request.form.get("optimize_for", "balanced"),
         }
 
-        # If you want the notice to show on the profile page after POST,
-        # store it in session temporarily:
+        # Store resume notice and flash confirmation
         session["resume_notice"] = resume_notice
+        session["flash"] = "✅ Profile saved successfully!"
 
         return redirect(url_for("survey"))  # ← new
 
@@ -280,6 +291,7 @@ def profile():
 
 
 @app.route("/roles", methods=["GET"])
+@login_required
 def roles():
     profile_data = session.get("profile", {})
 
@@ -354,6 +366,7 @@ def fetch_youtube_videos(query, max_results=2):
         return []
 
 @app.get("/results")
+@login_required
 def results():
     print("=== RESULTS DEBUG ===")
     print("profile:", session.get("profile"))
@@ -402,20 +415,21 @@ def results():
 
     # ── Certifications ────────────────────────────────
     CERT_LIBRARY = [
+        # ── Computing / Software ──
         {
             "name": "Google Data Analytics Professional Certificate",
             "provider": "Coursera",
             "level": "Beginner–Intermediate",
-            "skills": ["SQL", "Data Visualization", "Spreadsheets"],
-            "tags": ["data", "analytics"],
+            "skills": ["SQL", "Data Visualization", "Spreadsheets", "Data Analysis"],
+            "tags": ["data", "analytics", "software"],
             "link": "https://www.coursera.org/professional-certificates/google-data-analytics"
         },
         {
             "name": "IBM Data Science Professional Certificate",
             "provider": "Coursera",
             "level": "Intermediate",
-            "skills": ["Python", "Machine Learning", "Data Analysis"],
-            "tags": ["data", "software"],
+            "skills": ["Python", "Machine Learning", "Data Analysis", "SQL"],
+            "tags": ["data", "software", "science"],
             "link": "https://www.coursera.org/professional-certificates/ibm-data-science"
         },
         {
@@ -430,8 +444,8 @@ def results():
             "name": "CompTIA Security+",
             "provider": "CompTIA",
             "level": "Intermediate",
-            "skills": ["Security Basics", "Networking", "Incident Response"],
-            "tags": ["security"],
+            "skills": ["Security Basics", "Networking", "Incident Response", "Linux"],
+            "tags": ["security", "it"],
             "link": "https://www.comptia.org/certifications/security"
         },
         {
@@ -447,8 +461,99 @@ def results():
             "provider": "Coursera",
             "level": "Beginner–Intermediate",
             "skills": ["Project Management", "Communication", "Teamwork"],
-            "tags": ["business", "software", "healthcare", "science"],
+            "tags": ["business", "software", "healthcare", "science", "engineering"],
             "link": "https://www.coursera.org/professional-certificates/google-project-management"
+        },
+        {
+            "name": "Meta Front-End Developer Certificate",
+            "provider": "Coursera / Meta",
+            "level": "Beginner–Intermediate",
+            "skills": ["JavaScript", "HTML", "CSS", "React", "APIs"],
+            "tags": ["software", "it"],
+            "link": "https://www.coursera.org/professional-certificates/meta-front-end-developer"
+        },
+        {
+            "name": "Google IT Support Professional Certificate",
+            "provider": "Coursera / Google",
+            "level": "Beginner",
+            "skills": ["Networking", "Linux", "Security Basics", "Cloud"],
+            "tags": ["it", "security"],
+            "link": "https://www.coursera.org/professional-certificates/google-it-support"
+        },
+        # ── Engineering ──
+        {
+            "name": "AutoCAD Certified Professional",
+            "provider": "Autodesk",
+            "level": "Intermediate",
+            "skills": ["AutoCAD", "Technical Drawing", "CAD"],
+            "tags": ["engineering", "mechanical", "civil"],
+            "link": "https://www.autodesk.com/certification/all-certifications/autocad"
+        },
+        {
+            "name": "MATLAB Fundamentals",
+            "provider": "MathWorks",
+            "level": "Beginner–Intermediate",
+            "skills": ["MATLAB", "Simulation", "Signal Processing", "Data Analysis"],
+            "tags": ["engineering", "science", "physics"],
+            "link": "https://www.mathworks.com/learn/training/matlab-fundamentals.html"
+        },
+        {
+            "name": "Six Sigma Green Belt",
+            "provider": "ASQ",
+            "level": "Intermediate",
+            "skills": ["Quality Control", "Statistical Analysis", "Process Improvement"],
+            "tags": ["engineering", "mechanical", "industrial"],
+            "link": "https://asq.org/cert/six-sigma-green-belt"
+        },
+        {
+            "name": "PMP — Project Management Professional",
+            "provider": "PMI",
+            "level": "Advanced",
+            "skills": ["Project Management", "Communication", "Risk Management", "Teamwork"],
+            "tags": ["engineering", "software", "science", "business"],
+            "link": "https://www.pmi.org/certifications/project-management-pmp"
+        },
+        # ── Health / Medical Physics ──
+        {
+            "name": "Medical Imaging Fundamentals (edX)",
+            "provider": "edX",
+            "level": "Intermediate",
+            "skills": ["Medical Imaging", "Radiation Physics", "MATLAB", "Data Analysis"],
+            "tags": ["healthcare", "physics", "science"],
+            "link": "https://www.edx.org/learn/medical-imaging"
+        },
+        {
+            "name": "Radiation Protection Supervisor Certificate",
+            "provider": "IAEA / National Bodies",
+            "level": "Intermediate",
+            "skills": ["Radiation Safety", "Dosimetry", "Radiation Physics"],
+            "tags": ["healthcare", "physics", "science"],
+            "link": "https://www.iaea.org/resources/rpop/health-professionals/radiation-therapy/medical-physics"
+        },
+        {
+            "name": "Google Health Data Analytics",
+            "provider": "Coursera",
+            "level": "Intermediate",
+            "skills": ["Data Analysis", "Research", "Communication", "Excel"],
+            "tags": ["healthcare", "science", "data"],
+            "link": "https://www.coursera.org/learn/health-data-analytics"
+        },
+        # ── Science / Research ──
+        {
+            "name": "IBM Data Analyst Professional Certificate",
+            "provider": "Coursera / IBM",
+            "level": "Beginner–Intermediate",
+            "skills": ["Python", "SQL", "Excel", "Data Visualization", "Research"],
+            "tags": ["science", "data", "analytics"],
+            "link": "https://www.coursera.org/professional-certificates/ibm-data-analyst"
+        },
+        {
+            "name": "Research Methods and Statistics (Coursera)",
+            "provider": "Coursera",
+            "level": "Beginner–Intermediate",
+            "skills": ["Research", "Statistical Analysis", "Data Analysis", "Communication"],
+            "tags": ["science", "healthcare", "engineering"],
+            "link": "https://www.coursera.org/learn/research-methods"
         },
     ]
 
@@ -567,7 +672,18 @@ def results():
             if s in missing_skills
         ]
 
+    # Build recommended_learning from learning_paths for template compatibility
     recommended_learning = []
+    for lp in learning_paths:
+        for step in lp.get("steps", []):
+            if step.get("course"):
+                recommended_learning.append({
+                    "title":    step["course"],
+                    "skill":    lp["target_skill"],
+                    "provider": "edX / Microsoft Learn",
+                    "format":   "Course",
+                    "link":     step.get("ms_learn", ""),
+                })
 
     results_obj = {
         "degree":            profile_data.get("degree", ""),
@@ -588,6 +704,7 @@ def results():
     return render_template("results.html", results=results_obj)   
 
 @app.route("/progress", methods=["GET", "POST"])
+@login_required
 def progress():
     data = session.get("progress", {"skills": [], "completed": []})
 
@@ -615,6 +732,7 @@ def progress():
 
 
 @app.route("/survey", methods=["GET"])
+@login_required
 def survey():
     profile_data = session.get("profile")
     if not profile_data:
@@ -680,6 +798,7 @@ Return ONLY a valid JSON array, no markdown, no explanation:
 
 
 @app.route("/survey/submit", methods=["POST"])
+@login_required
 def survey_submit():
     profile_data = session.get("profile", {})
     answers = request.form
@@ -714,6 +833,20 @@ def reset():
 @app.get("/loading")
 def loading():
     return render_template("loading.html")
+
+# ── Firebase session bridge ───────────────────────────────────
+# Called by base.html after Firebase login so Flask knows who is logged in
+@app.post("/set-session")
+def set_session():
+    data = request.get_json(silent=True) or {}
+    session["user_id"]      = data.get("user_id")
+    session["display_name"] = data.get("display_name")
+    return {"ok": True}
+
+@app.get("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("home"))
 
 if __name__ == "__main__":
     app.run(debug=True)

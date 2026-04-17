@@ -10,22 +10,19 @@
     Add what you already have — then upload a resume if you want. STEMPath will merge everything.
   </p>
 
+  {% if session.get('flash') %}
+    <div class="flash-notice">{{ session.pop('flash') }}</div>
+  {% endif %}
+
   <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data" class="form" id="profile-form">
     <fieldset>
       <legend>Academic background</legend>
 
       <div class="field">
-        <label for="degree">Degree / Programme</label>
+        <label for="degree">Degree / Programme / Major</label>
         <input id="degree" name="degree" type="text" required
                value="{{ profile.get('degree','') }}"
                placeholder="e.g., BSc Computer Science">
-      </div>
-
-      <div class="field">
-        <label for="major">Major</label>
-        <input id="major" name="major" type="text" required
-               value="{{ profile.get('major','') }}"
-               placeholder="e.g., Software Engineering">
       </div>
 
       <div class="field">
@@ -37,27 +34,66 @@
           <option value="Trinidad"      {{ 'selected' if loc=='Trinidad'      else '' }}>Trinidad & Tobago</option>
           <option value="Barbados"      {{ 'selected' if loc=='Barbados'      else '' }}>Barbados</option>
           <option value="Caribbean"     {{ 'selected' if loc=='Caribbean'     else '' }}>Caribbean (General)</option>
-          <option value="Canada"        {{ 'selected' if loc=='Canada'        else '' }}>Canada</option>
           <option value="United States" {{ 'selected' if loc=='United States' else '' }}>United States</option>
           <option value="Remote"        {{ 'selected' if loc=='Remote'        else '' }}>Remote</option>
         </select>
       </div>
 
       <div class="field">
-        <label for="gpa">GPA (optional)</label>
-        <input id="gpa" name="gpa" type="text"
-               value="{{ profile.get('gpa','') }}"
-               placeholder="e.g., 3.4">
-        <small class="muted">You can leave this blank.</small>
+        <label>Optimise my pathway for</label>
+        <div class="user-type-toggle">
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="balanced"
+                   {{ 'checked' if profile.get('optimize_for','balanced')=='balanced' else '' }}/>
+            <span>⚖️ Balanced</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="time"
+                   {{ 'checked' if profile.get('optimize_for')=='time' else '' }}/>
+            <span>⚡ Fastest</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="easy"
+                   {{ 'checked' if profile.get('optimize_for')=='easy' else '' }}/>
+            <span>🎯 Easiest</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="optimize_for" value="cost"
+                   {{ 'checked' if profile.get('optimize_for')=='cost' else '' }}/>
+            <span>💰 Cheapest</span>
+          </label>
+        </div>
+        <small class="muted">This affects how Dijkstra weighs your learning path.</small>
       </div>
+
     </fieldset>
 
     <fieldset>
       <legend>What you already have</legend>
 
-      <!-- ── Skills tag picker ── -->
+      <!-- ── Skills tag picker with category filter ── -->
       <div class="field">
         <label>Current skills</label>
+
+        <!-- Skill categories thingy -->
+        <div class="skill-categories" id="skill-categories">
+          <button type="button" class="skill-cat-btn active" data-cat="all">All</button>
+          <button type="button" class="skill-cat-btn skill-cat-stem" data-cat="science">🔬 Science</button>
+          <button type="button" class="skill-cat-btn skill-cat-stem" data-cat="technology">💻 Technology</button>
+          <button type="button" class="skill-cat-btn skill-cat-stem" data-cat="engineering">⚙️ Engineering</button>
+          <button type="button" class="skill-cat-btn skill-cat-stem" data-cat="math">📐 Mathematics</button>
+
+          <div class="skill-subcat-row" id="tech-subcats">
+            <button type="button" class="skill-cat-btn skill-cat-sub" data-cat="programming">Programming</button>
+            <button type="button" class="skill-cat-btn skill-cat-sub" data-cat="data">Data & Databases</button>
+            <button type="button" class="skill-cat-btn skill-cat-sub" data-cat="software_eng">Software Engineering</button>
+            <button type="button" class="skill-cat-btn skill-cat-sub" data-cat="ml">Machine Learning</button>
+            <button type="button" class="skill-cat-btn skill-cat-sub" data-cat="cloud">Cloud & DevOps</button>
+            <button type="button" class="skill-cat-btn skill-cat-sub" data-cat="security">Cybersecurity</button>
+          </div>
+        </div>
+
+
         <div class="tag-picker" id="skills-picker">
           <div class="tag-picker-tags" id="skills-tags"></div>
           <div class="tag-picker-input-wrap">
@@ -65,16 +101,16 @@
               type="text"
               class="tag-picker-input"
               id="skills-input"
-              placeholder="Type a skill, e.g. Python…"
+              placeholder="Select a category above, then type to search…"
               autocomplete="off"
             />
             <ul class="tag-dropdown" id="skills-dropdown"></ul>
           </div>
         </div>
-        <!-- Hidden input carries the final value to Flask -->
+
         <input type="hidden" name="skills" id="skills-hidden"
                value="{{ (profile.get('skills', [])|join(', ')) }}">
-        <small class="muted">Type to search, click to add. Press ✕ to remove a tag.</small>
+        <small class="muted">Pick a category → type to search → click to add. Press ✕ to remove.</small>
       </div>
 
       <!-- ── Certifications tag picker ── -->
@@ -143,77 +179,157 @@
 
 
 <script>
-// ── Master skill list from SKILL_TAXONOMY ─────────────────────
-const SKILL_OPTIONS = [
-  "Python Basics","Python","JavaScript","Java","C++","HTML","CSS","HTML/CSS","React",
-  "Database Fundamentals","SQL","NoSQL","MongoDB","PostgreSQL",
-  "NumPy","Pandas","NumPy / Pandas","Data Wrangling",
-  "Basic Statistics","Statistics","Probability","Linear Algebra","Calculus",
-  "Version Control","Git","OOP Design","Data Structures","Algorithms",
-  "REST APIs","API Design","Software Architecture","Systems Analysis","Testing","Agile / Scrum",
-  "Scikit-Learn","Machine Learning","Deep Learning","TensorFlow","PyTorch","TensorFlow/PyTorch",
-  "Data Visualization","Matplotlib/Seaborn","Big Data","ML Deployment",
-  "Linux CLI","Networking Basics","Cloud Fundamentals","AWS","Azure","Docker","Kubernetes",
-  "Network Security","Cryptography","CompTIA Security+","Ethical Hacking","Penetration Testing",
-  "SIEM Tools","Incident Response","Forensics","Threat Intelligence","Security Architecture",
-  "AutoCAD","MATLAB","Circuit Analysis","Thermodynamics","Structural Analysis",
-  "Communication","Problem Solving","Teamwork","Project Management","Critical Thinking",
-];
+// ── Skill options organised by category ───────────────────────
+const SKILL_CATEGORIES = {
+  all: [
+    "Python Basics","Python","JavaScript","TypeScript","Java","C++","C#","PHP","Swift","Kotlin",
+    "HTML","CSS","HTML/CSS","React","Vue.js","Angular","Node.js",
+    "Database Fundamentals","SQL","NoSQL","MongoDB","PostgreSQL","MySQL","SQLite","Redis",
+    "NumPy","Pandas","NumPy / Pandas","Data Wrangling","Excel","Spreadsheets",
+    "Basic Statistics","Statistics","Probability","Linear Algebra","Calculus","Discrete Mathematics",
+    "Version Control","Git","OOP Design","Data Structures","Algorithms",
+    "REST APIs","API Design","Software Architecture","Systems Analysis","Testing","Agile / Scrum","DevOps","CI/CD",
+    "Scikit-Learn","Machine Learning","Deep Learning","TensorFlow","PyTorch","TensorFlow/PyTorch",
+    "Data Visualization","Matplotlib/Seaborn","Big Data","ML Deployment","Natural Language Processing","Computer Vision",
+    "Linux CLI","Networking Basics","Cloud Fundamentals","AWS","Azure","Google Cloud","Docker","Kubernetes","Terraform",
+    "Network Security","Cryptography","CompTIA Security+","Ethical Hacking","Penetration Testing",
+    "SIEM Tools","Incident Response","Forensics","Threat Intelligence","Security Architecture","Vulnerability Assessment",
+    "AutoCAD","MATLAB","Circuit Analysis","Thermodynamics","Structural Analysis",
+    "Signal Processing","Control Systems","PLC Programming","CAD","SOLIDWORKS","Fluid Mechanics","Heat Transfer",
+    "Research Methods","Laboratory Techniques","Scientific Writing","Medical Imaging","Radiation Physics",
+    "Dosimetry","Bioinformatics","Environmental Monitoring","GIS","Remote Sensing","Statistical Analysis",
+    "Communication","Problem Solving","Teamwork","Project Management","Critical Thinking",
+    "Leadership","Time Management","Presentation Skills",
+  ],
+  science: [
+    "Research Methods","Laboratory Techniques","Scientific Writing",
+    "Medical Imaging","Radiation Physics","Dosimetry","Bioinformatics",
+    "Environmental Monitoring","GIS","Remote Sensing","Statistical Analysis",
+    "Data Analysis",
+  ],
 
+  technology: [
+    // All tech skills combined
+    "Python Basics","Python","JavaScript","TypeScript","Java","C++","C#","PHP","Swift","Kotlin",
+    "HTML","CSS","HTML/CSS","React","Vue.js","Angular","Node.js",
+    "Database Fundamentals","SQL","NoSQL","MongoDB","PostgreSQL","MySQL","SQLite","Redis",
+    "NumPy","Pandas","NumPy / Pandas","Data Wrangling","Excel","Spreadsheets",
+    "Version Control","Git","OOP Design","Data Structures","Algorithms",
+    "REST APIs","API Design","Software Architecture","Systems Analysis","Testing","Agile / Scrum","DevOps","CI/CD",
+    "Scikit-Learn","Machine Learning","Deep Learning","TensorFlow","PyTorch","TensorFlow/PyTorch",
+    "Data Visualization","Matplotlib/Seaborn","Big Data","ML Deployment","Natural Language Processing","Computer Vision",
+    "Linux CLI","Networking Basics","Cloud Fundamentals","AWS","Azure","Google Cloud","Docker","Kubernetes","Terraform",
+    "Network Security","Cryptography","CompTIA Security+","Ethical Hacking","Penetration Testing",
+    "SIEM Tools","Incident Response","Forensics","Threat Intelligence","Security Architecture","Vulnerability Assessment",
+  ],
+
+  // Technology subcategories (still usable individually)
+  programming:  [ "Python Basics","Python","JavaScript","TypeScript","Java","C++","C#","PHP","Swift","Kotlin","HTML","CSS","HTML/CSS","React","Vue.js","Angular","Node.js" ],
+  data:         [ "Database Fundamentals","SQL","NoSQL","MongoDB","PostgreSQL","MySQL","SQLite","Redis","NumPy","Pandas","NumPy / Pandas","Data Wrangling","Excel","Spreadsheets" ],
+  software_eng: [ "Version Control","Git","OOP Design","Data Structures","Algorithms","REST APIs","API Design","Software Architecture","Systems Analysis","Testing","Agile / Scrum","DevOps","CI/CD" ],
+  ml:           [ "Scikit-Learn","Machine Learning","Deep Learning","TensorFlow","PyTorch","TensorFlow/PyTorch","Data Visualization","Matplotlib/Seaborn","Big Data","ML Deployment","Natural Language Processing","Computer Vision" ],
+  cloud:        [ "Linux CLI","Networking Basics","Cloud Fundamentals","AWS","Azure","Google Cloud","Docker","Kubernetes","Terraform" ],
+  security:     [ "Network Security","Cryptography","CompTIA Security+","Ethical Hacking","Penetration Testing","SIEM Tools","Incident Response","Forensics","Threat Intelligence","Security Architecture","Vulnerability Assessment" ],
+
+  engineering: [
+    "AutoCAD","MATLAB","Circuit Analysis","Thermodynamics","Structural Analysis",
+    "Signal Processing","Control Systems","PLC Programming","CAD","SOLIDWORKS",
+    "Fluid Mechanics","Heat Transfer","Finite Element Analysis",
+  ],
+
+  math: [
+    "Basic Statistics","Statistics","Probability","Linear Algebra","Calculus","Discrete Mathematics",
+  ],
+};
+ 
 const CERT_OPTIONS = [
   "Google Data Analytics","AWS Cloud Practitioner","AWS Solutions Architect",
   "Microsoft AZ-900","Microsoft AZ-104","CompTIA A+","CompTIA Security+","CompTIA Network+",
-  "Google IT Support","IBM Data Science","Meta Front-End Developer",
+  "Google IT Support","IBM Data Science","IBM Data Analyst","Meta Front-End Developer",
   "Cisco CCNA","Certified Ethical Hacker (CEH)","OSCP",
-  "PMP","Scrum Master","Google UX Design","TensorFlow Developer Certificate",
+  "PMP","Scrum Master","Six Sigma Green Belt","AutoCAD Certified Professional",
+  "MATLAB Fundamentals","Google UX Design","TensorFlow Developer Certificate",
+  "Radiation Protection Supervisor","Google Project Management",
 ];
 
 const COURSE_OPTIONS = [
   "Data Structures","Algorithms","Operating Systems","Computer Networks",
   "Database Systems","Software Engineering","Computer Architecture",
-  "Discrete Mathematics","Linear Algebra","Statistics",
+  "Discrete Mathematics","Linear Algebra","Statistics","Calculus",
   "Machine Learning","Deep Learning","Computer Vision","Natural Language Processing",
   "Web Development","Mobile Development","Cloud Computing","Cybersecurity Fundamentals",
   "Introduction to Python","Introduction to Java","Introduction to C++",
   "Data Analysis","Data Visualization","Big Data Analytics",
   "Object-Oriented Programming","Functional Programming","Design Patterns",
   "Agile Methodologies","Project Management","Technical Writing",
+  "Medical Imaging","Radiation Physics","Signal Processing","Control Systems",
+  "Research Methods","Bioinformatics","Environmental Science","GIS Fundamentals",
+  "Thermodynamics","Fluid Mechanics","Circuit Analysis","Structural Analysis",
 ];
 
-// ── Tag picker factory ────────────────────────────────────────
-function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
-  const input    = document.getElementById(inputId);
-  const dropdown = document.getElementById(dropdownId);
-  const tagsWrap = document.getElementById(tagsId);
-  const hidden   = document.getElementById(hiddenId);
+// Active state definitions
+let activeMainCategory = 'all';
+let activeSubCategory = null;
 
-  // Load existing values from hidden input (pre-filled by Flask)
+// ── Show/hide tech subcategories when Technology is clicked ─────────────────────────────────────────────
+const techSubcats = document.getElementById('tech-subcats');
+
+document.querySelectorAll('.skill-cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+
+    document.querySelectorAll('.skill-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cat = btn.dataset.cat;
+
+    // MAIN categories
+    if (['all','science','technology','engineering','math'].includes(cat)) {
+      activeMainCategory = cat;
+      activeSubCategory = null;
+
+      if (cat === 'technology') {
+        techSubcats.classList.add('visible');
+      } else {
+        techSubcats.classList.remove('visible');
+      }
+    }
+
+    // SUB categories
+    else {
+      activeMainCategory = 'technology';
+      activeSubCategory = cat;
+      techSubcats.classList.add('visible');
+    }
+
+    const input = document.getElementById('skills-input');
+    input.focus();
+    skillPickerShowDropdown(input.value);
+  });
+});
+
+// ── Skills picker (category thingy) ───────────────────────────
+(function() {
+  const input    = document.getElementById('skills-input');
+  const dropdown = document.getElementById('skills-dropdown');
+  const tagsWrap = document.getElementById('skills-tags');
+  const hidden   = document.getElementById('skills-hidden');
+
   let selected = hidden.value
     ? hidden.value.split(',').map(s => s.trim()).filter(Boolean)
     : [];
 
-  // Render all existing tags on page load
   selected.forEach(skill => renderTag(skill, false));
   syncHidden();
 
-  function syncHidden() {
-    hidden.value = selected.join(', ');
-  }
+  function syncHidden() { hidden.value = selected.join(', '); }
 
   function renderTag(skill, animate = true) {
     const tag = document.createElement('div');
     tag.className = 'tp-tag' + (animate ? ' tp-tag-new' : '');
-    tag.innerHTML = `
-      <span>${skill}</span>
-      <button type="button" class="tp-remove" aria-label="Remove ${skill}">✕</button>
-    `;
+    tag.innerHTML = `<span>${skill}</span><button type="button" class="tp-remove" aria-label="Remove ${skill}">✕</button>`;
     tag.querySelector('.tp-remove').addEventListener('click', () => {
       tag.classList.add('tp-tag-removing');
-      setTimeout(() => {
-        tag.remove();
-        selected = selected.filter(s => s !== skill);
-        syncHidden();
-      }, 180);
+      setTimeout(() => { tag.remove(); selected = selected.filter(s => s !== skill); syncHidden(); }, 180);
     });
     tagsWrap.appendChild(tag);
   }
@@ -221,23 +337,51 @@ function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
   function addTag(skill) {
     const trimmed = skill.trim();
     if (!trimmed || selected.includes(trimmed)) return;
-    selected.push(trimmed);
-    renderTag(trimmed, true);
-    syncHidden();
-    input.value = '';
-    closeDropdown();
+    selected.push(trimmed); renderTag(trimmed, true); syncHidden();
+    input.value = ''; closeDropdown();
   }
 
-  function showDropdown(query) {
-    const q = query.toLowerCase();
-    const matches = options
-      .filter(o => o.toLowerCase().includes(q) && !selected.includes(o))
-      .slice(0, 8);
+  window.skillPickerShowDropdown = function(query) {
+    const q    = query.toLowerCase();
+
+    let pool = [];
+    if (activeMainCategory === 'all') {
+      pool = SKILL_CATEGORIES.all || [];
+    }
+    else if (activeMainCategory === 'technology') {
+      if (activeSubCategory) {
+        pool = SKILL_CATEGORIES[activeSubCategory] || [];
+      } else {
+        pool = [
+      ...(SKILL_CATEGORIES.programming || []),
+      ...(SKILL_CATEGORIES.data || []),
+      ...(SKILL_CATEGORIES.software_eng || []),
+      ...(SKILL_CATEGORIES.ml || []),
+      ...(SKILL_CATEGORIES.cloud || []),
+      ...(SKILL_CATEGORIES.security || [])
+    ];
+  }
+}
+    else {
+      pool = SKILL_CATEGORIES[activeMainCategory] || [];
+}
+
+    const matches = pool
+      .filter(o => (!q || o.toLowerCase().includes(q)) && !selected.includes(o))
+      .slice(0, 10);
 
     dropdown.innerHTML = '';
 
+    // Category header when browsing a specific category with no query
+    if (!q && activeCategory !== 'all') {
+      const header = document.createElement('li');
+      header.className = 'tp-option-header';
+      const btn = document.querySelector(`.skill-cat-btn[data-cat="${activeCategory}"]`);
+      header.textContent = btn ? btn.textContent.trim() : activeCategory;
+      dropdown.appendChild(header);
+    }
+
     if (matches.length === 0 && query.length >= 2) {
-      // Allow adding custom entry
       const li = document.createElement('li');
       li.className = 'tp-option tp-option-custom';
       li.textContent = `Add "${query}"`;
@@ -250,57 +394,120 @@ function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
     matches.forEach(match => {
       const li = document.createElement('li');
       li.className = 'tp-option';
-      // Bold the matching part
-      const idx   = match.toLowerCase().indexOf(q);
-      const before = match.slice(0, idx);
-      const bold   = match.slice(idx, idx + q.length);
-      const after  = match.slice(idx + q.length);
-      li.innerHTML = `${before}<strong>${bold}</strong>${after}`;
+      if (q) {
+        const idx = match.toLowerCase().indexOf(q);
+        li.innerHTML = idx >= 0
+          ? `${match.slice(0, idx)}<strong>${match.slice(idx, idx + q.length)}</strong>${match.slice(idx + q.length)}`
+          : match;
+      } else {
+        li.textContent = match;
+      }
       li.addEventListener('mousedown', e => { e.preventDefault(); addTag(match); });
       dropdown.appendChild(li);
     });
 
-    dropdown.classList.toggle('open', matches.length > 0);
+    const shouldOpen = matches.length > 0 || (!q && activeCategory !== 'all');
+    dropdown.classList.toggle('open', shouldOpen);
   }
 
-  function closeDropdown() {
-    dropdown.classList.remove('open');
-    dropdown.innerHTML = '';
-  }
+  function closeDropdown() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
 
-  input.addEventListener('input', () => {
-    if (input.value.length >= 1) showDropdown(input.value);
-    else closeDropdown();
-  });
-
+  input.addEventListener('input',  () => skillPickerShowDropdown(input.value));
+  input.addEventListener('focus',  () => skillPickerShowDropdown(input.value));
+  input.addEventListener('blur',   () => setTimeout(closeDropdown, 150));
   input.addEventListener('keydown', e => {
-    // Add on Enter or comma
     if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
       e.preventDefault();
-      // If dropdown has a highlighted item use that, else use typed value
-      const first = dropdown.querySelector('.tp-option');
-      if (first) addTag(first.textContent.replace('Add "', '').replace('"', ''));
+      const first = dropdown.querySelector('.tp-option:not(.tp-option-header)');
+      if (first) addTag(first.textContent.replace(/^Add "/, '').replace(/"$/, ''));
       else addTag(input.value);
     }
     if (e.key === 'Escape') closeDropdown();
-    // Backspace on empty input removes last tag
     if (e.key === 'Backspace' && !input.value && selected.length > 0) {
-      const last = tagsWrap.lastElementChild;
-      if (last) last.querySelector('.tp-remove')?.click();
+      tagsWrap.lastElementChild?.querySelector('.tp-remove')?.click();
     }
   });
+})();
 
-  input.addEventListener('focus', () => {
-    if (input.value.length >= 1) showDropdown(input.value);
-  });
+// ── Standard tag picker (certs + courses) ────────────────────
+function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
+  const input    = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  const tagsWrap = document.getElementById(tagsId);
+  const hidden   = document.getElementById(hiddenId);
 
-  input.addEventListener('blur', () => {
-    setTimeout(closeDropdown, 150);
+  let selected = hidden.value
+    ? hidden.value.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
+
+  selected.forEach(s => renderTag(s, false));
+  syncHidden();
+
+  function syncHidden() { hidden.value = selected.join(', '); }
+
+  function renderTag(skill, animate = true) {
+    const tag = document.createElement('div');
+    tag.className = 'tp-tag' + (animate ? ' tp-tag-new' : '');
+    tag.innerHTML = `<span>${skill}</span><button type="button" class="tp-remove" aria-label="Remove ${skill}">✕</button>`;
+    tag.querySelector('.tp-remove').addEventListener('click', () => {
+      tag.classList.add('tp-tag-removing');
+      setTimeout(() => { tag.remove(); selected = selected.filter(s => s !== skill); syncHidden(); }, 180);
+    });
+    tagsWrap.appendChild(tag);
+  }
+
+  function addTag(skill) {
+    const trimmed = skill.trim();
+    if (!trimmed || selected.includes(trimmed)) return;
+    selected.push(trimmed); renderTag(trimmed, true); syncHidden();
+    input.value = ''; closeDropdown();
+  }
+
+  function showDropdown(query) {
+    const q = query.toLowerCase();
+    const matches = options.filter(o => o.toLowerCase().includes(q) && !selected.includes(o)).slice(0, 8);
+    dropdown.innerHTML = '';
+    if (matches.length === 0 && query.length >= 2) {
+      const li = document.createElement('li');
+      li.className = 'tp-option tp-option-custom';
+      li.textContent = `Add "${query}"`;
+      li.addEventListener('mousedown', e => { e.preventDefault(); addTag(query); });
+      dropdown.appendChild(li);
+      dropdown.classList.add('open');
+      return;
+    }
+    matches.forEach(match => {
+      const li = document.createElement('li');
+      li.className = 'tp-option';
+      const idx = match.toLowerCase().indexOf(q);
+      li.innerHTML = (idx >= 0 && q)
+        ? `${match.slice(0, idx)}<strong>${match.slice(idx, idx + q.length)}</strong>${match.slice(idx + q.length)}`
+        : match;
+      li.addEventListener('mousedown', e => { e.preventDefault(); addTag(match); });
+      dropdown.appendChild(li);
+    });
+    dropdown.classList.toggle('open', matches.length > 0);
+  }
+
+  function closeDropdown() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
+
+  input.addEventListener('input',  () => { if (input.value.length >= 1) showDropdown(input.value); else closeDropdown(); });
+  input.addEventListener('focus',  () => { if (input.value.length >= 1) showDropdown(input.value); });
+  input.addEventListener('blur',   () => setTimeout(closeDropdown, 150));
+  input.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+      e.preventDefault();
+      const first = dropdown.querySelector('.tp-option');
+      if (first) addTag(first.textContent.replace(/^Add "/, '').replace(/"$/, ''));
+      else addTag(input.value);
+    }
+    if (e.key === 'Escape') closeDropdown();
+    if (e.key === 'Backspace' && !input.value && selected.length > 0) {
+      tagsWrap.lastElementChild?.querySelector('.tp-remove')?.click();
+    }
   });
 }
 
-// ── Initialise all three pickers ─────────────────────────────
-createTagPicker('skills-input',  'skills-dropdown',  'skills-tags',  'skills-hidden',  SKILL_OPTIONS);
 createTagPicker('certs-input',   'certs-dropdown',   'certs-tags',   'certs-hidden',   CERT_OPTIONS);
 createTagPicker('courses-input', 'courses-dropdown', 'courses-tags', 'courses-hidden', COURSE_OPTIONS);
 </script>

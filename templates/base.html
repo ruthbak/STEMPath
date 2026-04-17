@@ -40,7 +40,7 @@
           <a href="{{ url_for('home') }}" class="nav-link">Home</a>
           <a href="#how-it-works"         class="nav-link">How It Works</a>
           <!-- Protected — opens modal if not logged in -->
-          <a href="#" class="nav-link" onclick="requireAuth(event, '{{ url_for('roles') }}')">Browse Roles</a>
+          <a href="{{ url_for('roles') }}" class="nav-link" onclick="requireAuth(event, this.href); return false;">Browse Roles</a>
         </div>
 
         <div class="nav-spacer"></div>
@@ -186,16 +186,27 @@
 
   /* ── Theme toggle ─────────────────────────────── */
   const themeBtn = document.getElementById('theme-toggle');
+
   function applyTheme(isLight) {
     document.body.classList.toggle('light', isLight);
     try { localStorage.setItem('sp_theme', isLight ? 'light' : 'dark'); } catch(e) {}
   }
-  try { if (localStorage.getItem('sp_theme') === 'light') applyTheme(true); } catch(e) {}
-  themeBtn?.addEventListener('click', () => applyTheme(!document.body.classList.contains('light')));
+
+  try {
+    if (localStorage.getItem('sp_theme') === 'light') applyTheme(true);
+  } catch(e) {}
+
+  themeBtn?.addEventListener('click', () => {
+    applyTheme(!document.body.classList.contains('light'));
+  });
 
   /* ── Large text toggle ────────────────────────── */
   const textBtn = document.getElementById('toggle-text');
-  try { if (localStorage.getItem('sp_large_text') === 'true') document.body.classList.add('large-text'); } catch(e) {}
+
+  try {
+    if (localStorage.getItem('sp_large_text') === 'true') document.body.classList.add('large-text');
+  } catch(e) {}
+
   textBtn?.addEventListener('click', () => {
     document.body.classList.toggle('large-text');
     try { localStorage.setItem('sp_large_text', document.body.classList.contains('large-text')); } catch(e) {}
@@ -212,6 +223,8 @@
     document.body.style.overflow = 'hidden';
     switchTab(tab);
   }
+  window.openModal = openModal;
+
   function closeModal() {
     modal.classList.remove('open');
     document.body.style.overflow = '';
@@ -223,17 +236,9 @@
   modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  /* ── requireAuth ──────────────────────────────────
-     Called by protected buttons on home.html and
-     the Browse Roles nav link.
-     If logged in  → navigate to destination.
-     If not logged in → open the register modal.
-  ─────────────────────────────────────────────── */
+  /* ── requireAuth ──────────────────────────────── */
   window.requireAuth = function(e, destination) {
     e.preventDefault();
-    // auth.currentUser is set by Firebase once session restores.
-    // sessionStorage fallback covers the brief window on page load
-    // before Firebase has finished checking the cached token.
     if (auth.currentUser || sessionStorage.getItem('sp_logged_in')) {
       window.location.href = destination;
     } else {
@@ -277,9 +282,21 @@
     setTimeout(() => { el.textContent = ''; }, 4000);
   }
 
+  /* ── Tell Flask the user is logged in ────────────
+     KEY FIX: after every Firebase login we POST to
+     /set-session so Flask's @login_required lets the
+     user through to protected pages like /profile.
+  ─────────────────────────────────────────────────── */
+  async function notifyFlask(uid, displayName) {
+    await fetch('/set-session', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ user_id: uid, display_name: displayName })
+    });
+  }
+
   /* ── Update nav after login ───────────────────── */
   function setLoggedIn(displayName) {
-    // Store flag so requireAuth works immediately on next page load
     sessionStorage.setItem('sp_logged_in', 'true');
 
     const navAuth = document.querySelector('.nav-auth');
@@ -309,6 +326,7 @@
       document.getElementById('sign-out-btn')?.addEventListener('click', () => {
         signOut(auth).then(() => {
           sessionStorage.removeItem('sp_logged_in');
+          fetch('/logout');
           location.reload();
         });
       });
@@ -324,6 +342,7 @@
   document.getElementById('google-btn')?.addEventListener('click', async () => {
     try {
       const result = await signInWithPopup(auth, provider);
+      await notifyFlask(result.user.uid, result.user.displayName || result.user.email);
       closeModal();
       setLoggedIn(result.user.displayName || result.user.email);
       window.location.href = "{{ url_for('profile') }}";
@@ -342,6 +361,7 @@
         const email    = document.getElementById('signin-email').value;
         const password = document.getElementById('signin-password').value;
         const result   = await signInWithEmailAndPassword(auth, email, password);
+        await notifyFlask(result.user.uid, result.user.displayName || result.user.email);
         closeModal();
         setLoggedIn(result.user.displayName || result.user.email);
         window.location.href = "{{ url_for('profile') }}";
@@ -350,6 +370,7 @@
         const email    = document.getElementById('reg-email').value;
         const password = document.getElementById('reg-password').value;
         const result   = await createUserWithEmailAndPassword(auth, email, password);
+        await notifyFlask(result.user.uid, name || result.user.email);
         closeModal();
         setLoggedIn(name || result.user.email);
         window.location.href = "{{ url_for('profile') }}";
