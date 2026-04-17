@@ -1,37 +1,3283 @@
 [
   {
-    "id": "data_analyst",
-    "title": "Data Analyst",
+    "id": "biostatisticians",
+    "title": "Biostatisticians",
     "category": "Data",
-    "description": "Analyze datasets, build dashboards, and support decision-making.",
-    "top_skills": ["SQL", "Excel", "Python", "Data Visualization"]
+    "description": "Develop and apply biostatistical theory and methods to the study of life sciences.",
+    "top_skills": [
+      "Statistics",
+      "SQL",
+      "Linux",
+      "Excel",
+      "Java",
+      "Python"
+    ],
+    "onet_code": "15-2041.01",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Bash",
+      "Data visualization software",
+      "Git",
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "MySQL",
+      "Oracle Database"
+    ]
   },
   {
-    "id": "junior_software_dev",
-    "title": "Junior Software Developer",
-    "category": "Software",
-    "description": "Build and maintain software applications with a team.",
-    "top_skills": ["Python", "Git", "Problem-solving", "APIs"]
+    "id": "business_intelligence_analysts",
+    "title": "Business Intelligence Analysts",
+    "category": "Data",
+    "description": "Produce financial and market intelligence by querying data repositories and generating periodic reports. Devise methods for identifying data patterns and trends in available information sources.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Linux",
+      "Data Visualization",
+      "Java",
+      "Statistics"
+    ],
+    "onet_code": "15-2051.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Citrix cloud computing software",
+      "Dynamic hypertext markup language DHTML",
+      "Enterprise JavaBeans",
+      "Extensible hypertext markup language XHTML",
+      "Git",
+      "GitHub",
+      "Hypertext markup language HTML"
+    ]
   },
   {
-    "id": "cybersecurity_analyst",
-    "title": "Cybersecurity Analyst",
+    "id": "clinical_data_managers",
+    "title": "Clinical Data Managers",
+    "category": "Data",
+    "description": "Apply knowledge of health care and database management to analyze clinical data, and to identify and report trends.",
+    "top_skills": [
+      "Statistics",
+      "SQL",
+      "Excel",
+      "Java",
+      "Research",
+      "Cloud"
+    ],
+    "onet_code": "15-2051.02",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "5AM Glassbox Translational Research",
+      "Citrix cloud computing software",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "Oracle Java",
+      "Oracle SQL Loader",
+      "PercipEnz Technologies OnCore-Clinical Research Management OnCore-CRM",
+      "SAS",
+      "SAS JMP"
+    ]
+  },
+  {
+    "id": "data_scientists",
+    "title": "Data Scientists",
+    "category": "Data",
+    "description": "Develop and implement a set of techniques or analytics applications to transform raw data into meaningful information using data-oriented programming languages and visualization software. Apply data mining, data modeling, natural language processing, and machine learning to extract and analyze information from large structured and unstructured datasets. Visualize, interpret, and report data findings. May create dynamic data reports.",
+    "top_skills": [
+      "Cloud",
+      "Machine Learning",
+      "Linux",
+      "Java",
+      "Data Visualization",
+      "SQL"
+    ],
+    "onet_code": "15-2051.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS SageMaker",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Docker",
+      "Git",
+      "GitHub",
+      "Google Cloud software",
+      "IBM SPSS Statistics"
+    ]
+  },
+  {
+    "id": "data_warehousing_specialists",
+    "title": "Data Warehousing Specialists",
+    "category": "Data",
+    "description": "Design, model, or implement corporate data warehousing activities. Program and configure warehouses of database information and provide support to warehouse users.",
+    "top_skills": [
+      "SQL",
+      "Linux",
+      "Cloud",
+      "Data Visualization",
+      "Statistics",
+      "Excel"
+    ],
+    "onet_code": "15-1243.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Cloudera Impala",
+      "IBM SPSS Statistics",
+      "IBM WebSphere",
+      "Jitterbit",
+      "KornShell",
+      "Linux"
+    ]
+  },
+  {
+    "id": "database_administrators",
+    "title": "Database Administrators",
+    "category": "Data",
+    "description": "Administer, test, and implement computer databases, applying knowledge of database management systems. Coordinate changes to computer databases. Identify, investigate, and resolve database performance issues, database capacity, and database scalability. May plan, coordinate, and implement security measures to safeguard computer databases.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Linux",
+      "Java",
+      "Networking",
+      "JavaScript"
+    ],
+    "onet_code": "15-1242.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Cascading style sheets CSS",
+      "Cisco Webex",
+      "Citrix cloud computing software",
+      "Database security software",
+      "Docker"
+    ]
+  },
+  {
+    "id": "database_architects",
+    "title": "Database Architects",
+    "category": "Data",
+    "description": "Design strategies for enterprise databases, data warehouse systems, and multidimensional networks. Set standards for database operations, programming, query processes, and security. Model, design, and construct large relational databases or data warehouses. Create and optimize data models for warehouse infrastructure and workflow. Integrate new systems with existing warehouse structure and refine system performance and functionality.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Linux",
+      "Java",
+      "JavaScript",
+      "Networking"
+    ],
+    "onet_code": "15-1243.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "C shell",
+      "Cascading style sheets CSS",
+      "Cisco IOS",
+      "Cisco Webex",
+      "Citrix cloud computing software"
+    ]
+  },
+  {
+    "id": "statisticians",
+    "title": "Statisticians",
+    "category": "Data",
+    "description": "Develop or apply mathematical or statistical theory and methods to collect, organize, interpret, and summarize numerical data to provide usable information. May specialize in fields such as biostatistics, agricultural statistics, business statistics, or economic statistics. Includes mathematical and survey statisticians.",
+    "top_skills": [
+      "Statistics",
+      "SQL",
+      "Cloud",
+      "Linux",
+      "Excel",
+      "Python"
+    ],
+    "onet_code": "15-2041.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "IBM SPSS Amos",
+      "IBM SPSS AnswerTree",
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "Python",
+      "SAS",
+      "SAS Enterprise Miner"
+    ]
+  },
+  {
+    "id": "aerospace_engineering_and_operations_technologists_and_technicians",
+    "title": "Aerospace Engineering and Operations Technologists and Technicians",
+    "category": "Engineering",
+    "description": "Operate, install, adjust, and maintain integrated computer/communications systems, consoles, simulators, and other data acquisition, test, and measurement instruments and equipment, which are used to launch, track, position, and evaluate air and space vehicles. May record and interpret test data.",
+    "top_skills": [
+      "Linux",
+      "SQL",
+      "Java",
+      "JavaScript",
+      "Excel",
+      "Python"
+    ],
+    "onet_code": "17-3021.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "National Instruments LabVIEW",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "Red Hat Enterprise Linux",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "aerospace_engineers",
+    "title": "Aerospace Engineers",
+    "category": "Engineering",
+    "description": "Perform engineering duties in designing, constructing, and testing aircraft, missiles, and spacecraft. May conduct basic and applied research to evaluate adaptability of materials and equipment to aircraft design and manufacture. May recommend improvements in testing equipment and techniques.",
+    "top_skills": [
+      "Research",
+      "Linux",
+      "Excel",
+      "Python",
+      "Java",
+      "Networking"
+    ],
+    "onet_code": "17-2011.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Collier Research HyperSizer",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Network Analysis SINDA-G",
+      "Oracle Java",
+      "Python",
+      "Shell script",
+      "Southwest Research Institute NASGRO",
+      "Structure query language SQL"
+    ]
+  },
+  {
+    "id": "agricultural_engineers",
+    "title": "Agricultural Engineers",
+    "category": "Engineering",
+    "description": "Apply knowledge of engineering technology and biological science to agricultural problems concerned with power and machinery, electrification, structures, soil and water conservation, and processing of agricultural products.",
+    "top_skills": [
+      "Excel",
+      "SQL",
+      "Java",
+      "Statistics"
+    ],
+    "onet_code": "17-2021.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "Oracle Database",
+      "Oracle Java",
+      "SAS"
+    ]
+  },
+  {
+    "id": "architects_except_landscape_and_naval",
+    "title": "Architects, Except Landscape and Naval",
+    "category": "Engineering",
+    "description": "Plan and design structures, such as private residences, office buildings, theaters, factories, and other structural property.",
+    "top_skills": [
+      "Cloud",
+      "Excel",
+      "SQL",
+      "Linux"
+    ],
+    "onet_code": "17-1011.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Web Services AWS software",
+      "Microsoft Excel",
+      "Microsoft PowerShell",
+      "Microsoft SQL Server",
+      "PostgreSQL"
+    ]
+  },
+  {
+    "id": "automotive_engineers",
+    "title": "Automotive Engineers",
+    "category": "Engineering",
+    "description": "Develop new or improved designs for vehicle structural members, engines, transmissions, or other vehicle systems, using computer-assisted design technology. Direct building, modification, or testing of vehicle or components.",
+    "top_skills": [
+      "JavaScript",
+      "Java",
+      "Linux",
+      "Excel",
+      "Python",
+      "Security Basics"
+    ],
+    "onet_code": "17-2141.02",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Git",
+      "JavaScript",
+      "JavaScript Object Notation JSON",
+      "Linux",
+      "Microsoft Excel",
+      "Node.js",
+      "Oracle Java",
+      "Python",
+      "Siemens NX",
+      "Siemens Solid Edge"
+    ]
+  },
+  {
+    "id": "bioengineers_and_biomedical_engineers",
+    "title": "Bioengineers and Biomedical Engineers",
+    "category": "Engineering",
+    "description": "Apply knowledge of engineering, biology, chemistry, computer science, and biomechanical principles to the design, development, and evaluation of biological, agricultural, and health systems and products, such as artificial organs, prostheses, instrumentation, medical information systems, and health management and care delivery systems.",
+    "top_skills": [
+      "Linux",
+      "Research",
+      "Java",
+      "Cloud",
+      "Excel",
+      "SQL"
+    ],
+    "onet_code": "17-2031.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Bioreactor Design",
+      "Hypertext markup language HTML",
+      "JavaScript",
+      "Linux",
+      "Microsoft Azure software",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Neural network modeling software",
+      "NeuroSolutions for MatLab",
+      "Oracle Database"
+    ]
+  },
+  {
+    "id": "calibration_technologists_and_technicians",
+    "title": "Calibration Technologists and Technicians",
+    "category": "Engineering",
+    "description": "Execute or adapt procedures and techniques for calibrating measurement devices, by applying knowledge of measurement science, mathematics, physics, chemistry, and electronics, sometimes under the direction of engineering staff. Determine measurement standard suitability for calibrating measurement devices. May perform preventive maintenance on equipment. May perform corrective actions to address identified calibration problems.",
+    "top_skills": [
+      "Research",
+      "Excel",
+      "Linux"
+    ],
+    "onet_code": "17-3028.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "cartographers_and_photogrammetrists",
+    "title": "Cartographers and Photogrammetrists",
+    "category": "Engineering",
+    "description": "Research, study, and prepare maps and other spatial data in digital or graphic form for one or more purposes, such as legal, social, political, educational, and design purposes. May work with Geographic Information Systems (GIS). May design and evaluate algorithms, data structures, and user interfaces for GIS and mapping systems. May collect, analyze, and interpret geographic information provided by geodetic surveys, aerial photographs, and satellite data.",
+    "top_skills": [
+      "SQL",
+      "Excel",
+      "Cloud",
+      "JavaScript",
+      "Java",
+      "Python"
+    ],
+    "onet_code": "17-1021.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "JavaScript Object Notation JSON",
+      "Microsoft Excel",
+      "Oracle Database",
+      "Python",
+      "Spreadsheet software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "chemical_engineers",
+    "title": "Chemical Engineers",
+    "category": "Engineering",
+    "description": "Design chemical plant equipment and devise processes for manufacturing chemicals and products, such as gasoline, synthetic rubber, plastics, detergents, cement, paper, and pulp, by applying principles and technology of chemistry, physics, and engineering.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "SQL",
+      "Statistics"
+    ],
+    "onet_code": "17-2041.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Spreadsheet software",
+      "Statistical software",
+      "Structured query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "civil_engineers",
+    "title": "Civil Engineers",
+    "category": "Engineering",
+    "description": "Perform engineering duties in planning, designing, and overseeing construction and maintenance of building structures and facilities, such as roads, railroads, airports, bridges, harbors, channels, dams, irrigation projects, pipelines, power plants, and water and sewage systems.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Linux"
+    ],
+    "onet_code": "17-2051.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Shell script",
+      "Spreadsheet software",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "computer_hardware_engineers",
+    "title": "Computer Hardware Engineers",
+    "category": "Engineering",
+    "description": "Research, design, develop, or test computer or computer-related equipment for commercial, industrial, military, or scientific use. May supervise the manufacturing and installation of computer or computer-related equipment and components.",
+    "top_skills": [
+      "Linux",
+      "Research",
+      "Python",
+      "Excel",
+      "Git",
+      "Java"
+    ],
+    "onet_code": "17-2061.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Cisco IOS",
+      "Git",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "Shell script",
+      "Spreadsheet software"
+    ]
+  },
+  {
+    "id": "electrical_engineers",
+    "title": "Electrical Engineers",
+    "category": "Engineering",
+    "description": "Research, design, develop, test, or supervise the manufacturing and installation of electrical equipment, components, or systems for commercial, industrial, military, or scientific use.",
+    "top_skills": [
+      "Linux",
+      "Research",
+      "Excel",
+      "Python",
+      "SQL",
+      "Networking"
+    ],
+    "onet_code": "17-2071.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "ATD protocol",
+      "Bash",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "National Instruments LabVIEW",
+      "Python",
+      "Shell script",
+      "Siemens ModelSim",
+      "Sun Microsystems Java"
+    ]
+  },
+  {
+    "id": "electrical_and_electronic_engineering_technologists_and_technicians",
+    "title": "Electrical and Electronic Engineering Technologists and Technicians",
+    "category": "Engineering",
+    "description": "Apply electrical and electronic theory and related knowledge, usually under the direction of engineering staff, to design, build, repair, adjust, and modify electrical components, circuitry, controls, and machinery for subsequent evaluation and use by engineering staff in making engineering design decisions.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Linux",
+      "JavaScript",
+      "Java",
+      "SQL"
+    ],
+    "onet_code": "17-3023.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "IBM WebSphere",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Database",
+      "pMatlab",
+      "Python",
+      "Siemens ModelSim",
+      "Spreadsheet software"
+    ]
+  },
+  {
+    "id": "electrical_and_electronics_drafters",
+    "title": "Electrical and Electronics Drafters",
+    "category": "Engineering",
+    "description": "Prepare wiring diagrams, circuit board assembly diagrams, and layout drawings used for the manufacture, installation, or repair of electrical equipment.",
+    "top_skills": [
+      "Linux",
+      "Excel",
+      "Python",
+      "Research"
+    ],
+    "onet_code": "17-3012.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Linux",
+      "Linux Virtual Server",
+      "Microsoft Excel",
+      "Python",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "electro_mechanical_and_mechatronics_technologists_and_technicians",
+    "title": "Electro-Mechanical and Mechatronics Technologists and Technicians",
+    "category": "Engineering",
+    "description": "Operate, test, maintain, or adjust unmanned, automated, servomechanical, or electromechanical equipment. May operate unmanned submarines, aircraft, or other equipment to observe or record visual information at sites such as oil rigs, crop fields, buildings, or for similar infrastructure, deep ocean exploration, or hazardous waste removal. May assist engineers in testing and designing robotics equipment.",
+    "top_skills": [
+      "Linux",
+      "Research",
+      "Excel",
+      "Python",
+      "Cloud"
+    ],
+    "onet_code": "17-3024.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "CloudCompare",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Python",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "electronics_engineers_except_computer",
+    "title": "Electronics Engineers, Except Computer",
+    "category": "Engineering",
+    "description": "Research, design, develop, or test electronic components and systems for commercial, industrial, military, or scientific use employing knowledge of electronic theory and materials properties. Design electronic circuits and components for use in fields such as telecommunications, aerospace guidance and propulsion control, acoustics, or instruments and controls.",
+    "top_skills": [
+      "Research",
+      "Linux",
+      "Excel",
+      "SQL",
+      "Java",
+      "Python"
+    ],
+    "onet_code": "17-2072.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "Structured query language SQL",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "energy_engineers_except_wind_and_solar",
+    "title": "Energy Engineers, Except Wind and Solar",
+    "category": "Engineering",
+    "description": "Design, develop, or evaluate energy-related projects or programs to reduce energy costs or improve energy efficiency during the designing, building, or remodeling stages of construction. May specialize in electrical systems; heating, ventilation, and air-conditioning (HVAC) systems; green buildings; lighting; air quality; or energy procurement.",
+    "top_skills": [
+      "Excel",
+      "Python",
+      "Research"
+    ],
+    "onet_code": "17-2199.03",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "Python",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "environmental_engineering_technologists_and_technicians",
+    "title": "Environmental Engineering Technologists and Technicians",
+    "category": "Engineering",
+    "description": "Apply theory and principles of environmental engineering to modify, test, and operate equipment and devices used in the prevention, control, and remediation of environmental problems, including waste treatment and site remediation, under the direction of engineering staff or scientists. May assist in the development of environmental remediation devices.",
+    "top_skills": [
+      "Research",
+      "Excel",
+      "Statistics",
+      "Python",
+      "Networking",
+      "SQL"
+    ],
+    "onet_code": "17-3025.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Neural network modeling software",
+      "Python",
+      "SAS",
+      "Spreadsheet software",
+      "Statistical software",
+      "Structure query language SQL",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "environmental_engineers",
+    "title": "Environmental Engineers",
+    "category": "Engineering",
+    "description": "Research, design, plan, or perform engineering duties in the prevention, control, and remediation of environmental hazards using various engineering disciplines. Work may include waste treatment, site remediation, or pollution control technology.",
+    "top_skills": [
+      "Excel",
+      "Python",
+      "Statistics",
+      "Research"
+    ],
+    "onet_code": "17-2081.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "fire_prevention_and_protection_engineers",
+    "title": "Fire-Prevention and Protection Engineers",
+    "category": "Engineering",
+    "description": "Research causes of fires, determine fire protection methods, and design or recommend materials or equipment such as structural components or fire-detection equipment to assist organizations in safeguarding life and property against fire, explosion, and related hazards.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Networking"
+    ],
+    "onet_code": "17-2111.02",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Building Research Establishment BRE Jasmine",
+      "Microsoft Excel",
+      "Network flow modeling software"
+    ]
+  },
+  {
+    "id": "fuel_cell_engineers",
+    "title": "Fuel Cell Engineers",
+    "category": "Engineering",
+    "description": "Design, evaluate, modify, or construct fuel cell components or systems for transportation, stationary, or portable applications.",
+    "top_skills": [
+      "Research",
+      "Excel",
+      "Python",
+      "SQL",
+      "Cloud",
+      "Statistics"
+    ],
+    "onet_code": "17-2141.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM Cloud",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Database",
+      "Python",
+      "Statistical software",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "geodetic_surveyors",
+    "title": "Geodetic Surveyors",
+    "category": "Engineering",
+    "description": "Measure large areas of the Earth's surface using satellite observations, global navigation satellite systems (GNSS), light detection and ranging (LIDAR), or related sources.",
+    "top_skills": [
+      "Cloud",
+      "HTML",
+      "Linux",
+      "Excel",
+      "Java",
+      "SQL"
+    ],
+    "onet_code": "17-1022.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "Hypertext markup language HTML",
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "health_and_safety_engineers_except_mining_safety_engineers_and_inspectors",
+    "title": "Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",
+    "category": "Engineering",
+    "description": "Promote worksite or product safety by applying knowledge of industrial processes, mechanics, chemistry, psychology, and industrial health and safety laws. Includes industrial product safety engineers.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Linux",
+      "Python"
+    ],
+    "onet_code": "17-2111.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Python",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "human_factors_engineers_and_ergonomists",
+    "title": "Human Factors Engineers and Ergonomists",
+    "category": "Engineering",
+    "description": "Design objects, facilities, and environments to optimize human well-being and overall system performance, applying theory, principles, and data regarding the relationship between humans and respective technology. Investigate and analyze characteristics of human behavior and performance as it relates to the use of technology.",
+    "top_skills": [
+      "Java",
+      "Statistics",
+      "JavaScript",
+      "Excel",
+      "Research",
+      "HTML"
+    ],
+    "onet_code": "17-2112.01",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Cascading style sheets CSS",
+      "Dynamic hypertext markup language DHTML",
+      "Hypertext markup language HTML",
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "JavaScript Object Notation JSON",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW"
+    ]
+  },
+  {
+    "id": "industrial_engineering_technologists_and_technicians",
+    "title": "Industrial Engineering Technologists and Technicians",
+    "category": "Engineering",
+    "description": "Apply engineering theory and principles to problems of industrial layout or manufacturing production, usually under the direction of engineering staff. May perform time and motion studies on worker operations in a variety of industries for purposes such as establishing standard production rates or improving efficiency.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "Research",
+      "Security Basics",
+      "Linux"
+    ],
+    "onet_code": "17-3026.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Siemens NX",
+      "Siemens SIMATIC HMI",
+      "Siemens SINUMERIK CNC",
+      "Siemens Solid Edge",
+      "Spreadsheet software",
+      "Statistical process control SPC software",
+      "Statistical software"
+    ]
+  },
+  {
+    "id": "industrial_engineers",
+    "title": "Industrial Engineers",
+    "category": "Engineering",
+    "description": "Design, develop, test, and evaluate integrated systems for managing industrial production processes, including human work factors, quality control, inventory control, logistics and material flow, cost analysis, and production coordination.",
+    "top_skills": [
+      "Linux",
+      "SQL",
+      "Excel",
+      "Research",
+      "Statistics",
+      "Git"
+    ],
+    "onet_code": "17-2112.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "GitHub",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "National Instruments LabVIEW",
+      "Neural network modeling software",
+      "Python",
+      "SAS",
+      "Shell script",
+      "Siemens UGS Jack"
+    ]
+  },
+  {
+    "id": "manufacturing_engineers",
+    "title": "Manufacturing Engineers",
+    "category": "Engineering",
+    "description": "Design, integrate, or improve manufacturing systems or related processes. May work with commercial or industrial designers to refine product designs to increase producibility and decrease costs.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Security Basics"
+    ],
+    "onet_code": "17-2112.03",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Siemens NX",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "marine_engineers_and_naval_architects",
+    "title": "Marine Engineers and Naval Architects",
+    "category": "Engineering",
+    "description": "Design, develop, and evaluate the operation of marine vessels, ship machinery, and related equipment, such as power supply and propulsion systems.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Security Basics"
+    ],
+    "onet_code": "17-2121.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM Lotus 1-2-3",
+      "Microsoft Excel",
+      "Siemens NX",
+      "Siemens Solid Edge",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "materials_engineers",
+    "title": "Materials Engineers",
+    "category": "Engineering",
+    "description": "Evaluate materials and develop machinery and processes to manufacture materials for use in products that must meet specialized design and performance specifications. Develop new uses for known materials. Includes those engineers working with composite materials or specializing in one type of material, such as graphite, metal and metal alloys, ceramics and glass, plastics and polymers, and naturally occurring materials. Includes metallurgists and metallurgical engineers, ceramic engineers, and welding engineers.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "SQL",
+      "Python"
+    ],
+    "onet_code": "17-2131.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Database",
+      "Python",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "mechanical_engineers",
+    "title": "Mechanical Engineers",
+    "category": "Engineering",
+    "description": "Perform engineering duties in planning and designing tools, engines, machines, and other mechanically functioning equipment. Oversee installation, operation, maintenance, and repair of equipment such as centralized heat, gas, water, and steam systems.",
+    "top_skills": [
+      "Excel",
+      "Python",
+      "Research",
+      "SQL",
+      "Linux",
+      "Statistics"
+    ],
+    "onet_code": "17-2141.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Lambda Research OSLO",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "National Instruments LabVIEW",
+      "Python",
+      "Shell script",
+      "Statistical energy analysis SEA software",
+      "Statistical software",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "mechatronics_engineers",
+    "title": "Mechatronics Engineers",
+    "category": "Engineering",
+    "description": "Research, design, develop, or test automation, intelligent systems, smart devices, or industrial systems control.",
+    "top_skills": [
+      "Research",
+      "Excel",
+      "Python",
+      "Linux",
+      "Java",
+      "SQL"
+    ],
+    "onet_code": "17-2199.05",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "Structured query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "microsystems_engineers",
+    "title": "Microsystems Engineers",
+    "category": "Engineering",
+    "description": "Research, design, develop, or test microelectromechanical systems (MEMS) devices.",
+    "top_skills": [
+      "Linux",
+      "Java",
+      "Statistics",
+      "Research",
+      "Git",
+      "JavaScript"
+    ],
+    "onet_code": "17-2199.06",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Bash",
+      "Git",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "Molecular visualization software",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "SAS"
+    ]
+  },
+  {
+    "id": "mining_and_geological_engineers_including_mining_safety_engineers",
+    "title": "Mining and Geological Engineers, Including Mining Safety Engineers",
+    "category": "Engineering",
+    "description": "Conduct subsurface surveys to identify the characteristics of potential land or mining development sites. May specify the ground support systems, processes, and equipment for safe, economical, and environmentally sound extraction or underground construction activities. May inspect areas for unsafe geological conditions, equipment, and working conditions. May design, implement, and coordinate mine safety programs.",
+    "top_skills": [
+      "SQL",
+      "Excel",
+      "Networking",
+      "Statistics"
+    ],
+    "onet_code": "17-2151.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "CyberArk",
+      "Microsoft Excel",
+      "MySQL",
+      "Oracle Database",
+      "Statistical software",
+      "Structure query language SQL"
+    ]
+  },
+  {
+    "id": "nanosystems_engineers",
+    "title": "Nanosystems Engineers",
+    "category": "Engineering",
+    "description": "Design, develop, or supervise the production of materials, devices, or systems of unique molecular or macromolecular composition, applying principles of nanoscale physics and electrical, chemical, or biological engineering.",
+    "top_skills": [
+      "SQL",
+      "Research",
+      "Linux",
+      "Excel",
+      "Java",
+      "Python"
+    ],
+    "onet_code": "17-2199.09",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "AWS Elastic MapReduce (EMR)",
+      "Breault Research ASAP",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Optical Research Associates LightTools",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "non_destructive_testing_specialists",
+    "title": "Non-Destructive Testing Specialists",
+    "category": "Engineering",
+    "description": "Test the safety of structures, vehicles, or vessels using x-ray, ultrasound, fiber optic or related equipment.",
+    "top_skills": [
+      "Excel",
+      "Data Visualization",
+      "Research"
+    ],
+    "onet_code": "17-3029.01",
+    "job_zone": 2,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Visualization Sciences Group VSG Avizo Fire",
+      "Visualization Sciences Group VSG Open Inventor"
+    ]
+  },
+  {
+    "id": "nuclear_engineers",
+    "title": "Nuclear Engineers",
+    "category": "Engineering",
+    "description": "Conduct research on nuclear engineering projects or apply principles and theory of nuclear science to problems concerned with release, control, and use of nuclear energy and nuclear waste disposal.",
+    "top_skills": [
+      "Excel",
+      "Linux",
+      "Python",
+      "Java",
+      "Statistics",
+      "Research"
+    ],
+    "onet_code": "17-2161.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Python",
+      "Reactor excursion and release analysis program RELAP",
+      "SAS",
+      "Spreadsheet software",
+      "The MathWorks MATLAB",
+      "Transient reactor analysis code TRAC",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "petroleum_engineers",
+    "title": "Petroleum Engineers",
+    "category": "Engineering",
+    "description": "Devise methods to improve oil and gas extraction and production and determine the need for new or modified tool designs. Oversee drilling and offer technical advice.",
+    "top_skills": [
+      "Excel",
+      "SQL",
+      "Linux",
+      "Java",
+      "Python",
+      "Statistics"
+    ],
+    "onet_code": "17-2171.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "Structure query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "photonics_engineers",
+    "title": "Photonics Engineers",
+    "category": "Engineering",
+    "description": "Design technologies specializing in light information or light energy, such as laser or fiber optics technology.",
+    "top_skills": [
+      "Research",
+      "Linux",
+      "Python",
+      "Excel",
+      "Java",
+      "Statistics"
+    ],
+    "onet_code": "17-2199.07",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Optical Research Associates LightTools",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "Shell script",
+      "Structure query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "photonics_technicians",
+    "title": "Photonics Technicians",
+    "category": "Engineering",
+    "description": "Build, install, test, or maintain optical or fiber optic equipment, such as lasers, lenses, or mirrors, using spectrometers, interferometers, or related equipment.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Statistics"
+    ],
+    "onet_code": "17-3029.08",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Statistical analysis software",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "radio_frequency_identification_device_specialists",
+    "title": "Radio Frequency Identification Device Specialists",
+    "category": "Engineering",
+    "description": "Design and implement radio frequency identification device (RFID) systems used to track shipments or goods.",
+    "top_skills": [
+      "SQL",
+      "Research",
+      "Networking",
+      "Linux",
+      "Excel",
+      "Python"
+    ],
+    "onet_code": "17-2072.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Forsk Atoll",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "Microsoft SQL Server Compact",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "Simple network management protocol SNMP software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "robotics_engineers",
+    "title": "Robotics Engineers",
+    "category": "Engineering",
+    "description": "Research, design, develop, or test robotic applications.",
+    "top_skills": [
+      "Java",
+      "Linux",
+      "Git",
+      "Research",
+      "SQL",
+      "Python"
+    ],
+    "onet_code": "17-2199.08",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "Git",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "Siemens SIMATIC STEP 7"
+    ]
+  },
+  {
+    "id": "robotics_technicians",
+    "title": "Robotics Technicians",
+    "category": "Engineering",
+    "description": "Build, install, test, or maintain robotic equipment or related automated production systems.",
+    "top_skills": [
+      "Excel",
+      "Java",
+      "Linux",
+      "Git",
+      "JavaScript",
+      "Python"
+    ],
+    "onet_code": "17-3024.01",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Git",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Python",
+      "Siemens SIMATIC STEP 7",
+      "Siemens SIMATIC WinCC",
+      "Spreadsheet software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "solar_energy_systems_engineers",
+    "title": "Solar Energy Systems Engineers",
+    "category": "Engineering",
+    "description": "Perform site-specific engineering analysis or evaluation of energy efficiency and solar projects involving residential, commercial, or industrial customers. Design solar domestic hot water and space heating systems for new and existing structures, applying knowledge of structural energy requirements, local climates, solar technology, and thermodynamics.",
+    "top_skills": [
+      "Python",
+      "Linux",
+      "Excel",
+      "Research",
+      "JavaScript",
+      "Java"
+    ],
+    "onet_code": "17-2199.11",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Bash",
+      "Data visualization software",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Python",
+      "Python Tools for Visual Studio (PTVS)",
+      "Structured query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "surveying_and_mapping_technicians",
+    "title": "Surveying and Mapping Technicians",
+    "category": "Engineering",
+    "description": "Perform surveying and mapping duties, usually under the direction of an engineer, surveyor, cartographer, or photogrammetrist, to obtain data used for construction, mapmaking, boundary location, mining, or other purposes. May calculate mapmaking information and create maps from source data, such as surveying notes, aerial photography, satellite data, or other maps to show topographical features, political boundaries, and other features. May verify accuracy and completeness of maps.",
+    "top_skills": [
+      "Excel",
+      "HTML",
+      "JavaScript",
+      "Java",
+      "Python",
+      "SQL"
+    ],
+    "onet_code": "17-3031.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Hypertext markup language HTML",
+      "JavaScript",
+      "Microsoft Excel",
+      "Python",
+      "Spreadsheet software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "transportation_engineers",
+    "title": "Transportation Engineers",
+    "category": "Engineering",
+    "description": "Develop plans for surface transportation projects, according to established engineering standards and state or federal construction policy. Prepare designs, specifications, or estimates for transportation facilities. Plan modifications of existing streets, highways, or freeways to improve traffic flow.",
+    "top_skills": [
+      "Excel",
+      "Python",
+      "SQL"
+    ],
+    "onet_code": "17-2051.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "Python",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "validation_engineers",
+    "title": "Validation Engineers",
+    "category": "Engineering",
+    "description": "Design or plan protocols for equipment or processes to produce products meeting internal and external purity, safety, and quality requirements.",
+    "top_skills": [
+      "Cloud",
+      "Linux",
+      "SQL",
+      "Java",
+      "Git",
+      "JavaScript"
+    ],
+    "onet_code": "17-2112.02",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Docker",
+      "Git",
+      "GitHub",
+      "Grafana Labs Grafana Cloud",
+      "JavaScript",
+      "Kubernetes"
+    ]
+  },
+  {
+    "id": "water_wastewater_engineers",
+    "title": "Water/Wastewater Engineers",
+    "category": "Engineering",
+    "description": "Design or oversee projects involving provision of potable water, disposal of wastewater and sewage, or prevention of flood-related damage. Prepare environmental documentation for water resources, regulatory program compliance, data management and analysis, and field work. Perform hydraulic modeling and pipeline design.",
+    "top_skills": [
+      "Excel",
+      "Linux",
+      "Java",
+      "Python",
+      "SQL"
+    ],
+    "onet_code": "17-2051.02",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Bash",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Python",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "wind_energy_engineers",
+    "title": "Wind Energy Engineers",
+    "category": "Engineering",
+    "description": "Design underground or overhead wind farm collector systems and prepare and develop site specifications.",
+    "top_skills": [
+      "Linux",
+      "Research",
+      "Git",
+      "Excel",
+      "SQL",
+      "Python"
+    ],
+    "onet_code": "17-2199.10",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "Git",
+      "Linux",
+      "Manitoba HVDC Research Centre PSCAD",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "Siemens PSS Product Suite"
+    ]
+  },
+  {
+    "id": "animal_scientists",
+    "title": "Animal Scientists",
+    "category": "Science",
+    "description": "Conduct research in the genetics, nutrition, reproduction, growth, and development of domestic farm animals.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "SQL",
+      "Data Visualization"
+    ],
+    "onet_code": "19-1011.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Microsoft Excel",
+      "SAS",
+      "Structured query language SQL",
+      "Tableau"
+    ]
+  },
+  {
+    "id": "anthropologists_and_archeologists",
+    "title": "Anthropologists and Archeologists",
+    "category": "Science",
+    "description": "Study the origin, development, and behavior of human beings. May study the way of life, language, or physical characteristics of people in various parts of the world. May engage in systematic recovery and examination of material evidence, such as tools or pottery remaining from past human cultures, in order to determine the history, customs, and living habits of earlier civilizations.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Research",
+      "SQL",
+      "Data Visualization"
+    ],
+    "onet_code": "19-3091.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Data visualization software",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Qaulis Research The Ethonograph",
+      "SAS",
+      "Structured query language SQL",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "astronomers",
+    "title": "Astronomers",
+    "category": "Science",
+    "description": "Observe, research, and interpret astronomical phenomena to increase basic knowledge or apply such information to practical problems.",
+    "top_skills": [
+      "Research",
+      "Statistics",
+      "Python",
+      "Linux",
+      "Excel",
+      "Java"
+    ],
+    "onet_code": "19-2011.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "Structured query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "atmospheric_and_space_scientists",
+    "title": "Atmospheric and Space Scientists",
+    "category": "Science",
+    "description": "Investigate atmospheric phenomena and interpret meteorological data, gathered by surface and air stations, satellites, and radar to prepare reports and forecasts for public and other uses. Includes weather analysts and forecasters whose functions require the detailed knowledge of meteorology.",
+    "top_skills": [
+      "Statistics",
+      "Linux",
+      "Research",
+      "Excel",
+      "Python",
+      "SQL"
+    ],
+    "onet_code": "19-2021.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Cisco IOS",
+      "Environmental Research Services RAOB",
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "Structured query language SQL",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "biochemists_and_biophysicists",
+    "title": "Biochemists and Biophysicists",
+    "category": "Science",
+    "description": "Study the chemical composition or physical principles of living cells and organisms, their electrical and mechanical energy, and related phenomena. May conduct research to further understanding of the complex chemical combinations and reactions involved in metabolism, reproduction, growth, and heredity. May determine the effects of foods, drugs, serums, hormones, and other substances on tissues and vital processes of living organisms.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Linux",
+      "Python",
+      "Research",
+      "Networking"
+    ],
+    "onet_code": "19-1021.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "Molecular Networks GmbH Biochemical Pathways",
+      "Multivariate statistical program MVSP software",
+      "Python",
+      "SAS",
+      "Statistical software",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "bioinformatics_scientists",
+    "title": "Bioinformatics Scientists",
+    "category": "Science",
+    "description": "Conduct research using bioinformatics theory and methods in areas such as pharmaceuticals, medical technology, biotechnology, computational biology, proteomics, computer information science, biology and medical informatics. May design databases and develop algorithms for processing and analyzing genomic information, or other biological information.",
+    "top_skills": [
+      "SQL",
+      "Linux",
+      "Cloud",
+      "Java",
+      "Git",
+      "Statistics"
+    ],
+    "onet_code": "19-1029.01",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Data visualization software",
+      "Docker",
+      "Git",
+      "GitHub",
+      "Hypertext markup language HTML",
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "JavaScript Object Notation JSON"
+    ]
+  },
+  {
+    "id": "biologists",
+    "title": "Biologists",
+    "category": "Science",
+    "description": "Research or study basic principles of plant and animal life, such as origin, relationship, development, anatomy, and functions.",
+    "top_skills": [
+      "Linux",
+      "Excel",
+      "Python",
+      "Research",
+      "Java",
+      "Statistics"
+    ],
+    "onet_code": "19-1029.04",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Agilent Technologies GeneSpring GX",
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Oracle Java",
+      "Python",
+      "Structured query language SQL",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "chemical_technicians",
+    "title": "Chemical Technicians",
+    "category": "Science",
+    "description": "Conduct chemical and physical laboratory tests to assist scientists in making qualitative and quantitative analyses of solids, liquids, and gaseous materials for research and development of new products or processes, quality control, maintenance of environmental standards, and other work involving experimental, theoretical, or practical application of chemistry and related sciences.",
+    "top_skills": [
+      "Excel",
+      "SQL",
+      "Linux",
+      "Java",
+      "Python"
+    ],
+    "onet_code": "19-4031.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "Spreadsheet software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "chemists",
+    "title": "Chemists",
+    "category": "Science",
+    "description": "Conduct qualitative and quantitative chemical analyses or experiments in laboratories for quality or process control or to develop new products or knowledge.",
+    "top_skills": [
+      "Excel",
+      "HTML",
+      "Java",
+      "SQL",
+      "Research",
+      "Statistics"
+    ],
+    "onet_code": "19-2031.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Apple iWork Numbers",
+      "Hypertext markup language HTML",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Network Science IR Mentor Pro",
+      "Oracle Java",
+      "SAS JMP",
+      "Siemens SHELXTL",
+      "Statistical software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "climate_change_policy_analysts",
+    "title": "Climate Change Policy Analysts",
+    "category": "Science",
+    "description": "Research and analyze policy developments related to climate change. Make climate-related recommendations for actions such as legislation, awareness campaigns, or fundraising approaches.",
+    "top_skills": [
+      "Linux",
+      "Excel",
+      "Python",
+      "Statistics",
+      "Research",
+      "Java"
+    ],
+    "onet_code": "19-2041.01",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "Sun Microsystems Java",
+      "The MathWorks MATLAB",
+      "Unidata Network common data form NetCDF",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "clinical_neuropsychologists",
+    "title": "Clinical Neuropsychologists",
+    "category": "Science",
+    "description": "Assess and diagnose patients with neurobehavioral problems related to acquired or developmental disorders of the nervous system, such as neurodegenerative disorders, traumatic brain injury, seizure disorders, and learning disabilities. Recommend treatment after diagnosis, such as therapy, medication, or surgery. Assist with evaluation before and after neurosurgical procedures, such as deep brain stimulation.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Research"
+    ],
+    "onet_code": "19-3039.03",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Behavioral Assessment and Research System BARS",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Statistical software"
+    ]
+  },
+  {
+    "id": "clinical_and_counseling_psychologists",
+    "title": "Clinical and Counseling Psychologists",
+    "category": "Science",
+    "description": "Assess, diagnose, and treat mental and emotional disorders of individuals through observation, interview, and psychological tests. Help individuals with distress or maladjustment understand their problems through their knowledge of case history, interviews with patients, and theory. Provide individual or group counseling services to assist individuals in achieving more effective personal, social, educational, and vocational development and adjustment. May design behavior modification programs and consult with medical personnel regarding the best treatment for patients.",
+    "top_skills": [
+      "Excel",
+      "APIs",
+      "Statistics"
+    ],
+    "onet_code": "19-3033.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Google Sheets",
+      "Microsoft Excel",
+      "Neuro Innovations Therapist's Toolkit",
+      "Spreadsheet software",
+      "Statistical software"
+    ]
+  },
+  {
+    "id": "conservation_scientists",
+    "title": "Conservation Scientists",
+    "category": "Science",
+    "description": "Manage, improve, and protect natural resources to maximize their use without damaging the environment. May conduct soil surveys and develop plans to eliminate soil erosion or to protect rangelands. May instruct farmers, agricultural production managers, or ranchers in best ways to use crop rotation, contour plowing, or terracing to conserve soil and water; in the number and kind of livestock and forage plants best suited to particular ranges; and in range and farm improvements, such as fencing and reservoirs for stock watering.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "APIs"
+    ],
+    "onet_code": "19-1031.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Interstudio Geo-Tec B",
+      "Microsoft Excel",
+      "USDA Forest Vegetation Simulator FVS"
+    ]
+  },
+  {
+    "id": "economists",
+    "title": "Economists",
+    "category": "Science",
+    "description": "Conduct research, prepare reports, or formulate plans to address economic problems related to the production and distribution of goods and services or monetary and fiscal policy. May collect and process economic and statistical data using sampling techniques and econometric methods.",
+    "top_skills": [
+      "Statistics",
+      "Data Visualization",
+      "SQL",
+      "Excel",
+      "Python",
+      "Linux"
+    ],
+    "onet_code": "19-3011.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Corel QuattroPro",
+      "IBM Lotus 1-2-3",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Microsoft Power BI",
+      "Microsoft SQL Server",
+      "MySQL",
+      "Oracle Java",
+      "Python",
+      "SAS"
+    ]
+  },
+  {
+    "id": "environmental_economists",
+    "title": "Environmental Economists",
+    "category": "Science",
+    "description": "Conduct economic analysis related to environmental protection and use of the natural environment, such as water, air, land, and renewable energy resources. Evaluate and quantify benefits, costs, incentives, and impacts of alternative options using economic principles and statistical techniques.",
+    "top_skills": [
+      "SQL",
+      "Statistics",
+      "Research",
+      "Excel",
+      "Python",
+      "Data Visualization"
+    ],
+    "onet_code": "19-3011.01",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "MySQL",
+      "Python",
+      "SAS",
+      "Structure query language SQL",
+      "Tableau",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "environmental_scientists_and_specialists_including_health",
+    "title": "Environmental Scientists and Specialists, Including Health",
+    "category": "Science",
+    "description": "Conduct research or perform investigation for the purpose of identifying, abating, or eliminating sources of pollutants or hazards that affect either the environment or public health. Using knowledge of various scientific disciplines, may collect, synthesize, study, report, and recommend action based on data derived from measurements or observations of air, food, soil, water, and other sources.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "SQL",
+      "Java"
+    ],
+    "onet_code": "19-2041.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Spreadsheet software",
+      "Statistical software",
+      "Structured query language SQL",
+      "Sun Microsystems Java"
+    ]
+  },
+  {
+    "id": "epidemiologists",
+    "title": "Epidemiologists",
+    "category": "Science",
+    "description": "Investigate and describe the determinants and distribution of disease, disability, or health outcomes. May develop the means for prevention and control.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Data Visualization",
+      "Python",
+      "SQL"
+    ],
+    "onet_code": "19-1041.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Data visualization software",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "Statistical processing software",
+      "Statistical software",
+      "Structured query language SQL",
+      "Tableau"
+    ]
+  },
+  {
+    "id": "food_science_technicians",
+    "title": "Food Science Technicians",
+    "category": "Science",
+    "description": "Work with food scientists or technologists to perform standardized qualitative and quantitative tests to determine physical or chemical properties of food or beverage products. Includes technicians who assist in research and development of production technology, quality control, packaging, processing, and use of foods.",
+    "top_skills": [
+      "Excel",
+      "SQL",
+      "Linux",
+      "Statistics",
+      "Cloud"
+    ],
+    "onet_code": "19-4013.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "IBM WebSphere",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "SAS",
+      "Spreadsheet software",
+      "Structure query language SQL"
+    ]
+  },
+  {
+    "id": "food_scientists_and_technologists",
+    "title": "Food Scientists and Technologists",
+    "category": "Science",
+    "description": "Use chemistry, microbiology, engineering, and other sciences to study the principles underlying the processing and deterioration of foods; analyze food content to determine levels of vitamins, fat, sugar, and protein; discover new food sources; research ways to make processed foods safe, palatable, and healthful; and apply food science knowledge to determine best ways to process, package, preserve, store, and distribute food.",
+    "top_skills": [
+      "Excel",
+      "HTML",
+      "SQL",
+      "Data Visualization"
+    ],
+    "onet_code": "19-1012.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Hypertext markup language HTML",
+      "Microsoft Excel",
+      "Structured query language SQL",
+      "Tableau"
+    ]
+  },
+  {
+    "id": "forensic_science_technicians",
+    "title": "Forensic Science Technicians",
+    "category": "Science",
+    "description": "Collect, identify, classify, and analyze physical evidence related to criminal investigations. Perform tests on weapons or substances, such as fiber, hair, and tissue to determine significance to investigation. May testify as expert witnesses on evidence or crime laboratory techniques. May serve as specialists in area of expertise, such as ballistics, fingerprinting, handwriting, or biochemistry.",
+    "top_skills": [
+      "Excel",
+      "Linux",
+      "Networking"
+    ],
+    "onet_code": "19-4092.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "National Integrated Ballistics Information Network NIBIN"
+    ]
+  },
+  {
+    "id": "geneticists",
+    "title": "Geneticists",
+    "category": "Science",
+    "description": "Research and study the inheritance of traits at the molecular, organism or population level. May evaluate or treat patients with genetic disorders.",
+    "top_skills": [
+      "Git",
+      "Linux",
+      "Python",
+      "Statistics",
+      "Excel",
+      "Java"
+    ],
+    "onet_code": "19-1029.03",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Git",
+      "GitHub",
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "SAS JMP",
+      "SAS/Genetics",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "geographers",
+    "title": "Geographers",
+    "category": "Science",
+    "description": "Study the nature and use of areas of the Earth's surface, relating and interpreting interactions of physical and cultural phenomena. Conduct research on physical aspects of a region, including land forms, climates, soils, plants, and animals, and conduct research on the spatial implications of human activities within a given area, including social characteristics, economic activities, and political organization, as well as researching interdependence between regions at scales ranging from local to global.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Python",
+      "SQL",
+      "Research"
+    ],
+    "onet_code": "19-3092.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "Structured query language SQL",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "geoscientists_except_hydrologists_and_geographers",
+    "title": "Geoscientists, Except Hydrologists and Geographers",
+    "category": "Science",
+    "description": "Study the composition, structure, and other physical aspects of the Earth. May use geological, physics, and mathematics knowledge in exploration for oil, gas, minerals, or underground water; or in waste disposal, land reclamation, or other environmental problems. May study the Earth's internal composition, atmospheres, and oceans, and its magnetic, electrical, and gravitational forces. Includes mineralogists, paleontologists, stratigraphers, geodesists, and seismologists.",
+    "top_skills": [
+      "Statistics",
+      "Git",
+      "Excel",
+      "Python",
+      "SQL",
+      "Research"
+    ],
+    "onet_code": "19-2042.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Geostatistical modeling GSTAT software",
+      "Geostatistics software GS+",
+      "Git",
+      "Microsoft Excel",
+      "Multivariate statistical program MVSP software",
+      "MySQL",
+      "Paleontological Statistics PAST",
+      "Python",
+      "SAS",
+      "Seismic visualization software"
+    ]
+  },
+  {
+    "id": "historians",
+    "title": "Historians",
+    "category": "Science",
+    "description": "Research, analyze, record, and interpret the past as recorded in sources, such as government and institutional records, newspapers and other periodicals, photographs, interviews, films, electronic media, and unpublished manuscripts, such as personal diaries and letters.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "SQL"
+    ],
+    "onet_code": "19-3093.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Statistical analysis software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "hydrologists",
+    "title": "Hydrologists",
+    "category": "Science",
+    "description": "Research the distribution, circulation, and physical properties of underground and surface waters; and study the form and intensity of precipitation and its rate of infiltration into the soil, movement through the earth, and return to the ocean and atmosphere.",
+    "top_skills": [
+      "Excel",
+      "Python",
+      "Research",
+      "Data Visualization",
+      "SQL"
+    ],
+    "onet_code": "19-2043.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Data visualization software",
+      "Microsoft Excel",
+      "Python",
+      "Spreadsheet software",
+      "Structure query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "industrial_ecologists",
+    "title": "Industrial Ecologists",
+    "category": "Science",
+    "description": "Apply principles and processes of natural ecosystems to develop models for efficient industrial systems. Use knowledge from the physical and social sciences to maximize effective use of natural resources in the production and use of goods and services. Examine societal issues and their relationship with both technical systems and the environment.",
+    "top_skills": [
+      "SQL",
+      "Excel",
+      "Research",
+      "Git",
+      "Linux",
+      "Java"
+    ],
+    "onet_code": "19-2041.03",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Git",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "Splunk Enterprise",
+      "Structure query language SQL"
+    ]
+  },
+  {
+    "id": "industrial_organizational_psychologists",
+    "title": "Industrial-Organizational Psychologists",
+    "category": "Science",
+    "description": "Apply principles of psychology to human resources, administration, management, sales, and marketing problems. Activities may include policy planning; employee testing and selection, training, and development; and organizational development and analysis. May work with management to organize the work setting to improve worker productivity.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "HTML"
+    ],
+    "onet_code": "19-3032.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Google Sheets",
+      "Hypertext markup language HTML",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "SAS"
+    ]
+  },
+  {
+    "id": "materials_scientists",
+    "title": "Materials Scientists",
+    "category": "Science",
+    "description": "Research and study the structures and chemical properties of various natural and synthetic or composite materials, including metals, alloys, rubber, ceramics, semiconductors, polymers, and glass. Determine ways to strengthen or combine materials or develop new materials with new or specific properties for use in a variety of products and applications. Includes glass scientists, ceramic scientists, metallurgical scientists, and polymer scientists.",
+    "top_skills": [
+      "Excel",
+      "Python",
+      "Research",
+      "HTML",
+      "Statistics"
+    ],
+    "onet_code": "19-2032.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Hypertext markup language HTML",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Python",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "medical_scientists_except_epidemiologists",
+    "title": "Medical Scientists, Except Epidemiologists",
+    "category": "Science",
+    "description": "Conduct research dealing with the understanding of human diseases and the improvement of human health. Engage in clinical investigation, research and development, or other related activities.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Linux",
+      "Research",
+      "Python"
+    ],
+    "onet_code": "19-1042.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "National Instruments LabVIEW",
+      "Python",
+      "SAS",
+      "Spreadsheet software",
+      "Statistical software",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "molecular_and_cellular_biologists",
+    "title": "Molecular and Cellular Biologists",
+    "category": "Science",
+    "description": "Research and study cellular molecules and organelles to understand cell function and organization.",
+    "top_skills": [
+      "Excel",
+      "Research",
+      "Git",
+      "Python",
+      "Java"
+    ],
+    "onet_code": "19-1029.02",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Agilent Technologies GeneSpring GX",
+      "Git",
+      "Microsoft Excel",
+      "Python",
+      "The MathWorks MATLAB",
+      "Wolfram Research Mathematica"
+    ]
+  },
+  {
+    "id": "neuropsychologists",
+    "title": "Neuropsychologists",
+    "category": "Science",
+    "description": "Apply theories and principles of neuropsychology to evaluate and diagnose disorders of higher cerebral functioning, often in research and medical settings. Study the human brain and the effect of physiological states on human cognition and behavior. May formulate and administer programs of treatment.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Research"
+    ],
+    "onet_code": "19-3039.02",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Behavioral Assessment and Research System BARS",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Statistical software"
+    ]
+  },
+  {
+    "id": "nuclear_monitoring_technicians",
+    "title": "Nuclear Monitoring Technicians",
+    "category": "Science",
+    "description": "Collect and test samples to monitor results of nuclear experiments and contamination of humans, facilities, and environment.",
+    "top_skills": [
+      "Excel",
+      "Cloud",
+      "Java",
+      "SQL"
+    ],
+    "onet_code": "19-4051.02",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Microsoft Azure software",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "nuclear_technicians",
+    "title": "Nuclear Technicians",
+    "category": "Science",
+    "description": "Assist nuclear physicists, nuclear engineers, or other scientists in laboratory, power generation, or electricity production activities. May operate, maintain, or provide quality control for nuclear testing and research equipment. May monitor radiation.",
+    "top_skills": [
+      "Excel",
+      "Linux",
+      "SQL"
+    ],
+    "onet_code": "19-4051.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "Spreadsheet software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "physicists",
+    "title": "Physicists",
+    "category": "Science",
+    "description": "Conduct research into physical phenomena, develop theories on the basis of observation and experiments, and devise methods to apply physical laws and theories.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Java",
+      "Linux",
+      "Python",
+      "Research"
+    ],
+    "onet_code": "19-2012.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "Git",
+      "JavaScript",
+      "Linux",
+      "Microsoft Azure software",
+      "Microsoft Excel",
+      "MySQL",
+      "National Instruments LabVIEW",
+      "OpenStack",
+      "Oracle Database"
+    ]
+  },
+  {
+    "id": "political_scientists",
+    "title": "Political Scientists",
+    "category": "Science",
+    "description": "Study the origin, development, and operation of political systems. May study topics, such as public opinion, political decisionmaking, and ideology. May analyze the structure and operation of governments, as well as various political entities. May conduct public opinion surveys, analyze election results, or analyze public documents.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Data Visualization",
+      "Python",
+      "Research",
+      "SQL"
+    ],
+    "onet_code": "19-3094.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Data visualization software",
+      "IBM SPSS Statistics",
+      "Interuniversity Consortium for Political and Social Research (ICPSR) database",
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "Structure query language SQL",
+      "Tableau"
+    ]
+  },
+  {
+    "id": "quality_control_analysts",
+    "title": "Quality Control Analysts",
+    "category": "Science",
+    "description": "Conduct tests to determine quality of raw materials, bulk intermediate and finished products. May conduct stability sample tests.",
+    "top_skills": [
+      "Excel",
+      "SQL",
+      "Research",
+      "HTML",
+      "JavaScript",
+      "Java"
+    ],
+    "onet_code": "19-4099.01",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Hypertext markup language HTML",
+      "JavaScript",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "National Instruments LabVIEW",
+      "Spreadsheet software",
+      "Structured query language SQL",
+      "The MathWorks MATLAB"
+    ]
+  },
+  {
+    "id": "range_managers",
+    "title": "Range Managers",
+    "category": "Science",
+    "description": "Research or study range land management practices to provide sustained production of forage, livestock, and wildlife.",
+    "top_skills": [
+      "Linux",
+      "Excel",
+      "Java",
+      "Python",
+      "Statistics",
+      "Research"
+    ],
+    "onet_code": "19-1031.02",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Linux",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "The MathWorks MATLAB",
+      "UNIX"
+    ]
+  },
+  {
+    "id": "remote_sensing_scientists_and_technologists",
+    "title": "Remote Sensing Scientists and Technologists",
+    "category": "Science",
+    "description": "Apply remote sensing principles and methods to analyze data and solve problems in areas such as natural resource management, urban planning, or homeland security. May develop new sensor systems, analytical techniques, or new applications for existing systems.",
+    "top_skills": [
+      "Cloud",
+      "SQL",
+      "Linux",
+      "JavaScript",
+      "Java",
+      "Git"
+    ],
+    "onet_code": "19-2099.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "CloudCompare",
+      "Docker",
+      "Git",
+      "GitHub"
+    ]
+  },
+  {
+    "id": "remote_sensing_technicians",
+    "title": "Remote Sensing Technicians",
+    "category": "Science",
+    "description": "Apply remote sensing technologies to assist scientists in areas such as natural resources, urban planning, or homeland security. May prepare flight plans or sensor configurations for flight trips.",
+    "top_skills": [
+      "Cloud",
+      "Linux",
+      "SQL",
+      "Git",
+      "JavaScript",
+      "Java"
+    ],
+    "onet_code": "19-4099.03",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Web Services AWS software",
+      "Cascading style sheets CSS",
+      "CloudCompare",
+      "Git",
+      "GitHub",
+      "Hypertext markup language HTML",
+      "JavaScript",
+      "Linux"
+    ]
+  },
+  {
+    "id": "social_science_research_assistants",
+    "title": "Social Science Research Assistants",
+    "category": "Science",
+    "description": "Assist social scientists in laboratory, survey, and other social science research. May help prepare findings for publication and assist in laboratory analysis, quality control, or data management.",
+    "top_skills": [
+      "Statistics",
+      "Java",
+      "Excel",
+      "SQL",
+      "Python",
+      "Research"
+    ],
+    "onet_code": "19-4061.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "Oracle Java",
+      "Python",
+      "REDCap Research Electronic Data Capture",
+      "SAS",
+      "Statistical software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "sociologists",
+    "title": "Sociologists",
+    "category": "Science",
+    "description": "Study human society and social behavior by examining the groups and social institutions that people form, as well as various social, religious, political, and business organizations. May study the behavior and interaction of groups, trace their origin and growth, and analyze the influence of group activities on individual members.",
+    "top_skills": [
+      "Statistics",
+      "Excel",
+      "Data Visualization",
+      "Research"
+    ],
+    "onet_code": "19-3041.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Data visualization software",
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Qualtrics Research Suite",
+      "SAS"
+    ]
+  },
+  {
+    "id": "survey_researchers",
+    "title": "Survey Researchers",
+    "category": "Science",
+    "description": "Plan, develop, or conduct surveys. May analyze and interpret the meaning of survey data, determine survey objectives, or suggest or test question wording. Includes social scientists who primarily design questionnaires or supervise survey teams.",
+    "top_skills": [
+      "Statistics",
+      "Research",
+      "Java",
+      "Excel",
+      "Python",
+      "Data Visualization"
+    ],
+    "onet_code": "19-3022.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Creative Research Survey System",
+      "Future Information Research Management Confirmit",
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "Microsoft Excel",
+      "Oracle Java",
+      "Python",
+      "Random forest software",
+      "REDCap Research Electronic Data Capture",
+      "Research Spectrum Survent CATI"
+    ]
+  },
+  {
+    "id": "transportation_planners",
+    "title": "Transportation Planners",
+    "category": "Science",
+    "description": "Prepare studies for proposed transportation projects. Gather, compile, and analyze data. Study the use and operation of transportation systems. Develop transportation models or simulations.",
+    "top_skills": [
+      "Data Visualization",
+      "Statistics",
+      "Excel",
+      "Python",
+      "SQL"
+    ],
+    "onet_code": "19-3099.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Microsoft Power BI",
+      "Python",
+      "SAS",
+      "Structured query language SQL",
+      "Tableau"
+    ]
+  },
+  {
+    "id": "urban_and_regional_planners",
+    "title": "Urban and Regional Planners",
+    "category": "Science",
+    "description": "Develop comprehensive plans and programs for use of land and physical facilities of jurisdictions, such as towns, cities, counties, and metropolitan areas.",
+    "top_skills": [
+      "Excel",
+      "SQL",
+      "Cloud",
+      "HTML",
+      "Java",
+      "JavaScript"
+    ],
+    "onet_code": "19-3051.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "e-on VUE",
+      "Hypertext markup language HTML",
+      "IBM Lotus 1-2-3",
+      "Microsoft Excel",
+      "Oracle Database",
+      "Oracle Java",
+      "Spreadsheet software",
+      "Structured query language SQL"
+    ]
+  },
+  {
+    "id": "zoologists_and_wildlife_biologists",
+    "title": "Zoologists and Wildlife Biologists",
+    "category": "Science",
+    "description": "Study the origins, behavior, diseases, genetics, and life processes of animals and wildlife. May specialize in wildlife research and management. May collect and analyze biological data to determine the environmental effects of present and potential use of land and water habitats.",
+    "top_skills": [
+      "Excel",
+      "Statistics",
+      "Python"
+    ],
+    "onet_code": "19-1023.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM Lotus 1-2-3",
+      "Microsoft Excel",
+      "Python",
+      "SAS",
+      "Spreadsheet software",
+      "Statistical software"
+    ]
+  },
+  {
+    "id": "information_security_analysts",
+    "title": "Information Security Analysts",
     "category": "Security",
-    "description": "Monitor systems, analyze threats, and improve security posture.",
-    "top_skills": ["Networking", "Linux", "Security Basics", "Incident Response"]
+    "description": "Plan, implement, upgrade, or monitor security measures for the protection of computer networks and information. Assess system vulnerabilities for security risks and propose and implement risk mitigation strategies. May ensure appropriate security controls are in place that will safeguard digital files and vital electronic infrastructure. May respond to computer security breaches and viruses.",
+    "top_skills": [
+      "Networking",
+      "Linux",
+      "Cloud",
+      "SQL",
+      "Java",
+      "Security Basics"
+    ],
+    "onet_code": "15-1212.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "AccessData FTK",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Automated audit trail analysis software",
+      "Automated media tracking software",
+      "Bash",
+      "Border Gateway Protocol BGP",
+      "Cisco Systems CiscoWorks"
+    ]
   },
-    {
-        "id": "medical_physicist",
-        "title": "Medical Physicist",
-        "category": "Healthcare",
-        "description": "Apply physics principles to medical imaging and radiation therapy.",
-        "top_skills": ["Radiation Physics", "Medical Imaging", "Dosimetry", "Patient Safety"]
-    },
-    {   
-        "id": "marine_biologist",
-        "title": "Marine Biologist",
-        "category": "Science",
-        "description": "Study marine ecosystems, organisms, and their interactions.",
-        "top_skills": ["Oceanography", "Research Methods", "Data Analysis", "Biology"]
-}
+  {
+    "id": "information_security_engineers",
+    "title": "Information Security Engineers",
+    "category": "Security",
+    "description": "Develop and oversee the implementation of information security procedures and policies. Build, maintain and upgrade security technology, such as firewalls, for the safe use of computer networks and the transmission and retrieval of information. Design and implement appropriate security controls to identify vulnerabilities and protect digital files and electronic infrastructures. Monitor and respond to computer security breaches, viruses, and intrusions, and perform forensic investigation. May oversee the assessment of information security systems.",
+    "top_skills": [
+      "Linux",
+      "Cloud",
+      "Networking",
+      "Security Basics",
+      "Java",
+      "SQL"
+    ],
+    "onet_code": "15-1299.05",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Border Gateway Protocol BGP",
+      "Docker",
+      "Firewall software",
+      "Git",
+      "GitHub",
+      "Google Cloud software",
+      "IBM QRadar SIEM"
+    ]
+  },
+  {
+    "id": "actuaries",
+    "title": "Actuaries",
+    "category": "Software",
+    "description": "Analyze statistical data, such as mortality, accident, sickness, disability, and retirement rates and construct probability tables to forecast risk and liability for payment of future benefits. May ascertain insurance rates required and cash reserves necessary to ensure payment of future benefits.",
+    "top_skills": [
+      "Data Visualization",
+      "SQL",
+      "Statistics",
+      "Excel",
+      "Python",
+      "Java"
+    ],
+    "onet_code": "15-2011.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "Microsoft Excel",
+      "Microsoft Power BI",
+      "Microsoft SQL Server",
+      "Oracle Database",
+      "Oracle Java",
+      "Python",
+      "SAS",
+      "Spreadsheet software",
+      "Statistical software"
+    ]
+  },
+  {
+    "id": "bioinformatics_technicians",
+    "title": "Bioinformatics Technicians",
+    "category": "Software",
+    "description": "Apply principles and methods of bioinformatics to assist scientists in areas such as pharmaceuticals, medical technology, biotechnology, computational biology, proteomics, computer information science, biology and medical informatics. Apply bioinformatics tools to visualize, analyze, manipulate or interpret molecular data. May build and maintain databases for processing and analyzing genomic or other biological information.",
+    "top_skills": [
+      "SQL",
+      "Statistics",
+      "Git",
+      "HTML",
+      "Linux",
+      "Excel"
+    ],
+    "onet_code": "15-2099.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Data visualization software",
+      "Git",
+      "Hypertext markup language HTML",
+      "IBM SPSS Statistics",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "MySQL",
+      "Oracle Database",
+      "Oracle Java"
+    ]
+  },
+  {
+    "id": "blockchain_engineers",
+    "title": "Blockchain Engineers",
+    "category": "Software",
+    "description": "Maintain and support distributed and decentralized blockchain-based networks or block-chain applications such as cryptocurrency exchange, payment processing, document sharing, and digital voting. Design and deploy secure block-chain design patterns and solutions over geographically distributed networks using advanced technologies. May assist with infrastructure setup and testing for application transparency and security.",
+    "top_skills": [
+      "JavaScript",
+      "Cloud",
+      "Java",
+      "SQL",
+      "Git",
+      "Python"
+    ],
+    "onet_code": "15-1299.07",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Docker",
+      "Git",
+      "GitHub",
+      "Google Angular",
+      "Grafana Labs Grafana Cloud",
+      "JavaScript",
+      "Kubernetes"
+    ]
+  },
+  {
+    "id": "computer_network_architects",
+    "title": "Computer Network Architects",
+    "category": "Software",
+    "description": "Design and implement computer and information networks, such as local area networks (LAN), wide area networks (WAN), intranets, extranets, and other data communications networks. Perform network modeling, analysis, and planning, including analysis of capacity needs for network infrastructures. May also design network and computer security measures. May research and recommend network and data communications hardware and software.",
+    "top_skills": [
+      "Networking",
+      "Cloud",
+      "Linux",
+      "SQL",
+      "Java",
+      "JavaScript"
+    ],
+    "onet_code": "15-1241.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "AirMagnet Enterprise",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Aruba Networks AirWave",
+      "Bash",
+      "Border Gateway Protocol BGP",
+      "Cascading style sheets CSS",
+      "Cisco IOS"
+    ]
+  },
+  {
+    "id": "computer_network_support_specialists",
+    "title": "Computer Network Support Specialists",
+    "category": "Software",
+    "description": "Analyze, test, troubleshoot, and evaluate existing network systems, such as local area networks (LAN), wide area networks (WAN), cloud networks, servers, and other data communications networks. Perform network maintenance to ensure networks operate correctly with minimal interruption.",
+    "top_skills": [
+      "Networking",
+      "Linux",
+      "Cloud",
+      "Security Basics",
+      "SQL",
+      "Excel"
+    ],
+    "onet_code": "15-1231.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Arping",
+      "B&W Port Scanner",
+      "Bash",
+      "BitWizard B.V. mtr",
+      "Border Gateway Protocol BGP",
+      "Cisco Systems Cisco NetFlow Collection Engine",
+      "Cisco Systems Cisco Traffic Analyzer",
+      "Cisco Systems CiscoWorks",
+      "Cisco Systems CiscoWorks LAN Management Solution",
+      "Citrix cloud computing software"
+    ]
+  },
+  {
+    "id": "computer_programmers",
+    "title": "Computer Programmers",
+    "category": "Software",
+    "description": "Create, modify, and test the code and scripts that allow computer applications to run. Work from specifications drawn up by software and web developers or other individuals. May develop and write computer programs to store, locate, and retrieve specific documents, data, and information.",
+    "top_skills": [
+      "SQL",
+      "Linux",
+      "Java",
+      "Cloud",
+      "JavaScript",
+      "HTML"
+    ],
+    "onet_code": "15-1251.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Bourne Shell",
+      "Cascading style sheets CSS",
+      "CAST SQL Builder",
+      "Citrix cloud computing software",
+      "CoffeeCup The HTML Editor"
+    ]
+  },
+  {
+    "id": "computer_systems_analysts",
+    "title": "Computer Systems Analysts",
+    "category": "Software",
+    "description": "Analyze science, engineering, business, and other data processing problems to develop and implement solutions to complex applications problems, system administration issues, or network concerns. Perform systems management and integration functions, improve existing computer systems, and review computer system capabilities, workflow, and schedule limitations. May analyze or recommend commercially available software.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Linux",
+      "Java",
+      "JavaScript",
+      "Networking"
+    ],
+    "onet_code": "15-1211.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Cascading style sheets CSS",
+      "Cisco Systems CiscoWorks",
+      "Cisco Webex",
+      "Citrix cloud computing software",
+      "Docker"
+    ]
+  },
+  {
+    "id": "computer_systems_engineers_architects",
+    "title": "Computer Systems Engineers/Architects",
+    "category": "Software",
+    "description": "Design and develop solutions to complex applications problems, system administration issues, or network concerns. Perform systems management and integration functions.",
+    "top_skills": [
+      "Cloud",
+      "Linux",
+      "SQL",
+      "Java",
+      "Networking",
+      "JavaScript"
+    ],
+    "onet_code": "15-1299.08",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Atlassian Bitbucket",
+      "Bash",
+      "Border Gateway Protocol BGP",
+      "Cascading style sheets CSS",
+      "Cisco IOS"
+    ]
+  },
+  {
+    "id": "computer_user_support_specialists",
+    "title": "Computer User Support Specialists",
+    "category": "Software",
+    "description": "Provide technical assistance to computer users. Answer questions or resolve computer problems for clients in person, via telephone, or electronically. May provide assistance concerning the use of computer hardware and software, including printing, installation, word processing, electronic mail, and operating systems.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Linux",
+      "Java",
+      "Networking",
+      "JavaScript"
+    ],
+    "onet_code": "15-1232.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Cascading style sheets CSS",
+      "Cisco IOS",
+      "Cisco Webex",
+      "Citrix cloud computing software",
+      "Dartware InterMapper",
+      "Docker",
+      "Dropbox"
+    ]
+  },
+  {
+    "id": "computer_and_information_research_scientists",
+    "title": "Computer and Information Research Scientists",
+    "category": "Software",
+    "description": "Conduct research into fundamental computer and information science as theorists, designers, or inventors. Develop solutions to problems in the field of computer hardware and software.",
+    "top_skills": [
+      "Cloud",
+      "Linux",
+      "SQL",
+      "Machine Learning",
+      "Git",
+      "Java"
+    ],
+    "onet_code": "15-1221.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS SageMaker",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Computational statistics software",
+      "Data visualization software",
+      "Docker",
+      "Git",
+      "GitHub"
+    ]
+  },
+  {
+    "id": "digital_forensics_analysts",
+    "title": "Digital Forensics Analysts",
+    "category": "Software",
+    "description": "Conduct investigations on computer-based crimes establishing documentary or physical evidence, such as digital media and logs associated with cyber intrusion incidents. Analyze digital evidence and investigate computer security incidents to derive information in support of system and network vulnerability mitigation. Preserve and present computer-related evidence in support of criminal, fraud, counterintelligence, or law enforcement investigations.",
+    "top_skills": [
+      "Cloud",
+      "Linux",
+      "Networking",
+      "Security Basics",
+      "Java",
+      "Python"
+    ],
+    "onet_code": "15-1299.06",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "AccessData FTK",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Border Gateway Protocol BGP",
+      "Cisco Systems Cisco NetFlow Collection Engine",
+      "Firewall software",
+      "Hypertext markup language HTML",
+      "IBM QRadar SIEM",
+      "Intrusion detection system IDS"
+    ]
+  },
+  {
+    "id": "document_management_specialists",
+    "title": "Document Management Specialists",
+    "category": "Software",
+    "description": "Implement and administer enterprise-wide document management systems and related procedures that allow organizations to capture, store, retrieve, share, and destroy electronic records and documents.",
+    "top_skills": [
+      "Linux",
+      "Excel",
+      "SQL",
+      "HTML",
+      "Cloud",
+      "Java"
+    ],
+    "onet_code": "15-1299.03",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Hypertext markup language HTML",
+      "IBM WebSphere MQ",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "Oracle Java",
+      "Oracle SQL Developer",
+      "UNIX",
+      "Version control software"
+    ]
+  },
+  {
+    "id": "geographic_information_systems_technologists_and_technicians",
+    "title": "Geographic Information Systems Technologists and Technicians",
+    "category": "Software",
+    "description": "Assist scientists or related professionals in building, maintaining, modifying, or using geographic information systems (GIS) databases. May also perform some custom application development or provide user support.",
+    "top_skills": [
+      "JavaScript",
+      "SQL",
+      "Cloud",
+      "Java",
+      "Linux",
+      "CSS"
+    ],
+    "onet_code": "15-1299.02",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Web Services AWS software",
+      "Bootstrap",
+      "Cascading style sheets CSS",
+      "Docker",
+      "ESRI ArcGIS Geostatistical Analyst",
+      "Git",
+      "GitHub",
+      "Google Angular",
+      "Hypertext markup language HTML"
+    ]
+  },
+  {
+    "id": "health_informatics_specialists",
+    "title": "Health Informatics Specialists",
+    "category": "Software",
+    "description": "Apply knowledge of nursing and informatics to assist in the design, development, and ongoing modification of computerized health care systems. May educate staff and assist in problem solving to promote the implementation of the health care system.",
+    "top_skills": [
+      "Data Visualization",
+      "Statistics",
+      "SQL",
+      "Excel",
+      "Python",
+      "Java"
+    ],
+    "onet_code": "15-1211.01",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "Microsoft Excel",
+      "Microsoft Power BI",
+      "Microsoft SQL Server Reporting Services SSRS",
+      "Python",
+      "SAS",
+      "Structured query language SQL",
+      "Tableau",
+      "Texas Medical Software SpringCharts EMR"
+    ]
+  },
+  {
+    "id": "information_technology_project_managers",
+    "title": "Information Technology Project Managers",
+    "category": "Software",
+    "description": "Plan, initiate, and manage information technology (IT) projects. Lead and guide the work of technical staff. Serve as liaison between business and technical aspects of projects. Plan project stages and assess business implications for each stage. Monitor progress to assure deadlines, standards, and cost targets are met.",
+    "top_skills": [
+      "Cloud",
+      "SQL",
+      "Linux",
+      "Java",
+      "JavaScript",
+      "Networking"
+    ],
+    "onet_code": "15-1299.09",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Cascading style sheets CSS",
+      "Cisco IOS",
+      "Cisco Webex",
+      "Citrix cloud computing software",
+      "Docker",
+      "Dynamic hypertext markup language DHTML"
+    ]
+  },
+  {
+    "id": "mathematicians",
+    "title": "Mathematicians",
+    "category": "Software",
+    "description": "Conduct research in fundamental mathematics or in application of mathematical techniques to science, management, and other fields. Solve problems in various fields using mathematical methods.",
+    "top_skills": [
+      "Linux",
+      "Research",
+      "Statistics",
+      "Java",
+      "Excel",
+      "SQL"
+    ],
+    "onet_code": "15-2021.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Analysis and Visualization of Time Sequences AVTS",
+      "Bash",
+      "Cascading style sheets CSS",
+      "Data visualization software",
+      "EleSoft Research",
+      "Hypertext markup language HTML",
+      "IBM SPSS Amos",
+      "IBM SPSS Statistics",
+      "JavaScript",
+      "LINDO Systems LINDO API"
+    ]
+  },
+  {
+    "id": "network_and_computer_systems_administrators",
+    "title": "Network and Computer Systems Administrators",
+    "category": "Software",
+    "description": "Install, configure, and maintain an organization's local area network (LAN), wide area network (WAN), data communications network, operating systems, and physical and virtual servers. Perform system monitoring and verify the integrity and availability of hardware, network, and server resources and systems. Review system and application logs and verify completion of scheduled jobs, including system backups. Analyze network and server resource consumption and control user access. Install and upgrade software and maintain software licenses. May assist in network modeling, analysis, planning, and coordination between network and data communications hardware and software.",
+    "top_skills": [
+      "Networking",
+      "Linux",
+      "SQL",
+      "Cloud",
+      "Java",
+      "Security Basics"
+    ],
+    "onet_code": "15-1244.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Border Gateway Protocol BGP",
+      "Cisco Systems CiscoWorks",
+      "Cisco Webex",
+      "Citrix cloud computing software",
+      "Dartware InterMapper"
+    ]
+  },
+  {
+    "id": "operations_research_analysts",
+    "title": "Operations Research Analysts",
+    "category": "Software",
+    "description": "Formulate and apply mathematical modeling and other optimizing methods to develop and interpret information that assists management with decisionmaking, policy formulation, or other managerial functions. May collect and analyze data and develop decision support software, services, or products. May develop and supply optimal time, cost, or logistics networks for program evaluation, review, or implementation.",
+    "top_skills": [
+      "Linux",
+      "SQL",
+      "Data Visualization",
+      "Python",
+      "Statistics",
+      "Excel"
+    ],
+    "onet_code": "15-2031.00",
+    "job_zone": 5,
+    "onet_tech_examples": [
+      "Bash",
+      "Cisco IOS",
+      "Citrix cloud computing software",
+      "GitHub",
+      "Google Drive",
+      "IBM SPSS Statistics",
+      "Jupyter Notebook",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft Power BI"
+    ]
+  },
+  {
+    "id": "penetration_testers",
+    "title": "Penetration Testers",
+    "category": "Software",
+    "description": "Evaluate network system security by conducting simulated internal and external cyberattacks using adversary tools and techniques. Attempt to breach and exploit critical systems and gain access to sensitive information to assess system security.",
+    "top_skills": [
+      "Linux",
+      "Cloud",
+      "Java",
+      "Security Basics",
+      "SQL",
+      "Networking"
+    ],
+    "onet_code": "15-1299.04",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Docker",
+      "Firewall software",
+      "GitHub",
+      "Google Cloud software",
+      "IBM QRadar SIEM",
+      "JavaScript",
+      "Kali Linux",
+      "Kubernetes"
+    ]
+  },
+  {
+    "id": "software_developers",
+    "title": "Software Developers",
+    "category": "Software",
+    "description": "Research, design, and develop computer and network software or specialized utility programs. Analyze user needs and develop software solutions, applying principles and techniques of computer science, engineering, and mathematical analysis. Update software or enhance existing software capabilities. May work with computer hardware engineers to integrate hardware and software systems, and develop specifications and performance requirements. May maintain databases within an application area, working individually or coordinating database development as part of a team.",
+    "top_skills": [
+      "Cloud",
+      "JavaScript",
+      "Java",
+      "SQL",
+      "Linux",
+      "Git"
+    ],
+    "onet_code": "15-1252.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Atlassian Bitbucket",
+      "Bash",
+      "Bootstrap",
+      "Border Gateway Protocol BGP",
+      "Cascading style sheets CSS"
+    ]
+  },
+  {
+    "id": "software_quality_assurance_analysts_and_testers",
+    "title": "Software Quality Assurance Analysts and Testers",
+    "category": "Software",
+    "description": "Develop and execute software tests to identify software problems and their causes. Test system modifications to prepare for implementation. Document software and application defects using a bug tracking system and report defects to software or web developers. Create and maintain databases of known defects. May participate in software design reviews to provide input on functional requirements, operational characteristics, product designs, and schedules.",
+    "top_skills": [
+      "Cloud",
+      "SQL",
+      "Java",
+      "Linux",
+      "JavaScript",
+      "Git"
+    ],
+    "onet_code": "15-1253.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Cascading style sheets CSS",
+      "Cisco IOS",
+      "Cisco Webex",
+      "Citrix cloud computing software"
+    ]
+  },
+  {
+    "id": "telecommunications_engineering_specialists",
+    "title": "Telecommunications Engineering Specialists",
+    "category": "Software",
+    "description": "Design or configure wired, wireless, and satellite communications systems for voice, video, and data services. Supervise installation, service, and maintenance.",
+    "top_skills": [
+      "Linux",
+      "Networking",
+      "Excel",
+      "SQL",
+      "Security Basics",
+      "Java"
+    ],
+    "onet_code": "15-1241.01",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Cisco Systems Cisco Traffic Analyzer",
+      "Firewall software",
+      "IBM Lotus 1-2-3",
+      "KornShell",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft PowerShell",
+      "Microsoft SQL Server",
+      "Nagios",
+      "Network management software"
+    ]
+  },
+  {
+    "id": "video_game_designers",
+    "title": "Video Game Designers",
+    "category": "Software",
+    "description": "Design core features of video games. Specify innovative game and role-play mechanics, story lines, and character biographies. Create and maintain design documentation. Guide and collaborate with production staff to produce games as designed.",
+    "top_skills": [
+      "SQL",
+      "JavaScript",
+      "Java",
+      "Python",
+      "Cloud",
+      "Git"
+    ],
+    "onet_code": "15-1255.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Git",
+      "Hypertext markup language HTML",
+      "JavaScript",
+      "Linux",
+      "Microsoft Excel",
+      "Microsoft SQL Server",
+      "MySQL",
+      "Oracle Java",
+      "Python"
+    ]
+  },
+  {
+    "id": "web_administrators",
+    "title": "Web Administrators",
+    "category": "Software",
+    "description": "Manage web environment design, deployment, development and maintenance activities. Perform testing and quality assurance of web sites and web applications.",
+    "top_skills": [
+      "SQL",
+      "Cloud",
+      "Java",
+      "Linux",
+      "HTML",
+      "Networking"
+    ],
+    "onet_code": "15-1299.01",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Web Services AWS software",
+      "CA SiteMinder",
+      "Cascading style sheets CSS",
+      "Citrix cloud computing software",
+      "Dynamic hypertext markup language DHTML",
+      "Enterprise JavaBeans",
+      "Extensible hypertext markup language XHTML",
+      "Firewall software",
+      "Hypertext markup language HTML"
+    ]
+  },
+  {
+    "id": "web_developers",
+    "title": "Web Developers",
+    "category": "Software",
+    "description": "Develop and implement websites, web applications, application databases, and interactive web interfaces. Evaluate code to ensure that it is properly structured, meets industry standards, and is compatible with browsers and devices. Optimize website performance, scalability, and server-side code and processes. May develop website infrastructure and integrate websites with other computer applications.",
+    "top_skills": [
+      "JavaScript",
+      "Cloud",
+      "Java",
+      "SQL",
+      "Linux",
+      "Git"
+    ],
+    "onet_code": "15-1254.00",
+    "job_zone": 3,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Atlassian Bitbucket",
+      "Bash",
+      "Bootstrap",
+      "Cascading style sheets CSS",
+      "Cisco Webex"
+    ]
+  },
+  {
+    "id": "web_and_digital_interface_designers",
+    "title": "Web and Digital Interface Designers",
+    "category": "Software",
+    "description": "Design digital user interfaces or websites. Develop and test layouts, interfaces, functionality, and navigation menus to ensure compatibility and usability across browsers or devices. May use web framework applications as well as client-side code and processes. May evaluate web design following web and accessibility standards, and may analyze web use metrics and optimize websites for marketability and search engine ranking. May design and test interfaces that facilitate the human-computer interaction and maximize the usability of digital devices, websites, and software with a focus on aesthetics and design. May create graphics used in websites and manage website content and links.",
+    "top_skills": [
+      "Cloud",
+      "JavaScript",
+      "SQL",
+      "Java",
+      "Linux",
+      "CSS"
+    ],
+    "onet_code": "15-1255.00",
+    "job_zone": 4,
+    "onet_tech_examples": [
+      "Adobe Creative Cloud software",
+      "Amazon Elastic Compute Cloud EC2",
+      "Amazon Simple Storage Service S3",
+      "Amazon Web Services AWS CloudFormation",
+      "Amazon Web Services AWS software",
+      "Bash",
+      "Bootstrap",
+      "Cascading style sheets CSS",
+      "Cisco Webex",
+      "Docker"
+    ]
+  }
 ]
