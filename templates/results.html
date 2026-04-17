@@ -1,442 +1,305 @@
 <!--This is te results page that provides skill gap analysis + personalized
-recommendations for certifications, courses and learning resources-->
+recommendations for certifications, courses and learning resources, it has 
+a roadmap view-->
 
 {% extends "base.html" %}
 {% block title %}Your Roadmap • STEMPath{% endblock %}
 
 {% block content %}
+<section class="results-shell">
 
-<!-- ── Page header ─────────────────────────────────────── -->
-<div class="rm-page-header">
-  <div class="rm-header-left">
-    <p class="section-label">Your career journey</p>
-    <h1 class="rm-title">{{ results.selected_role }}</h1>
-    <p class="rm-subtitle">
-      {{ results.degree or "—" }} &nbsp;·&nbsp; {{ results.location or "—" }}
-    </p>
-  </div>
-  <div class="rm-score-ring" role="img" aria-label="Match score {{ results.match_score }}%">
-    <svg viewBox="0 0 80 80" width="80" height="80">
-      <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(155,89,245,0.15)" stroke-width="7"/>
-      <circle cx="40" cy="40" r="34" fill="none" stroke="url(#scoreGrad)" stroke-width="7"
-              stroke-linecap="round"
-              stroke-dasharray="{{ (results.match_score / 100 * 213.6) | round(1) }} 213.6"
-              transform="rotate(-90 40 40)"/>
-      <defs>
-        <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stop-color="#9b59f5"/>
-          <stop offset="100%" stop-color="#22d3ee"/>
-        </linearGradient>
-      </defs>
-    </svg>
-    <div class="rm-score-text">
-      <span class="rm-score-num">{{ results.match_score }}%</span>
-      <span class="rm-score-lbl">match</span>
+  <!-- Top header -->
+  <div class="rm2-topbar">
+    <div>
+      <p class="section-label">Your career journey</p>
+      <h1 class="rm2-page-title">{{ results.selected_role }}</h1>
+      <p class="rm2-page-subtitle">
+        {{ results.degree or "—" }} &nbsp;·&nbsp; {{ results.location or "—" }}
+      </p>
+    </div>
+
+    <div class="rm2-top-score-pill">
+      Current Match Score: <strong>{{ results.match_score }}%</strong>
     </div>
   </div>
-</div>
 
-<!-- ── Road legend ─────────────────────────────────────── -->
-<div class="rm-legend">
-  <div class="rm-legend-item"><span class="rm-pin rm-pin-have"></span> Skills you have</div>
-  <div class="rm-legend-item"><span class="rm-pin rm-pin-missing"></span> Skills to build</div>
-  <div class="rm-legend-item"><span class="rm-pin rm-pin-cert"></span> Certifications</div>
-  <div class="rm-legend-item"><span class="rm-pin rm-pin-job"></span> Job opportunities</div>
-  <div class="rm-legend-item"><span class="rm-pin rm-pin-goal"></span> Target career</div>
-</div>
+  <!-- Profile Summary -->
+  <section class="card rm2-summary-card">
+    <h2 class="rm2-section-title">Your Profile Summary</h2>
 
-<!-- ══════════════════════════════════════════════════════
-     THE ROAD
-══════════════════════════════════════════════════════ -->
-<div class="rm-road-wrap">
-
-  <!-- SVG winding road background (drawn behind stops) -->
-  <svg class="rm-road-svg" id="rm-road-svg" preserveAspectRatio="none">
-    <defs>
-      <filter id="roadShadow">
-        <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.5)"/>
-      </filter>
-      <linearGradient id="roadGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%"   stop-color="rgba(155,89,245,0.3)"/>
-        <stop offset="100%" stop-color="rgba(34,211,238,0.3)"/>
-      </linearGradient>
-    </defs>
-    <!-- Road path injected by JS -->
-    <path id="rm-road-path-shadow" fill="none"/>
-    <path id="rm-road-path-body"   fill="none"/>
-    <path id="rm-road-path-dashes" fill="none"/>
-    <path id="rm-road-path-glow"   fill="none"/>
-  </svg>
-
-  <!-- Stops injected by JS -->
-  <div id="rm-stops"></div>
-
-</div><!-- /.rm-road-wrap -->
-
-<!-- ── Bottom actions ─────────────────────────────────── -->
-<div class="rm-bottom-actions">
-  <a class="btn btn-ghost" href="{{ url_for('roles') }}">← Choose different role</a>
-  <a class="btn btn-ghost" href="{{ url_for('profile') }}">Edit profile</a>
-  <a class="btn"           href="{{ url_for('progress') }}">Track my progress</a>
-  <button class="btn btn-ghost" onclick="window.print()">🖨 Download plan</button>
-</div>
-
-
-<!-- ══════════════════════════════════════════════════════
-     DATA + ROAD SCRIPT
-══════════════════════════════════════════════════════ -->
-<script>
-(function(){
-
-/* ── Flask data ─────────────────────────────────────────── */
-const USER_SKILLS    = {{ results.user_skills    | tojson }};
-const MISSING_SKILLS = {{ results.missing_skills | tojson }};
-const TARGET_ROLE    = {{ results.selected_role  | tojson }};
-const MATCH_SCORE    = {{ results.match_score    | tojson }};
-const REC_CERTS      = {{ results.recommended_certs    | tojson }};
-const REC_LEARNING   = {{ results.recommended_learning | tojson }};
-const JOB_LISTINGS   = {{ results.job_listings   | tojson }};
-
-/* ── Job search links ───────────────────────────────────── */
-const roleQ = encodeURIComponent(TARGET_ROLE);
-const locQ  = encodeURIComponent({{ results.location | tojson }});
-
-/* ── Resource hints ─────────────────────────────────────── */
-const RESOURCES = {
-  "Python":             { course:"Python for Everybody",          provider:"Coursera", link:"https://www.coursera.org/specializations/python" },
-  "Python Basics":      { course:"Introduction to Python",        provider:"edX",      link:"https://www.edx.org/learn/python" },
-  "SQL":                { course:"Intro to SQL",                  provider:"Khan Academy", link:"https://www.khanacademy.org/computing/computer-programming/sql" },
-  "Machine Learning":   { course:"ML Specialization (Andrew Ng)", provider:"Coursera", link:"https://www.coursera.org/specializations/machine-learning-introduction" },
-  "Data Structures":    { course:"Data Structures Fundamentals",  provider:"edX",      link:"https://www.edx.org/learn/data-structures" },
-  "Cloud Fundamentals": { course:"AWS Cloud Practitioner",        provider:"AWS",      link:"https://aws.amazon.com/certification/certified-cloud-practitioner/" },
-  "Networking Basics":  { course:"Networking Basics",             provider:"Cisco NetAcad", link:"https://www.netacad.com/" },
-  "CompTIA Security+":  { course:"Security+ (SY0-701)",           provider:"CompTIA",  link:"https://www.comptia.org/certifications/security" },
-  "Linux CLI":          { course:"Introduction to Linux",         provider:"Linux Foundation", link:"https://www.edx.org/learn/linux" },
-  "React":              { course:"Meta Front-End Developer",      provider:"Coursera", link:"https://www.coursera.org/professional-certificates/meta-front-end-developer" },
-  "Docker":             { course:"Docker Getting Started",        provider:"Docker",   link:"https://www.docker.com/get-started/" },
-  "Git":                { course:"Git & GitHub Fundamentals",     provider:"GitHub",   link:"https://skills.github.com/" },
-  "JavaScript":         { course:"JavaScript Algorithms & DS",    provider:"freeCodeCamp", link:"https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/" },
-  "AWS":                { course:"AWS Solutions Architect",       provider:"AWS",      link:"https://aws.amazon.com/certification/certified-solutions-architect-associate/" },
-};
-
-/* ── Build ordered stops ────────────────────────────────── */
-// 1. START stop — skills user already has
-// 2. MISSING skills stops (ordered: prereqs first)
-// 3. CERTIFICATION stops (from recommended_certs)
-// 4. JOB stop — job listings
-// 5. GOAL stop — target career
-
-const PREREQS = {
-  "Data Structures":       ["Python Basics","Python"],
-  "Algorithms":            ["Data Structures"],
-  "OOP Design":            ["Python Basics","Python"],
-  "REST APIs":             ["Python","OOP Design"],
-  "Software Architecture": ["OOP Design","REST APIs"],
-  "Machine Learning":      ["Python","Statistics","NumPy / Pandas"],
-  "Deep Learning":         ["Machine Learning","Linear Algebra"],
-  "TensorFlow/PyTorch":    ["Machine Learning"],
-  "Scikit-Learn":          ["Python","NumPy / Pandas"],
-  "Big Data":              ["SQL","Data Wrangling"],
-  "Data Wrangling":        ["Python","SQL"],
-  "Data Visualization":    ["Python","Pandas"],
-  "SQL":                   ["Database Fundamentals","Python"],
-  "Cloud Fundamentals":    ["Networking Basics","Linux CLI"],
-  "AWS":                   ["Cloud Fundamentals"],
-  "Docker":                ["Linux CLI","Cloud Fundamentals"],
-  "Kubernetes":            ["Docker"],
-  "Network Security":      ["Networking Basics"],
-  "CompTIA Security+":     ["Network Security"],
-  "Ethical Hacking":       ["Networking Basics","Linux CLI","Python"],
-  "Penetration Testing":   ["Ethical Hacking"],
-  "SIEM Tools":            ["Linux CLI","Network Security"],
-  "Incident Response":     ["SIEM Tools","CompTIA Security+"],
-};
-
-// Sort missing skills: ones that are prereqs of others come first
-function sortByPrereq(skills) {
-  return [...skills].sort((a, b) => {
-    const aBlocks = skills.filter(s => (PREREQS[s] || []).includes(a)).length;
-    const bBlocks = skills.filter(s => (PREREQS[s] || []).includes(b)).length;
-    return bBlocks - aBlocks;
-  });
-}
-
-const orderedMissing = sortByPrereq(MISSING_SKILLS);
-
-const stops = [];
-
-// STOP: Current skills
-stops.push({
-  type:   'have',
-  icon:   '📍',
-  label:  'You are here',
-  title:  'Your current skills',
-  skills: USER_SKILLS,
-  content: null,
-});
-
-// STOPS: Missing skills
-orderedMissing.forEach((skill, i) => {
-  const res = RESOURCES[skill];
-  // Find a matching learning item
-  const learningItem = REC_LEARNING.find(l => l.skill === skill);
-  stops.push({
-    type:    'missing',
-    icon:    '🔴',
-    label:   `Step ${i + 1}`,
-    title:   skill,
-    prereqs: (PREREQS[skill] || []).filter(p => USER_SKILLS.includes(p) || MISSING_SKILLS.includes(p)),
-    resource: res || null,
-    learning: learningItem || null,
-    content:  'skill',
-  });
-});
-
-// STOPS: Certifications
-REC_CERTS.slice(0, 3).forEach((cert, i) => {
-  stops.push({
-    type:    'cert',
-    icon:    '🏆',
-    label:   `Certification ${i + 1}`,
-    title:   cert.name,
-    provider: cert.provider,
-    level:   cert.level,
-    reason:  cert.reason,
-    skills:  cert.skills || [],
-    link:    cert.link || '',
-    content: 'cert',
-  });
-});
-
-// STOP: Job opportunities
-if (JOB_LISTINGS && JOB_LISTINGS.length > 0) {
-  stops.push({
-    type:    'job',
-    icon:    '💼',
-    label:   'Opportunities',
-    title:   'Caribbean Job Listings',
-    jobs:    JOB_LISTINGS.slice(0, 3),
-    searchLinks: [
-      { label:'CaribbeanJobs', url:`https://www.caribbeanjobs.com/ShowResults.aspx?Keywords=${roleQ}` },
-      { label:'LinkedIn',      url:`https://www.linkedin.com/jobs/search/?keywords=${roleQ}&location=${locQ}` },
-      { label:'Indeed JM',     url:`https://jm.indeed.com/jobs?q=${roleQ}` },
-    ],
-    content: 'jobs',
-  });
-}
-
-// STOP: Goal
-stops.push({
-  type:    'goal',
-  icon:    '🎯',
-  label:   'Destination',
-  title:   TARGET_ROLE,
-  score:   MATCH_SCORE,
-  content: 'goal',
-});
-
-/* ── Render stops ───────────────────────────────────────── */
-const stopsContainer = document.getElementById('rm-stops');
-const TOTAL = stops.length;
-
-function cardHTML(stop, idx) {
-  const isLeft  = idx % 2 === 0;
-  const pinClass = `rm-pin-${stop.type}`;
-
-  let innerHTML = '';
-
-  if (stop.content === null) {
-    // START — skills you have
-    innerHTML = `
-      <div class="rm-stop-skills">
-        ${stop.skills.length > 0
-          ? stop.skills.map(s => `<span class="rm-skill-tag rm-skill-have">${s}</span>`).join('')
-          : '<span class="rm-stop-empty">No skills entered yet — <a href="/profile">edit your profile</a></span>'
-        }
-      </div>`;
-  }
-
-  else if (stop.content === 'skill') {
-    const res = stop.resource;
-    innerHTML = `
-      ${stop.prereqs && stop.prereqs.length > 0
-        ? `<p class="rm-stop-meta">Prerequisites: ${stop.prereqs.map(p => `<span class="rm-skill-tag rm-skill-prereq">${p}</span>`).join(' ')}</p>`
-        : ''}
-      ${res
-        ? `<div class="rm-resource-card">
-             <p class="rm-resource-course">${res.course}</p>
-             <p class="rm-resource-provider">${res.provider}</p>
-             <a href="${res.link}" target="_blank" rel="noopener" class="rm-resource-btn">Open course →</a>
-           </div>`
-        : stop.learning
-          ? `<div class="rm-resource-card">
-               <p class="rm-resource-course">${stop.learning.title}</p>
-               <p class="rm-resource-provider">${stop.learning.provider} · ${stop.learning.format}</p>
-               ${stop.learning.link ? `<a href="${stop.learning.link}" target="_blank" rel="noopener" class="rm-resource-btn">Open →</a>` : ''}
-             </div>`
-          : `<p class="rm-stop-meta">Search edX or Coursera for "${stop.title}" courses.</p>`
-      }`;
-  }
-
-  else if (stop.content === 'cert') {
-    innerHTML = `
-      <p class="rm-stop-meta">${stop.reason || ''}</p>
-      <div class="rm-resource-card">
-        <p class="rm-resource-course">${stop.title}</p>
-        <p class="rm-resource-provider">${stop.provider} · ${stop.level}</p>
-        ${stop.skills.length > 0
-          ? `<div style="margin:.4rem 0;">${stop.skills.map(s => `<span class="rm-skill-tag">${s}</span>`).join('')}</div>`
-          : ''}
-        ${stop.link
-          ? `<a href="${stop.link}" target="_blank" rel="noopener" class="rm-resource-btn">View cert →</a>`
-          : '<span class="rm-resource-btn rm-resource-btn-dim">Link coming soon</span>'}
-      </div>`;
-  }
-
-  else if (stop.content === 'jobs') {
-    innerHTML = `
-      <div class="rm-jobs-list">
-        ${stop.jobs.map(j => `
-          <div class="rm-job-card">
-            <p class="rm-job-title">${j.title}</p>
-            <p class="rm-job-meta">${j.company} · ${j.location}</p>
-            ${j.link ? `<a href="${j.link}" target="_blank" rel="noopener" class="rm-resource-btn">View →</a>` : ''}
-          </div>`).join('')}
-      </div>
-      <div class="rm-search-links">
-        ${stop.searchLinks.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="rm-search-btn">${l.label}</a>`).join('')}
-      </div>`;
-  }
-
-  else if (stop.content === 'goal') {
-    innerHTML = `
-      <div class="rm-goal-content">
-        <div class="rm-goal-score">${stop.score}% match</div>
-        <p class="rm-stop-meta" style="text-align:center;">
-          ${stop.score >= 80
-            ? "You're ready to apply! 🚀"
-            : stop.score >= 50
-              ? "Keep building — you're on track! 💪"
-              : "Complete the stops above to get career-ready."}
-        </p>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.75rem;">
-          <a href="{{ url_for('progress') }}" class="rm-resource-btn">Track progress</a>
-          <a href="{{ url_for('profile') }}"  class="rm-resource-btn rm-resource-btn-ghost">Edit profile</a>
+    <div class="rm2-summary-grid">
+      <div class="rm2-summary-left">
+        <div class="rm2-summary-banner">
+          <span class="rm2-summary-flag">🚩</span>
+          <span>You Are Here</span>
         </div>
-      </div>`;
-  }
 
-  return `
-    <div class="rm-stop rm-stop-${stop.type} rm-stop-${isLeft ? 'left' : 'right'}"
-         data-idx="${idx}" style="--stop-delay:${idx * 0.12}s">
+        <div class="rm2-summary-items">
+          <div class="rm2-summary-item">
+            <span class="rm2-summary-icon">✅</span>
+            <div>
+              <strong>Current skills:</strong>
+              {% if results.user_skills %}
+                {{ results.user_skills | join(', ') }}
+              {% else %}
+                None entered yet
+              {% endif %}
+            </div>
+          </div>
 
-      <!-- connector line to road -->
-      <div class="rm-connector"></div>
+          <div class="rm2-summary-item">
+            <span class="rm2-summary-icon">⚠️</span>
+            <div>
+              <strong>Missing skills:</strong>
+              {% if results.missing_skills %}
+                {{ results.missing_skills | join(', ') }}
+              {% else %}
+                None — strong alignment already
+              {% endif %}
+            </div>
+          </div>
 
-      <!-- pin -->
-      <div class="rm-pin-wrap">
-        <div class="rm-pin-head ${pinClass}">
-          <span class="rm-pin-icon">${stop.icon}</span>
+          <div class="rm2-summary-item">
+            <span class="rm2-summary-icon">🎯</span>
+            <div>
+              <strong>Match score:</strong> {{ results.match_score }}%
+            </div>
+          </div>
         </div>
-        <div class="rm-pin-tail ${pinClass}-tail"></div>
       </div>
 
-      <!-- card -->
-      <div class="rm-card">
-        <div class="rm-card-label">${stop.label}</div>
-        <h3 class="rm-card-title">${stop.title}</h3>
-        <div class="rm-card-body">${innerHTML}</div>
+      <div class="rm2-summary-right">
+        <div class="rm2-score-ring-wrap">
+          <svg viewBox="0 0 120 120" class="rm2-score-ring-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="scoreGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#9b59f5"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="48" class="rm2-score-ring-bg"></circle>
+            <circle
+              cx="60" cy="60" r="48"
+              class="rm2-score-ring-fg"
+              stroke-dasharray="{{ (results.match_score / 100 * 301.6) | round(1) }} 301.6"
+            ></circle>
+          </svg>
+          <div class="rm2-score-ring-text">
+            <span class="rm2-score-ring-num">{{ results.match_score }}%</span>
+            <span class="rm2-score-ring-label">Match score</span>
+          </div>
+        </div>
       </div>
+    </div>
+  </section>
 
-    </div>`;
-}
+  <!-- Personalized Roadmap -->
+<section class="card rm3-roadmap-card">
+  <h2 class="rm3-section-title">Your Personalized Roadmap</h2>
 
-stopsContainer.innerHTML = stops.map((s, i) => cardHTML(s, i)).join('');
+  <div class="rm3-roadmap-grid">
+    <div class="rm3-steps-col">
+      {% if results.missing_skills %}
+        {% for skill in results.missing_skills[:3] %}
+          <div class="rm3-step-card">
+            <div class="rm3-step-badge">{{ loop.index }}
+              <span class="rm3-step-icon">
+                {% if loop.index == 1 %}
+                📍
+                {% elif loop.index == 2 %}
+                🗂️
+                {% elif loop.index == 3 %}
+                📊
+                {% else %}
+                🏆
+                {% endif %}
+              </span>
+            </div>
 
-/* ── Draw the winding road ──────────────────────────────── */
-function drawRoad() {
-  const wrap   = document.querySelector('.rm-road-wrap');
-  const svg    = document.getElementById('rm-road-svg');
-  const W      = wrap.offsetWidth;
-  const H      = wrap.offsetHeight || Math.max(stops.length * 260, 800);
+            <div class="rm3-step-text">
+              <h3>Step {{ loop.index }}: Learn {{ skill }}</h3>
+              <p>
+                {% if skill == "SQL" %}
+                  Understand how to query and manage data.
+                {% elif skill == "Python" %}
+                  Use Python for data cleaning and analysis.
+                {% elif skill == "Data Visualization" %}
+                  Present insights using charts and dashboards.
+                {% else %}
+                  Build this skill to strengthen your alignment with {{ results.selected_role }} roles.
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
 
-  svg.setAttribute('width',  W);
-  svg.setAttribute('height', H);
-  svg.style.height = H + 'px';
+      <div class="rm3-step-card">
+        <div class="rm3-step-badge">4</div>
+        <div class="rm3-step-text">
+          <h3>Step 4: Get certified</h3>
+          <p>Validate your skills with industry-recognized certifications and structured learning.</p>
+        </div>
+      </div>
+    </div>
 
-  // Road centre line: weaves left-centre-right following stop positions
-  const pts = [];
-  const stopEls = document.querySelectorAll('.rm-stop');
-  stopEls.forEach((el, i) => {
-    const isLeft = i % 2 === 0;
-    const top    = el.offsetTop + el.offsetHeight / 2;
-    const x      = isLeft ? W * 0.38 : W * 0.62;
-    pts.push({ x, y: top });
-  });
+    <div class="rm3-visual-col">
+      <div class="rm3-road-graphic-card">
+        <div class="rm3-goal-pill">🏁 Goal</div>
+        <div class="rm3-road-graphic"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  if (pts.length < 2) return;
+  <!-- Recommended Resources -->
+  <section class="rm2-resources-wrap">
+    <h2 class="rm2-section-title">Recommended Resources</h2>
 
-  // Add entry and exit points
-  pts.unshift({ x: W * 0.5, y: 0 });
-  pts.push({ x: W * 0.5, y: H });
+    <!-- Skills to develop -->
+    <details class="rm2-accordion" open>
+      <summary>Skills to Develop</summary>
+      <div class="rm2-accordion-body">
 
-  // Build smooth curve through points
-  function buildPath(points) {
-    if (points.length < 2) return '';
-    let d = `M ${points[0].x} ${points[0].y}`;
-    for (let i = 0; i < points.length - 1; i++) {
-      const p0 = points[i];
-      const p1 = points[i + 1];
-      const cx = (p0.x + p1.x) / 2;
-      d += ` C ${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
-    }
-    return d;
-  }
+        {% if results.missing_skills %}
+          {% for skill in results.missing_skills %}
+            <div class="rm2-resource-block">
+              <div class="rm2-resource-skill">{{ skill }}</div>
 
-  const pathD = buildPath(pts);
-  const RW    = 28; // road half-width
+              <p class="rm2-resource-why">
+                <strong>Why this matters:</strong>
+                {% if skill == "SQL" %}
+                  SQL is essential for querying databases and working with structured data in {{ results.selected_role }} roles.
+                {% elif skill == "Python" %}
+                  Python is widely used for automation, data cleaning, analysis, and technical workflows in {{ results.selected_role }} roles.
+                {% elif skill == "Data Visualization" %}
+                  Data visualization helps you communicate findings clearly through charts, dashboards, and reports.
+                {% elif skill == "Machine Learning" %}
+                  Machine learning helps you build models and make data-driven predictions.
+                {% elif skill == "Cloud" or skill == "Cloud Fundamentals" or skill == "AWS" %}
+                  Cloud skills are important for deploying, scaling, and managing modern applications.
+                {% elif skill == "Networking" or skill == "Networking Basics" %}
+                  Networking helps you understand system communication, connectivity, and infrastructure.
+                {% elif skill == "Security Basics" or skill == "CompTIA Security+" %}
+                  Security knowledge helps protect systems, data, and users from threats.
+                {% else %}
+                  This skill appears in the requirements for {{ results.selected_role }} and will improve your career readiness.
+                {% endif %}
+              </p>
 
-  // Shadow
-  document.getElementById('rm-road-path-shadow').setAttribute('d', pathD);
-  document.getElementById('rm-road-path-shadow').setAttribute('stroke', 'rgba(0,0,0,0.5)');
-  document.getElementById('rm-road-path-shadow').setAttribute('stroke-width', RW * 2 + 10);
-  document.getElementById('rm-road-path-shadow').setAttribute('filter', 'url(#roadShadow)');
+              <div class="rm2-link-row">
+                {% if results.skill_videos and results.skill_videos.get(skill) %}
+                  {% set vid = results.skill_videos.get(skill)[0] %}
+                  <a href="{{ vid.url }}" target="_blank" rel="noopener" class="rm2-link-pill">
+                    ▶ YouTube: {{ vid.title[:45] }}{% if vid.title|length > 45 %}...{% endif %}
+                  </a>
+                {% endif %}
 
-  // Road body
-  document.getElementById('rm-road-path-body').setAttribute('d', pathD);
-  document.getElementById('rm-road-path-body').setAttribute('stroke', '#1a1a2e');
-  document.getElementById('rm-road-path-body').setAttribute('stroke-width', RW * 2);
+                {% set learning_match = (results.recommended_learning | selectattr('skill', 'equalto', skill) | list) %}
+                {% if learning_match %}
+                  {% set item = learning_match[0] %}
+                  {% if item.link %}
+                    <a href="{{ item.link }}" target="_blank" rel="noopener" class="rm2-link-pill rm2-link-pill-alt">
+                      📘 {{ item.provider }}: {{ item.title }}
+                    </a>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="muted">No skill gaps were identified for this role.</p>
+        {% endif %}
 
-  // Glow edge
-  document.getElementById('rm-road-path-glow').setAttribute('d', pathD);
-  document.getElementById('rm-road-path-glow').setAttribute('stroke', 'url(#roadGlow)');
-  document.getElementById('rm-road-path-glow').setAttribute('stroke-width', RW * 2 + 2);
-  document.getElementById('rm-road-path-glow').setAttribute('opacity', '0.35');
+      </div>
+    </details>
 
-  // Dashed centre line
-  document.getElementById('rm-road-path-dashes').setAttribute('d', pathD);
-  document.getElementById('rm-road-path-dashes').setAttribute('stroke', 'rgba(255,255,255,0.25)');
-  document.getElementById('rm-road-path-dashes').setAttribute('stroke-width', '2.5');
-  document.getElementById('rm-road-path-dashes').setAttribute('stroke-dasharray', '18 14');
-}
+    <!-- Certifications -->
+    <details class="rm2-accordion">
+      <summary>Certifications</summary>
+      <div class="rm2-accordion-body">
+        {% if results.recommended_certs %}
+          {% for cert in results.recommended_certs %}
+            <div class="rm2-resource-block">
+              <div class="rm2-resource-skill">{{ cert.name }}</div>
+              <p class="rm2-resource-why">
+                <strong>{{ cert.provider }}</strong>
+                {% if cert.level %} · {{ cert.level }}{% endif %}
+              </p>
+              <p class="rm2-resource-why">{{ cert.reason }}</p>
 
-// Draw after layout settles
-setTimeout(drawRoad, 100);
-window.addEventListener('resize', drawRoad);
+              {% if cert.skills %}
+                <div class="tag-list" style="margin-top:.5rem;">
+                  {% for s in cert.skills %}
+                    <span class="tag">{{ s }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
 
-/* ── Scroll-triggered reveal ────────────────────────────── */
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('rm-stop-visible');
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.15 });
+              {% if cert.link %}
+                <div class="rm2-link-row">
+                  <a href="{{ cert.link }}" target="_blank" rel="noopener" class="rm2-link-pill rm2-link-pill-alt">
+                    🏆 View certification
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="muted">No certification recommendations available yet.</p>
+        {% endif %}
+      </div>
+    </details>
 
-document.querySelectorAll('.rm-stop').forEach(el => observer.observe(el));
+    <!-- Job opportunities -->
+    <details class="rm2-accordion">
+      <summary>Job Opportunities</summary>
+      <div class="rm2-accordion-body">
+        <div class="rm2-job-links">
+          <a class="rm2-link-pill" target="_blank" rel="noopener"
+             href="https://www.linkedin.com/jobs/search/?keywords={{ results.selected_role | urlencode }}&location={{ results.location | urlencode }}">
+             LinkedIn Jobs
+          </a>
 
-})();
-</script>
+          <a class="rm2-link-pill" target="_blank" rel="noopener"
+             href="https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={{ results.selected_role | urlencode }}">
+             CaribbeanJobs
+          </a>
 
+          <a class="rm2-link-pill" target="_blank" rel="noopener"
+             href="https://jm.indeed.com/jobs?q={{ results.selected_role | urlencode }}">
+             Indeed JM
+          </a>
+        </div>
+
+        {% if results.job_listings %}
+          <div class="rm2-job-cards">
+            {% for job in results.job_listings %}
+              <div class="rm2-job-card">
+                <h4>{{ job.title }}</h4>
+                <p>{{ job.company }} · {{ job.location }}</p>
+                {% if job.skills %}
+                  <div class="tag-list" style="margin-top:.5rem;">
+                    {% for s in job.skills %}
+                      <span class="tag">{{ s }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </details>
+  </section>
+
+  <!-- Bottom actions -->
+  <div class="rm-bottom-actions">
+    <a class="btn btn-ghost" href="{{ url_for('roles') }}">← Choose different role</a>
+    <a class="btn btn-ghost" href="{{ url_for('profile') }}">Edit profile</a>
+    <a class="btn" href="{{ url_for('progress') }}">Track my progress</a>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 Download plan</button>
+  </div>
+
+</section>
 {% endblock %}

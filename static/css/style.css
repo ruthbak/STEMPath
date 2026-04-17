@@ -1417,124 +1417,154 @@ body.light .rm-card {
 }
 
 /* ============================================================
-   RESULTS PAGE — WITH ROADMAP VIEW
+   RESULTS PAGE — Complete CSS
+   Matches the dark space + purple roadmap design
+   Uses site fonts: Syne (headings) + DM Sans (body)
    ============================================================ */
 
+/* ── Page shell ─────────────────────────────────────────────── */
 .results-shell {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding-bottom: 2rem;
 }
 
+/* ── Top bar ─────────────────────────────────────────────────── */
 .rm2-topbar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: .25rem;
+  gap: 1rem;
+  padding: 1.5rem 0 .5rem;
+  animation: fadeUp .4s ease both;
 }
 
 .rm2-page-title {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(1.7rem, 4vw, 2.5rem);
-  margin-bottom: .25rem;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  margin: .25rem 0 .2rem;
 }
 
 .rm2-page-subtitle {
+  font-size: .875rem;
   color: var(--muted-light);
-  font-size: .92rem;
 }
 
 .rm2-top-score-pill {
   display: inline-flex;
   align-items: center;
-  gap: .45rem;
-  padding: .7rem 1rem;
-  border-radius: 999px;
+  gap: .5rem;
+  padding: .5rem 1.1rem;
+  border-radius: 99px;
+  background: var(--purple-glow);
   border: 1px solid var(--purple-border);
-  background: rgba(155,89,245,0.08);
-  color: var(--text);
-  font-size: .88rem;
+  font-size: .875rem;
+  color: var(--muted-light);
+  white-space: nowrap;
 }
 
-.rm2-section-title {
-  margin-bottom: 1rem;
+.rm2-top-score-pill strong {
   font-family: 'Syne', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1rem;
+  color: var(--purple-light);
+}
+
+/* ── Section title (shared) ──────────────────────────────────── */
+.rm2-section-title,
+.rm3-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.1rem;
+}
+
+/* ── Profile summary card ────────────────────────────────────── */
+.rm2-summary-card {
+  animation: fadeUp .4s .05s ease both;
 }
 
 .rm2-summary-grid {
   display: grid;
-  grid-template-columns: 1.5fr .9fr;
-  gap: 1rem;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
   align-items: center;
 }
 
+/* "You Are Here" banner */
 .rm2-summary-banner {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: .55rem;
-  font-size: 1.55rem;
+  gap: .5rem;
+  background: rgba(155,89,245,0.12);
+  border: 1px solid var(--purple-border);
+  border-radius: 99px;
+  padding: .35rem .9rem;
+  font-family: 'Syne', sans-serif;
+  font-size: .85rem;
   font-weight: 700;
+  color: var(--purple-light);
   margin-bottom: 1rem;
 }
 
-.rm2-summary-flag {
-  font-size: 1.25rem;
-}
+.rm2-summary-flag { font-size: 1rem; }
 
+/* Summary items list */
 .rm2-summary-items {
   display: flex;
   flex-direction: column;
-  gap: .9rem;
+  gap: .65rem;
 }
 
 .rm2-summary-item {
   display: flex;
   align-items: flex-start;
-  gap: .7rem;
-  color: var(--text);
-  font-size: .98rem;
+  gap: .65rem;
+  font-size: .9rem;
+  color: var(--muted-light);
+  line-height: 1.5;
 }
 
-.rm2-summary-icon {
-  flex-shrink: 0;
-  font-size: 1.05rem;
-  margin-top: .1rem;
-}
+.rm2-summary-icon { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
 
-.rm2-summary-right {
-  display: flex;
-  justify-content: center;
-}
+.rm2-summary-item strong { color: var(--text); }
+
+/* Score ring */
+.rm2-summary-right { display: flex; align-items: center; justify-content: center; }
 
 .rm2-score-ring-wrap {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
 }
 
 .rm2-score-ring-svg {
-  width: 100%;
-  height: 100%;
+  width: 110px;
+  height: 110px;
   transform: rotate(-90deg);
 }
 
 .rm2-score-ring-bg {
   fill: none;
   stroke: rgba(155,89,245,0.15);
-  stroke-width: 10;
+  stroke-width: 8;
 }
 
 .rm2-score-ring-fg {
   fill: none;
-  stroke: url(#rm2ScoreGrad);
-  stroke: #9b59f5;
-  stroke-width: 10;
+  stroke: url(#scoreGrad2);
+  stroke-width: 8;
   stroke-linecap: round;
+  transition: stroke-dasharray .8s cubic-bezier(.4,0,.2,1);
 }
 
+/* Inject gradient for ring — defined inline in SVG */
 .rm2-score-ring-text {
   position: absolute;
   inset: 0;
@@ -1542,290 +1572,375 @@ body.light .rm-card {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  line-height: 1.2;
 }
 
 .rm2-score-ring-num {
   font-family: 'Syne', sans-serif;
-  font-size: 2rem;
+  font-size: 1.3rem;
   font-weight: 800;
+  background: linear-gradient(110deg, var(--purple-light), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .rm2-score-ring-label {
-  color: var(--muted-light);
-  font-size: .86rem;
+  font-size: .65rem;
+  color: var(--muted);
+  text-align: center;
 }
 
-.rm2-roadmap-grid {
+/* ── Personalized Roadmap card ───────────────────────────────── */
+.rm3-roadmap-card {
+  background:
+    radial-gradient(circle at 18% 25%, rgba(155,89,245,0.14), transparent 30%),
+    radial-gradient(circle at 80% 75%, rgba(34,211,238,0.05), transparent 24%),
+    var(--bg-card);
+  border: 1px solid rgba(192,132,252,0.18);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.3), 0 0 18px rgba(155,89,245,0.07);
+  animation: fadeUp .4s .1s ease both;
+}
+
+.rm3-roadmap-grid {
   display: grid;
-  grid-template-columns: 1.15fr .85fr;
-  gap: 1.2rem;
-  align-items: stretch;
+  grid-template-columns: 1.2fr 0.95fr;
+  gap: 1.25rem;
+  align-items: start;
 }
 
-.rm2-roadmap-steps {
+/* Steps column */
+.rm3-steps-col {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: .75rem;
 }
 
-.rm2-step-card {
+.rm3-step-card {
   display: flex;
-  gap: .85rem;
   align-items: flex-start;
-  padding: 1rem 1.05rem;
-  border-radius: 18px;
-  border: 1px solid rgba(192,132,252,0.22);
-  background:
-    linear-gradient(180deg, rgba(155,89,245,0.15));
-  box-shadow: 
-    inset 0 1px 0 rgba(255,255,255,0,04),
-    0 8px 20px rgba(0,0,0,0.18);
+  gap: .85rem;
+  padding: .85rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(192,132,252,0.18);
+  background: linear-gradient(160deg, rgba(155,89,245,0.12), rgba(155,89,245,0.06));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 4px 14px rgba(0,0,0,0.14);
+  transition: border-color var(--transition), transform var(--transition);
 }
 
-.rm2-step-pin {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+.rm3-step-card:hover {
+  border-color: var(--purple-border);
+  transform: translateX(3px);
+}
+
+/* Location pin badge */
+.rm3-step-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 30% 30%, #8b5cf6 60%, #6d28d9 100%);
-  color: #fff;
-  font-weight: 700;
-  font-size: .95rem;
+  background: radial-gradient(circle at 30% 30%, #d8b4fe, #a855f7 58%, #7e22ce 100%);
   box-shadow: 0 0 14px rgba(155,89,245,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
-.rm2-step-content h3 {
-  font-size: 1.18rem;
+.rm3-step-icon {
+  transform: rotate(45deg);
+  font-size: .95rem;
+}
+
+.rm3-step-text h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
   margin-bottom: .2rem;
 }
 
-.rm2-step-content p {
+.rm3-step-text p {
+  font-size: .82rem;
   color: var(--muted-light);
+  line-height: 1.5;
   margin: 0;
 }
 
-.rm2-road-visual {
+/* Visual column — road graphic */
+.rm3-visual-col {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
 }
 
-.rm2-road-shape {
+.rm3-road-graphic-card {
   position: relative;
-  min-height: 360px;
-  border-radius: 22px;
-  border: 1px solid rgba(192,132,252,0.18);
+  min-height: 300px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(192,132,252,0.16);
   background:
-    radial-gradient(circle at 25% 25%, rgba(155,89,245,0.18), transparent 32%),
-    radial-gradient(circle at 70% 75%, rgba(34,211,238,0.10), transparent 25%),
-    linear-gradient(180deg, rgba(32,22,60,0.92), rgba(16,12,30,0.96));
+    radial-gradient(circle at 35% 35%, rgba(155,89,245,0.18), transparent 28%),
+    linear-gradient(180deg, rgba(30,22,56,0.98), rgba(16,12,30,0.98));
   overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
-.rm2-road-path {
+.rm3-goal-pill {
   position: absolute;
-  inset: 24px;
-  background: url('/static/images/road.svg') center / contain no-repeat;
-}
-
-
-.rm2-road-flag {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  padding: .45rem .85rem;
-  border-radius: 999px;
-  background: rgba(34,211,238,0.28);
-  border: 1px solid rgba(34,211,238,0.28);
-  color: #e9fcff;
-  font-weight: 700;
+  top: 12px;
+  right: 12px;
   z-index: 2;
-  box-shadow: 0 0 14px rgba(34,211,238,0.18);
-}
-
-
-.rm2-road-links-title {
+  padding: .35rem .8rem;
+  border-radius: 99px;
+  background: rgba(34,211,238,0.12);
+  border: 1px solid rgba(34,211,238,0.28);
+  color: #e0fffe;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .78rem;
   font-weight: 700;
-  margin-bottom: .7rem;
 }
 
-.rm2-road-links-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
+.rm3-road-graphic {
+  position: absolute;
+  inset: 0;
+  background: url('/static/images/roadmap-panel.png') center / cover no-repeat;
+  opacity: .9;
 }
 
-.rm2-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: .3rem;
-  padding: .35rem .75rem;
-  border-radius: 999px;
-  border: 1px solid var(--purple-border);
-  background: rgba(155,89,245,0.08);
-  color: var(--text);
-  font-size: .82rem;
+/* Fallback gradient road if image is missing */
+.rm3-road-graphic::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 60% 90%, rgba(155,89,245,0.35), transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 10%, rgba(34,211,238,0.15), transparent 50%);
+  pointer-events: none;
 }
 
+/* ── Resources section ───────────────────────────────────────── */
 .rm2-resources-wrap {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: .6rem;
+  animation: fadeUp .4s .15s ease both;
 }
 
+/* Accordion */
 .rm2-accordion {
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 18px;
-  background: rgba(155,89,245,0.04);
+  border-radius: var(--radius-sm);
   overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: border-color var(--transition);
 }
+
+.rm2-accordion:hover { border-color: var(--purple-border); }
 
 .rm2-accordion summary {
-  list-style: none;
-  cursor: pointer;
-  padding: 1rem 1.2rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: .9rem 1.25rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background var(--transition);
 }
+
+.rm2-accordion summary::-webkit-details-marker { display: none; }
+
+.rm2-accordion summary:hover { background: rgba(155,89,245,0.05); }
 
 .rm2-accordion summary::after {
   content: "⌄";
-  font-size: 1.2rem;
-  color: var(--purple-light);
-  transition: transform 0.2s ease;
+  font-size: 1rem;
+  color: var(--muted);
+  transition: transform var(--transition);
+  flex-shrink: 0;
 }
 
-.rm2-accordion[open] summary::after {
-  transform: rotate(180deg);
-}
-
-.rm2-accordion summary::-webkit-details-marker {
-  display: none;
-}
-
-.rm2-summary-card {
-  background:
-    radial-gradient(circle at 75% 30%, rgba(155,89,245,0.14), transparent 26%),
-    linear-gradient(180deg, rgba(155,89,245,0.07), rgba(18,14,40,0.92));
-  border: 1px solid var(--purple-border);
-}
+.rm2-accordion[open] summary::after { transform: rotate(180deg); }
 
 .rm2-accordion-body {
-  padding: 0 1.2rem 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.rm2-resource-block {
+  padding: 0 1.25rem 1.1rem;
   border-top: 1px solid var(--border);
-  padding-top: 1rem;
 }
 
-.rm2-resource-block:first-child {
-  border-top: none;
-  padding-top: 0;
+/* Resource block (one per skill) */
+.rm2-resource-block {
+  padding: .85rem 0;
+  border-bottom: 1px solid var(--border);
 }
+
+.rm2-resource-block:last-child { border-bottom: none; }
 
 .rm2-resource-skill {
   display: inline-flex;
   align-items: center;
-  gap: .45rem;
-  font-size: 1.25rem;
+  gap: .4rem;
+  background: var(--purple-glow);
+  border: 1px solid var(--purple-border);
+  border-radius: var(--radius-xs);
+  padding: .2rem .7rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .82rem;
   font-weight: 700;
-  margin-bottom: .45rem;
+  color: var(--purple-light);
+  margin-bottom: .5rem;
 }
 
 .rm2-resource-why {
+  font-size: .84rem;
   color: var(--muted-light);
-  margin-bottom: .7rem;
+  line-height: 1.6;
+  margin-bottom: .5rem;
 }
 
+.rm2-resource-why strong { color: var(--text); }
+
+/* Link pills */
 .rm2-link-row {
   display: flex;
   flex-wrap: wrap;
-  gap: .6rem;
+  gap: .45rem;
+  margin-top: .5rem;
 }
 
 .rm2-link-pill {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
-  padding: .45rem .9rem;
-  border-radius: 999px;
-  background: rgba(134, 4, 157, 0.12);
+  padding: .35rem .85rem;
+  border-radius: 99px;
+  background: rgba(155,89,245,0.1);
   border: 1px solid var(--purple-border);
-  color: var(--text);
+  color: var(--purple-light);
+  font-size: .78rem;
+  font-weight: 500;
   text-decoration: none;
-  font-size: .84rem;
   transition: all var(--transition);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rm2-link-pill:hover {
-  background: var(--purple-glow);
-  color: var(--purple-light);
+  background: rgba(155,89,245,0.2);
+  border-color: var(--purple-light);
+  transform: translateY(-1px);
 }
 
 .rm2-link-pill-alt {
-  background: rgba(216, 3, 205, 0.08);
-  border-color: rgba(71, 1, 74, 0.22);
+  background: rgba(34,211,238,0.08);
+  border-color: rgba(34,211,238,0.25);
+  color: var(--cyan);
 }
 
+.rm2-link-pill-alt:hover {
+  background: rgba(34,211,238,0.15);
+  border-color: var(--cyan);
+}
+
+/* Job links row */
 .rm2-job-links {
   display: flex;
   flex-wrap: wrap;
-  gap: .6rem;
+  gap: .5rem;
   margin-bottom: 1rem;
 }
 
+/* Job cards */
 .rm2-job-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .75rem;
+  margin-top: .5rem;
 }
 
 .rm2-job-card {
+  background: rgba(155,89,245,0.06);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1rem;
-  background: rgba(155,89,245,0.04);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1rem;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.rm2-job-card:hover {
+  border-color: var(--purple-border);
+  transform: translateY(-2px);
 }
 
 .rm2-job-card h4 {
-  margin-bottom: .2rem;
-}
-
-.rm2-job-card p {
-  color: var(--muted-light);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--text);
   margin-bottom: .25rem;
 }
 
-@media (max-width: 900px) {
-  .rm2-summary-grid,
-  .rm2-roadmap-grid {
-    grid-template-columns: 1fr;
-  }
+.rm2-job-card p {
+  font-size: .8rem;
+  color: var(--muted-light);
+  margin: 0;
+}
 
-  .rm2-summary-right {
-    justify-content: flex-start;
-  }
+/* ── Bottom actions ───────────────────────────────────────────── */
+.rm-bottom-actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding-top: .5rem;
+  animation: fadeUp .4s .2s ease both;
+}
 
-  .rm2-score-ring-wrap {
-    width: 140px;
-    height: 140px;
-  }
+/* ── SVG gradient for score ring ─────────────────────────────── */
+/* Injected inline in the HTML SVG defs */
 
-  .rm2-road-shape {
-    min-height: 260px;
-  }
+/* ── Light mode ──────────────────────────────────────────────── */
+body.light .rm3-roadmap-card {
+  background:
+    radial-gradient(circle at 18% 25%, rgba(124,58,237,0.08), transparent 30%),
+    rgba(255,255,255,0.9);
+}
+
+body.light .rm3-step-card {
+  background: linear-gradient(160deg, rgba(124,58,237,0.08), rgba(124,58,237,0.04));
+}
+
+body.light .rm3-road-graphic-card {
+  background: linear-gradient(180deg, #ede9fe, #ddd6fe);
+}
+
+body.light .rm2-accordion {
+  background: rgba(255,255,255,0.9);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .rm3-roadmap-grid { grid-template-columns: 1fr; }
+  .rm3-road-graphic-card { min-height: 200px; }
+  .rm2-summary-grid { grid-template-columns: 1fr; }
+  .rm2-summary-right { display: none; }
+  .rm2-topbar { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .rm2-job-cards { grid-template-columns: 1fr; }
+  .rm2-link-pill { font-size: .72rem; }
+}
+
+/* ── Print ───────────────────────────────────────────────────── */
+@media print {
+  .rm-bottom-actions,
+  .rm3-road-graphic-card { display: none; }
+  .rm3-roadmap-grid { grid-template-columns: 1fr; }
+  .rm2-accordion { border: 1px solid #ddd; }
+  .rm2-accordion[open] .rm2-accordion-body { display: block; }
 }
