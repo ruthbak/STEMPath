@@ -37,25 +37,26 @@ def login_required(f):
     return decorated
 
 BROAD_SKILL_TAXONOMY = {
-    "Python": ["python"],
-    "SQL": ["sql", "mysql", "postgresql", "sqlite"],
-    "JavaScript": ["javascript", "js", "node"],
-    "Java": ["java"],
-    "HTML": ["html"],
-    "CSS": ["css"],
-    "Git": ["git", "github", "version control"],
-    "Data Visualization": ["tableau", "power bi", "matplotlib", "data visualization"],
-    "Machine Learning": ["machine learning", "scikit", "tensorflow", "pytorch", "neural network"],
-    "Networking": ["networking", "tcp/ip", "cisco", "protocols"],
+    "Python": ["python", "jupyter", "anaconda"],
+    "SQL": ["sql", "mysql", "postgresql", "postgres", "sqlite", "oracle database", "transact-sql"],
+    "JavaScript": ["javascript", "js", "node", "node.js", "react", "angular", "vue", "typescript"],
+    "Java": ["java", "spring"],
+    "HTML": ["html", "html5"],
+    "CSS": ["css", "css3", "sass", "bootstrap"],
+    "Git": ["git", "github", "gitlab", "bitbucket", "version control"],
+    "Data Visualization": ["tableau", "power bi", "matplotlib", "seaborn", "plotly", "data visualization", "dashboard"],
+    "Machine Learning": ["machine learning", "scikit", "tensorflow", "pytorch", "neural network", "keras"],
+    "Networking": ["networking", "network", "tcp/ip", "cisco", "protocols", "router", "switch"],
     "Linux": ["linux", "bash", "shell scripting", "unix"],
-    "Security Basics": ["cybersecurity", "security", "encryption", "firewall"],
-    "Cloud": ["aws", "azure", "gcp", "cloud", "docker", "kubernetes"],
-    "APIs": ["rest api", "restful api", "graphql", "api development"],
+    "Security Basics": ["cybersecurity", "security", "encryption", "firewall", "splunk", "siem"],
+    "Cloud": ["aws", "azure", "gcp", "google cloud", "cloud", "docker", "kubernetes"],
+    "APIs": ["rest api", "restful api", "graphql", "api development", "postman"],
     "Problem-solving": ["data structures", "problem solving", "problem-solving"],
     "Communication": ["communication", "presentation", "report writing"],
     "MATLAB": ["matlab"],
-    "Excel": ["microsoft excel", "excel spreadsheet"],
-    "Research": ["academic research", "research methods"],
+    "Excel": ["microsoft excel", "excel", "spreadsheet"],
+    "Research": ["academic research", "research methods", "research", "labview"],
+    "Statistics": ["statistics", "statistical analysis", "spss", "sas", "rstudio"],
 }
 
 # -----------------------------
@@ -158,6 +159,14 @@ def find_role_by_id(role_id: str, roles: list[dict]):
 
 def normalize_skill(s: str) -> str:
     return s.strip().lower()
+
+def get_graph_skills():
+    supported = set()
+    for c in courses:
+        supported.update(c.get("teaches", []))
+        supported.update(c.get("prerequisites", []))
+    supported.discard("ROOT")
+    return supported
 
 def score_skill_gaps(missing_skills, all_roles):
     """
@@ -407,6 +416,10 @@ def results():
         if sk and sk not in user_skills_norm
     ]
 
+    graph_skills = get_graph_skills()
+    pathfindable_skills = [s for s in missing_skills if s in graph_skills]
+    unsupported_skills = [s for s in missing_skills if s not in graph_skills]
+
     scored_gaps = score_skill_gaps(missing_skills, roles_catalog)
 
     role_total  = max(len(role_top_skills), 1)
@@ -596,13 +609,15 @@ def results():
     weights = weight_presets.get(optimize_for, weight_presets["balanced"])
 
     learning_paths = []
-    for gap_skill in missing_skills[:4]:
+    for gap_skill in pathfindable_skills[:4]:
         path, cost = find_learning_path(graph, user_skills, gap_skill, **weights)
         if path and len(path) > 1:
             steps = []
             for i in range(len(path) - 1):
                 edge        = graph.get_edge_data(path[i], path[i + 1])
                 course_name = edge.get("course", "")
+                if course_name == "return_to_root" or course_name.startswith("prereq_check::"):
+                    continue
                 course_data = course_lookup.get(course_name, {})
 
                 # YouTube: search per step
@@ -610,12 +625,13 @@ def results():
                 videos   = fetch_youtube_videos(yt_query, max_results=2)
 
                 steps.append({
-                    "from":     path[i],
-                    "to":       path[i + 1],
-                    "course":   course_name,
+                    "from": path[i],
+                    "to": path[i + 1],
+                    "course": course_name,
+                    "provider": course_data.get("provider", ""),
                     "ms_learn": course_data.get("ms_learn", ""),
                     "youtube_search": course_data.get("youtube", ""),
-                    "videos":   videos,
+                    "videos": videos,
                 })
             learning_paths.append({
                 "target_skill": gap_skill,
@@ -624,6 +640,8 @@ def results():
                 "total_cost":   round(cost, 1),
             })
 
+    recommended_learning = build_recommended_learning(learning_paths)
+
     # YouTube: also fetch per skill gap (for the skill section)
     skill_videos = {}
     for gap in missing_skills[:4]:
@@ -631,31 +649,26 @@ def results():
             f"{gap} tutorial for beginners", max_results=2
         )
 
-    # ── Job listings (dummy until Adzuna) ────────────
-    location    = profile_data.get("location", "Remote") or "Remote"
-    job_listings = [
-        {
-            "title":    f"{role.get('title','Role')} (Entry-Level)",
-            "company":  "Sample Company A",
+    # ── Job listings (CaribbeanJobs with safe fallback) ────────────
+    location = profile_data.get("location", "Remote") or "Remote"
+    role_title = role.get("title", "")
+    job_listings = []
+
+    try:
+        from adapters.caribbeanjobs import fetch_caribbean_jobs
+        job_listings = fetch_caribbean_jobs(role_title, location=location) or []
+    except Exception as e:
+        print("CaribbeanJobs adapter error:", e)
+        job_listings = []
+
+    if not job_listings:
+        job_listings = [{
+            "title": f"{role_title} (Search on CaribbeanJobs)",
+            "company": "See live listings",
             "location": location,
-            "skills":   role_top_skills[:4],
-            "link":     "",
-        },
-        {
-            "title":    f"Junior {role.get('title','Role')}",
-            "company":  "Sample Company B",
-            "location": location,
-            "skills":   role_top_skills[1:5],
-            "link":     "",
-        },
-        {
-            "title":    f"{role.get('title','Role')} Intern",
-            "company":  "Sample Company C",
-            "location": "Remote",
-            "skills":   role_top_skills[:3],
-            "link":     "",
-        },
-    ]
+            "link": f"https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={role_title.replace(' ', '+')}",
+            "skills": role_top_skills[:3],
+        }]
 
     # ── Progress checklist ────────────────────────────
     progress = session.get("progress")
@@ -672,33 +685,21 @@ def results():
             if s in missing_skills
         ]
 
-    # Build recommended_learning from learning_paths for template compatibility
-    recommended_learning = []
-    for lp in learning_paths:
-        for step in lp.get("steps", []):
-            if step.get("course"):
-                recommended_learning.append({
-                    "title":    step["course"],
-                    "skill":    lp["target_skill"],
-                    "provider": "edX / Microsoft Learn",
-                    "format":   "Course",
-                    "link":     step.get("ms_learn", ""),
-                })
-
     results_obj = {
-        "degree":            profile_data.get("degree", ""),
-        "location":          profile_data.get("location", ""),
-        "user_skills":       user_skills,
-        "selected_role":     role.get("title", ""),
-        "top_skills_in_jobs": role_top_skills,
-        "missing_skills":    missing_skills,
-        "scored_gaps":       scored_gaps,
-        "match_score":       match_score,
-        "recommended_certs": recommended_certs,
-        "learning_paths":    learning_paths,
-        "skill_videos":      skill_videos,
-        "recommended_learning": recommended_learning,
-        "job_listings":      job_listings,
+    "degree": profile_data.get("degree", ""),
+    "location": profile_data.get("location", ""),
+    "user_skills": user_skills,
+    "selected_role": role.get("title", ""),
+    "top_skills_in_jobs": role_top_skills,
+    "missing_skills": missing_skills,
+    "scored_gaps": scored_gaps,
+    "match_score": match_score,
+    "recommended_certs": recommended_certs,
+    "recommended_learning": recommended_learning,
+    "learning_paths": learning_paths,
+    "skill_videos": skill_videos,
+    "job_listings": job_listings,
+    "unsupported_skills": unsupported_skills,
     }
 
     return render_template("results.html", results=results_obj)   
@@ -748,9 +749,10 @@ def survey():
 
     # Filter gaps to tech-relevant skills only
     TECH_SKILLS = {
-        "Python", "SQL", "JavaScript", "Java", "HTML", "CSS", "Git",
-        "APIs", "Cloud", "Linux", "Machine Learning", "Data Visualization",
-        "Networking", "Security Basics", "Problem-solving", "MATLAB", "Research"
+    "Python", "SQL", "JavaScript", "Java", "HTML", "CSS", "Git",
+    "APIs", "Cloud", "Linux", "Machine Learning", "Data Visualization",
+    "Networking", "Security Basics", "Problem-solving", "MATLAB",
+    "Research", "Excel", "Statistics"
     }
     gaps = [s for s in all_role_skills 
             if normalize_skill(s) not in confirmed and s in TECH_SKILLS]
@@ -796,6 +798,47 @@ Return ONLY a valid JSON array, no markdown, no explanation:
     session["survey_gaps"] = gaps
     return render_template("survey.html", questions=questions, profile=profile_data)
 
+def build_recommended_learning(learning_paths):
+    items = []
+
+    for lp in learning_paths:
+        real_steps = []
+        for step in lp.get("steps", []):
+            course = step.get("course", "")
+            if not course or course == "return_to_root" or course.startswith("prereq_check::"):
+                continue
+            real_steps.append(step)
+
+        if not real_steps:
+            continue
+
+        final_step = real_steps[-1]
+
+        # Build visible path from actual step destinations only
+        learning_nodes = []
+        for step in real_steps:
+            to_node = step.get("to", "")
+            if to_node and to_node != "ROOT" and not str(to_node).startswith("GATE::"):
+                if not learning_nodes or learning_nodes[-1] != to_node:
+                    learning_nodes.append(to_node)
+
+        if not learning_nodes:
+            continue
+
+        prereqs = learning_nodes[:-1] if len(learning_nodes) > 1 else []
+
+        items.append({
+            "skill": lp.get("target_skill", ""),
+            "title": final_step.get("course", ""),
+            "provider": final_step.get("provider", "Learning Path"),
+            "format": "Guided path",
+            "link": final_step.get("ms_learn") or final_step.get("youtube_search") or "",
+            "path": learning_nodes,
+            "prereqs": prereqs,
+            "total_cost": round(lp.get("total_cost", 0), 1),
+        })
+
+    return items
 
 @app.route("/survey/submit", methods=["POST"])
 @login_required
