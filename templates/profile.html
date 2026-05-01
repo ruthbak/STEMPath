@@ -170,10 +170,19 @@
       {% endif %}
     </fieldset>
 
-    <div class="actions">
-      <button class="btn" type="submit">Save Profile</button>
-      <a class="btn btn-ghost" href="{{ url_for('roles') }}">Choose a role</a>
-    </div>
+      {% if not session.get('selected_role_id') %}
+      <div class="flash-notice" style="background:rgba(245,197,66,0.1);border-color:rgba(245,197,66,0.3);color:#f5c542;margin-bottom:1rem;">
+        ⚠️ You haven't selected a role yet. 
+        <a href="{{ url_for('roles') }}" style="color:#f5c542;font-weight:700;">Choose a role first</a> 
+        so your survey questions are relevant.
+      </div>
+      {% endif %}
+  <div class="actions">
+    <button class="btn" type="submit">Save Profile</button>
+    <a class="btn btn-ghost" href="{{ url_for('roles') }}">
+      {% if session.get('selected_role_id') %}Change role{% else %}Choose a role{% endif %}
+    </a>
+  </div>
   </form>
 </section>
 

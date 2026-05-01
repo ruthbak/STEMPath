@@ -28,11 +28,15 @@ how it works, CTA-->
       algorithm-driven learning pathways based on their desired career aspirations.
     </p>
 
-    <div class="hero-actions">
+  <div class="hero-actions">
+    {% if session.get('user_id') %}
+      <a class="btn" href="{{ url_for('reset') }}">Get Started</a>
+    {% else %}
       <a class="btn" href="#" onclick="event.preventDefault(); openModal('register')">Get Started</a>
+    {% endif %}
       <a class="btn btn-ghost" href="#how-it-works">See How It Works</a>
-    </div>
   </div>
+</div>
 
   <div class="hero-visual" aria-hidden="true">
     <img
@@ -140,8 +144,13 @@ how it works, CTA-->
       Join other Caribbean STEM students using data-driven guidance to get hired faster.
     </p>
     <div class="hero-actions">
-      <a class="btn" href="#" onclick="event.preventDefault(); openModal('register')">Start Now</a>
-      <a class="btn btn-ghost" href="#" onclick="requireAuth(event, '{{ url_for('roles') }}')">Browse Roles</a>
+      {% if session.get('user_id') %}
+        <a class="btn" href="{{ url_for('reset') }}">Start Now</a>
+        <a class="btn btn-ghost" href="{{ url_for('roles') }}">Browse Roles</a>
+      {% else %}
+        <a class="btn" href="#" onclick="event.preventDefault(); openModal('register')">Start Now</a>
+        <a class="btn btn-ghost" href="#" onclick="event.preventDefault(); openModal('register')">Browse Roles</a>
+      {% endif %}
     </div>
   </div>
 </section>

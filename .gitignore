@@ -10,3 +10,5 @@ __pycache__/
 *.pyc
 .env
 uploads/
+
+flask_sessions/

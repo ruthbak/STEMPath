@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from functools import wraps
 import os
 import re
@@ -8,7 +8,7 @@ import pdfplumber
 from docx import Document
 import json
 from pathlib import Path
-from groq import Groq 
+from groq import Groq
 from graph_builder import build_learning_graph
 from pathfinder import find_learning_path
 from data import courses
@@ -18,14 +18,9 @@ import urllib.request
 graph = build_learning_graph(courses)
 
 app = Flask(__name__)
-app.secret_key = "dev-secret-key-change-me"  # required for session
-from flask_session import Session
-import tempfile
-
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_FILE_DIR"] = tempfile.gettempdir()
-app.config["SESSION_PERMANENT"] = False
-Session(app)
+app.config["SECRET_KEY"]              = "dev-secret-key-change-me"
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"]   = False
 
 # ── Auth decorator ────────────────────────────────────────────
 def login_required(f):
@@ -36,6 +31,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+# ── Broad skill taxonomy for resume parsing ───────────────────
 BROAD_SKILL_TAXONOMY = {
     "Python": ["python", "jupyter", "anaconda"],
     "SQL": ["sql", "mysql", "postgresql", "postgres", "sqlite", "oracle database", "transact-sql"],
@@ -59,105 +55,76 @@ BROAD_SKILL_TAXONOMY = {
     "Statistics": ["statistics", "statistical analysis", "spss", "sas", "rstudio"],
 }
 
-# -----------------------------
-# Resume parsing helpers
-# -----------------------------
-def extract_text_from_pdf(path: str) -> str:
+# ── Resume parsing ────────────────────────────────────────────
+def extract_text_from_pdf(path):
     text = []
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
             text.append(page.extract_text() or "")
     return "\n".join(text)
 
-def extract_text_from_docx(path: str) -> str:
+def extract_text_from_docx(path):
     doc = Document(path)
     return "\n".join(p.text for p in doc.paragraphs)
 
-def extract_skills_from_text(text: str, known_skills: list[str]) -> list[str]:
+def extract_skills_from_text(text, known_skills):
     t = text.lower()
     found = set()
-
-    # Layer 1 — whole-word match against role skills
     for sk in known_skills:
         if re.search(r'\b' + re.escape(sk.lower()) + r'\b', t):
             found.add(sk)
-
-    # Layer 2 — whole-word match against broad taxonomy
     for skill_name, keywords in BROAD_SKILL_TAXONOMY.items():
         for kw in keywords:
             if re.search(r'\b' + re.escape(kw.lower()) + r'\b', t):
                 found.add(skill_name)
                 break
-
-    # Layer 3 — remove weak single-occurrence matches outside skills context
     weak = set()
     for skill in found:
-        skill_lower = skill.lower()
-        matches = list(re.finditer(r'\b' + re.escape(skill_lower) + r'\b', t))
+        matches = list(re.finditer(r'\b' + re.escape(skill.lower()) + r'\b', t))
         if len(matches) == 1:
-            position = matches[0].start()
+            position   = matches[0].start()
             surrounding = t[max(0, position-200):position+200]
-            skills_context = any(word in surrounding for word in
-                ["skill", "technolog", "proficien", "experience", "language", "tool"])
-            if not skills_context:
+            if not any(w in surrounding for w in ["skill", "technolog", "proficien", "experience", "language", "tool"]):
                 weak.add(skill)
-
     found -= weak
     return sorted(found)
 
-def parse_resume_for_skills(file_path: str, known_skills: list[str]) -> list[str]:
+def parse_resume_for_skills(file_path, known_skills):
     if file_path.lower().endswith(".pdf"):
         text = extract_text_from_pdf(file_path)
     elif file_path.lower().endswith(".docx"):
         text = extract_text_from_docx(file_path)
     else:
         return []
-
     found = extract_skills_from_text(text, known_skills)
     print("=== RESUME EXTRACTION ===")
     print("Text sample:", text[:300])
     print("Skills found:", found)
-    print("=========================")
     return found
-# -----------------------------
-# Roles Catalog (using JSON)
-# -----------------------------
-BASE_DIR = Path(__file__).parent
-DATA_DIR = BASE_DIR / "data"
+
+# ── Roles catalog helpers ─────────────────────────────────────
+BASE_DIR   = Path(__file__).parent
+DATA_DIR   = BASE_DIR / "data"
 ROLES_PATH = DATA_DIR / "roles.json"
 
-
 def load_roles():
-    """
-    Loads roles from data/roles.json.
-    Called inside routes so updates show without editing code.
-    """
     if not ROLES_PATH.exists():
-        raise FileNotFoundError(
-            f"Could not find roles catalog at: {ROLES_PATH}\n"
-            f"Create: {DATA_DIR}\\roles.json"
-        )
-
+        raise FileNotFoundError(f"Could not find roles catalog at: {ROLES_PATH}")
     with open(ROLES_PATH, "r", encoding="utf-8") as f:
         roles = json.load(f)
-
-    # Basic validation
     required_keys = {"id", "title", "category", "description", "top_skills"}
     for r in roles:
         missing = required_keys - set(r.keys())
         if missing:
-            raise ValueError(f"Role '{r.get('id', 'UNKNOWN')}' is missing keys: {missing}")
+            raise ValueError(f"Role '{r.get('id','UNKNOWN')}' missing keys: {missing}")
         if not isinstance(r["top_skills"], list):
             raise ValueError(f"Role '{r['id']}' top_skills must be a list")
-
     return roles
 
-
-def find_role_by_id(role_id: str, roles: list[dict]):
+def find_role_by_id(role_id, roles):
     return next((r for r in roles if r["id"] == role_id), None)
 
-
-def normalize_skill(s: str) -> str:
+def normalize_skill(s):
     return s.strip().lower()
 
 def get_graph_skills():
@@ -169,188 +136,28 @@ def get_graph_skills():
     return supported
 
 def score_skill_gaps(missing_skills, all_roles):
-    """
-    Scores each missing skill by how many roles across the entire
-    catalog require it — higher frequency = higher market demand.
-    Returns skills sorted by criticality descending.
-    """
     frequency = {}
     for role in all_roles:
         for skill in role.get("top_skills", []):
             key = normalize_skill(skill)
             frequency[key] = frequency.get(key, 0) + 1
-
     total_roles = max(len(all_roles), 1)
     scored = []
     for skill in missing_skills:
-        freq = frequency.get(normalize_skill(skill), 0)
+        freq         = frequency.get(normalize_skill(skill), 0)
         market_score = round((freq / total_roles) * 100)
-        priority = (
-            "High"   if market_score >= 60 else
-            "Medium" if market_score >= 30 else
-            "Low"
-        )
-        scored.append({
-            "skill":        skill,
-            "market_score": market_score,
-            "priority":     priority,
-        })
-
+        priority     = "High" if market_score >= 60 else "Medium" if market_score >= 30 else "Low"
+        scored.append({"skill": skill, "market_score": market_score, "priority": priority})
     return sorted(scored, key=lambda x: x["market_score"], reverse=True)
 
-# -----------------------------
-# Routes
-# -----------------------------
-@app.get("/")
-def home():
-    return render_template("home.html")
-
-
-from werkzeug.utils import secure_filename
-from pathlib import Path
-import os
-
-ALLOWED_RESUME_EXTS = {".pdf", ".docx"}
-
-@app.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    resume_notice = None
-
-    if request.method == "POST":
-        degree = request.form.get("degree", "").strip()
-        major = request.form.get("major", "").strip()
-        location = request.form.get("location", "").strip()
-
-        gpa = request.form.get("gpa", "").strip()
-        certifications_raw = request.form.get("certifications", "").strip()
-        courses_raw = request.form.get("courses", "").strip()
-        skills_raw = request.form.get("skills", "").strip()
-
-        # Turn comma-separated into lists
-        user_skills = [s.strip() for s in skills_raw.split(",") if s.strip()]
-        user_certs = [c.strip() for c in certifications_raw.split(",") if c.strip()]
-        user_courses = [c.strip() for c in courses_raw.split(",") if c.strip()]
-
-        # Load known skills from roles dataset
-        roles_data = load_roles()  # your existing function that reads roles.json
-        known_skills = sorted({
-            skill
-            for r in roles_data
-            for skill in r.get("top_skills", [])
-        })
-
-        # Resume upload (optional)
-        resume_file = request.files.get("resume")
-        if resume_file and resume_file.filename:
-            original_name = resume_file.filename
-            safe_name = secure_filename(original_name)
-            ext = Path(safe_name).suffix.lower()
-
-            if ext not in ALLOWED_RESUME_EXTS:
-                resume_notice = "Resume upload ignored: please upload a PDF or DOCX file."
-            else:
-                uploads_dir = Path(__file__).parent / "uploads"
-                uploads_dir.mkdir(exist_ok=True)
-
-                save_path = uploads_dir / safe_name
-                resume_file.save(str(save_path))
-
-                try:
-                    resume_skills = parse_resume_for_skills(str(save_path), known_skills)
-
-                    before_count = len(set(user_skills))
-                    user_skills = sorted(set(user_skills) | set(resume_skills))
-                    after_count = len(set(user_skills))
-
-                    added = max(0, after_count - before_count)
-                    if added > 0:
-                        resume_notice = f"Resume parsed successfully — {added} skill(s) added."
-                    else:
-                        resume_notice = "Resume parsed successfully — no new skills found beyond what you entered."
-
-                except Exception as e:
-                    # Don't crash the app if resume parsing fails
-                    resume_notice = "Resume upload saved, but we couldn't extract skills from it. You can still continue."
-                    # Optional: print(e) for debugging
-                    print("Resume parsing error:", e)
-
-        # Store in session
-        session["profile"] = {
-            "degree": degree,
-            "major": major,
-            "location": location,
-            "gpa": gpa,
-            "skills": user_skills,
-            "certifications": user_certs,
-            "courses": user_courses,
-            "optimize_for": request.form.get("optimize_for", "balanced"),
-        }
-
-        # Store resume notice and flash confirmation
-        session["resume_notice"] = resume_notice
-        session["flash"] = "✅ Profile saved successfully!"
-
-        return redirect(url_for("survey"))  # ← new
-
-    # GET
-    existing = session.get("profile", {})
-    resume_notice = session.pop("resume_notice", None)  # shows once then clears
-    return render_template("profile.html", profile=existing, resume_notice=resume_notice)
-
-
-@app.route("/roles", methods=["GET"])
-@login_required
-def roles():
-    profile_data = session.get("profile", {})
-
-    roles_catalog = load_roles()
-
-    query = request.args.get("q", "").strip().lower()
-    category = request.args.get("cat", "").strip().lower()
-
-    categories = sorted({r["category"] for r in roles_catalog})
-
-    filtered_roles = []
-    for r in roles_catalog:
-        matches_query = (
-            (not query)
-            or (query in r["title"].lower())
-            or (query in r["description"].lower())
-            or (any(query in sk.lower() for sk in r["top_skills"]))
-        )
-        matches_cat = (not category) or (category == r["category"].lower())
-
-        if matches_query and matches_cat:
-            filtered_roles.append(r)
-
-    return render_template(
-        "roles.html",
-        profile=profile_data,  # already defaults to {} now
-        roles=filtered_roles,
-        categories=categories,
-        q=request.args.get("q", ""),
-        cat=request.args.get("cat", ""),
-    )
-
-
-@app.post("/select-role")
-def select_role():
-    role_id = request.form.get("role_id", "").strip()
-    if not role_id:
-        return redirect(url_for("roles"))
-
-    session["selected_role_id"] = role_id  # ← save FIRST, always
-    return redirect(url_for("profile"))
-
+# ── YouTube helper ────────────────────────────────────────────
 def fetch_youtube_videos(query, max_results=2):
-    """Fetch real YouTube videos for a search query."""
     api_key = os.environ.get("YOUTUBE_API_KEY", "")
     if not api_key:
         return []
     try:
         import urllib.parse
-        q = urllib.parse.quote(query)
+        q   = urllib.parse.quote(query)
         url = (
             f"https://www.googleapis.com/youtube/v3/search"
             f"?part=snippet&q={q}&type=video&maxResults={max_results}"
@@ -364,15 +171,263 @@ def fetch_youtube_videos(query, max_results=2):
             title  = item["snippet"]["title"]
             thumb  = item["snippet"]["thumbnails"]["medium"]["url"]
             videos.append({
-                "title": title,
-                "url": f"https://www.youtube.com/watch?v={vid_id}",
+                "title":     title,
+                "url":       f"https://www.youtube.com/watch?v={vid_id}",
                 "thumbnail": thumb,
-                "video_id": vid_id,
+                "video_id":  vid_id,
             })
         return videos
     except Exception as e:
         print("YouTube API error:", e)
         return []
+
+# ── Build recommended learning ────────────────────────────────
+def build_recommended_learning(learning_paths):
+    items = []
+    for lp in learning_paths:
+        real_steps = [
+            s for s in lp.get("steps", [])
+            if s.get("course")
+            and s["course"] != "return_to_root"
+            and not s["course"].startswith("prereq_check::")
+        ]
+        if not real_steps:
+            continue
+        final_step     = real_steps[-1]
+        learning_nodes = []
+        for step in real_steps:
+            to_node = step.get("to", "")
+            if to_node and to_node != "ROOT" and not str(to_node).startswith("GATE::"):
+                if not learning_nodes or learning_nodes[-1] != to_node:
+                    learning_nodes.append(to_node)
+        if not learning_nodes:
+            continue
+        prereqs   = learning_nodes[:-1] if len(learning_nodes) > 1 else []
+        edx_link  = final_step.get("edx_link") or final_step.get("edx", "")
+        ms_link   = final_step.get("ms_learn") or final_step.get("microsoft", "")
+        best_link = edx_link or ms_link or ""
+        if edx_link:
+            provider = final_step.get("provider") or "edX"
+        elif ms_link:
+            provider = "Microsoft Learn"
+        else:
+            provider = final_step.get("provider") or "edX / Coursera"
+        items.append({
+            "skill":      lp.get("target_skill", ""),
+            "title":      final_step.get("course", ""),
+            "provider":   provider,
+            "format":     "Guided path",
+            "link":       best_link,
+            "path":       learning_nodes,
+            "prereqs":    prereqs,
+            "total_cost": round(lp.get("total_cost", 0), 1),
+        })
+    return items
+
+# ── Cert library ──────────────────────────────────────────────
+CERT_LIBRARY = [
+    {"name": "Google Data Analytics Professional Certificate", "provider": "Coursera",
+     "level": "Beginner–Intermediate", "skills": ["SQL", "Data Visualization", "Spreadsheets", "Data Analysis"],
+     "tags": ["data", "analytics", "software", "technology"],
+     "link": "https://www.coursera.org/professional-certificates/google-data-analytics"},
+    {"name": "IBM Data Science Professional Certificate", "provider": "Coursera",
+     "level": "Intermediate", "skills": ["Python", "Machine Learning", "Data Analysis", "SQL"],
+     "tags": ["data", "software", "science", "technology"],
+     "link": "https://www.coursera.org/professional-certificates/ibm-data-science"},
+    {"name": "Microsoft Azure Fundamentals (AZ-900)", "provider": "Microsoft",
+     "level": "Beginner", "skills": ["Cloud", "Networking", "Security Basics"],
+     "tags": ["it", "security", "software", "technology"],
+     "link": "https://learn.microsoft.com/en-us/certifications/azure-fundamentals/"},
+    {"name": "CompTIA Security+", "provider": "CompTIA",
+     "level": "Intermediate", "skills": ["Security Basics", "Networking", "Incident Response", "Linux"],
+     "tags": ["security", "it", "technology"],
+     "link": "https://www.comptia.org/certifications/security"},
+    {"name": "AWS Certified Cloud Practitioner", "provider": "AWS",
+     "level": "Beginner", "skills": ["Cloud", "Networking", "Security Basics"],
+     "tags": ["it", "software", "technology"],
+     "link": "https://aws.amazon.com/certification/certified-cloud-practitioner/"},
+    {"name": "Google Project Management Certificate", "provider": "Coursera",
+     "level": "Beginner–Intermediate", "skills": ["Project Management", "Communication", "Teamwork"],
+     "tags": ["business", "software", "healthcare", "science", "engineering", "technology"],
+     "link": "https://www.coursera.org/professional-certificates/google-project-management"},
+    {"name": "Meta Front-End Developer Certificate", "provider": "Coursera / Meta",
+     "level": "Beginner–Intermediate", "skills": ["JavaScript", "HTML", "CSS", "React", "APIs"],
+     "tags": ["software", "it", "technology"],
+     "link": "https://www.coursera.org/professional-certificates/meta-front-end-developer"},
+    {"name": "Google IT Support Professional Certificate", "provider": "Coursera / Google",
+     "level": "Beginner", "skills": ["Networking", "Linux", "Security Basics", "Cloud"],
+     "tags": ["it", "security", "technology"],
+     "link": "https://www.coursera.org/professional-certificates/google-it-support"},
+    {"name": "AutoCAD Certified Professional", "provider": "Autodesk",
+     "level": "Intermediate", "skills": ["AutoCAD", "Technical Drawing", "CAD"],
+     "tags": ["engineering", "mechanical", "civil"],
+     "link": "https://www.autodesk.com/certification/all-certifications/autocad"},
+    {"name": "MATLAB Fundamentals", "provider": "MathWorks",
+     "level": "Beginner–Intermediate", "skills": ["MATLAB", "Simulation", "Signal Processing", "Data Analysis"],
+     "tags": ["engineering", "science", "physics", "mathematics"],
+     "link": "https://www.mathworks.com/learn/training/matlab-fundamentals.html"},
+    {"name": "Six Sigma Green Belt", "provider": "ASQ",
+     "level": "Intermediate", "skills": ["Quality Control", "Statistical Analysis", "Process Improvement"],
+     "tags": ["engineering", "mechanical", "industrial"],
+     "link": "https://asq.org/cert/six-sigma-green-belt"},
+    {"name": "PMP — Project Management Professional", "provider": "PMI",
+     "level": "Advanced", "skills": ["Project Management", "Communication", "Risk Management", "Teamwork"],
+     "tags": ["engineering", "software", "science", "business"],
+     "link": "https://www.pmi.org/certifications/project-management-pmp"},
+    {"name": "Medical Imaging Fundamentals (edX)", "provider": "edX",
+     "level": "Intermediate", "skills": ["Medical Imaging", "Radiation Physics", "MATLAB", "Data Analysis"],
+     "tags": ["healthcare", "physics", "science"],
+     "link": "https://www.edx.org/learn/medical-imaging"},
+    {"name": "Radiation Protection Supervisor Certificate", "provider": "IAEA / National Bodies",
+     "level": "Intermediate", "skills": ["Radiation Safety", "Dosimetry", "Radiation Physics"],
+     "tags": ["healthcare", "physics", "science"],
+     "link": "https://www.iaea.org/resources/rpop/health-professionals/radiation-therapy/medical-physics"},
+    {"name": "Google Health Data Analytics", "provider": "Coursera",
+     "level": "Intermediate", "skills": ["Data Analysis", "Research", "Communication", "Excel"],
+     "tags": ["healthcare", "science", "data"],
+     "link": "https://www.coursera.org/learn/health-data-analytics"},
+    {"name": "IBM Data Analyst Professional Certificate", "provider": "Coursera / IBM",
+     "level": "Beginner–Intermediate", "skills": ["Python", "SQL", "Excel", "Data Visualization", "Research"],
+     "tags": ["science", "data", "analytics"],
+     "link": "https://www.coursera.org/professional-certificates/ibm-data-analyst"},
+    {"name": "Research Methods and Statistics (Coursera)", "provider": "Coursera",
+     "level": "Beginner–Intermediate", "skills": ["Research", "Statistical Analysis", "Data Analysis", "Communication"],
+     "tags": ["science", "healthcare", "engineering"],
+     "link": "https://www.coursera.org/learn/research-methods"},
+]
+
+# ── STEM category map for roles filter ───────────────────────
+STEM_MAP = {
+    "Science":     ["science", "life science", "physical science", "environmental science",
+                    "medical physics", "physics", "chemistry", "biology"],
+    "Technology":  ["technology", "it", "software", "computing", "data science",
+                    "cybersecurity", "information technology", "computer science"],
+    "Engineering": ["engineering", "civil engineering", "mechanical engineering",
+                    "electrical engineering", "chemical engineering"],
+    "Mathematics": ["mathematics", "math", "statistics", "actuarial"],
+}
+
+# ── Routes ────────────────────────────────────────────────────
+@app.get("/")
+def home():
+    return render_template("home.html")
+
+from werkzeug.utils import secure_filename
+ALLOWED_RESUME_EXTS = {".pdf", ".docx"}
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    resume_notice = None
+    if request.method == "POST":
+        degree             = request.form.get("degree", "").strip()
+        major              = request.form.get("major", "").strip()
+        location           = request.form.get("location", "").strip()
+        gpa                = request.form.get("gpa", "").strip()
+        certifications_raw = request.form.get("certifications", "").strip()
+        courses_raw        = request.form.get("courses", "").strip()
+        skills_raw         = request.form.get("skills", "").strip()
+
+        user_skills  = [s.strip() for s in skills_raw.split(",")         if s.strip()]
+        user_certs   = [c.strip() for c in certifications_raw.split(",") if c.strip()]
+        user_courses = [c.strip() for c in courses_raw.split(",")        if c.strip()]
+
+        roles_data   = load_roles()
+        known_skills = sorted({skill for r in roles_data for skill in r.get("top_skills", [])})
+
+        resume_file = request.files.get("resume")
+        if resume_file and resume_file.filename:
+            safe_name = secure_filename(resume_file.filename)
+            ext       = Path(safe_name).suffix.lower()
+            if ext not in ALLOWED_RESUME_EXTS:
+                resume_notice = "Resume upload ignored: please upload a PDF or DOCX file."
+            else:
+                uploads_dir = Path(__file__).parent / "uploads"
+                uploads_dir.mkdir(exist_ok=True)
+                save_path = uploads_dir / safe_name
+                resume_file.save(str(save_path))
+                try:
+                    resume_skills = parse_resume_for_skills(str(save_path), known_skills)
+                    before        = len(set(user_skills))
+                    user_skills   = sorted(set(user_skills) | set(resume_skills))
+                    added         = max(0, len(set(user_skills)) - before)
+                    resume_notice = (
+                        f"Resume parsed — {added} skill(s) added." if added > 0
+                        else "Resume parsed — no new skills found beyond what you entered."
+                    )
+                except Exception as e:
+                    resume_notice = "Resume saved but we couldn't extract skills from it."
+                    print("Resume parsing error:", e)
+
+        session["profile"] = {
+            "degree":         degree,
+            "major":          major,
+            "location":       location,
+            "gpa":            gpa,
+            "skills":         user_skills,
+            "certifications": user_certs,
+            "courses":        user_courses,
+            "optimize_for":   request.form.get("optimize_for", "balanced"),
+        }
+        session["resume_notice"] = resume_notice
+        session["flash"]         = "✅ Profile saved successfully!"
+
+        if session.get("selected_role_id"):
+            return redirect(url_for("survey"))
+        else:
+            return redirect(url_for("roles"))
+
+    existing      = session.get("profile", {})
+    resume_notice = session.pop("resume_notice", None)
+    return render_template("profile.html", profile=existing, resume_notice=resume_notice)
+
+
+@app.route("/roles", methods=["GET"])
+@login_required
+def roles():
+    profile_data   = session.get("profile", {})
+    roles_catalog  = load_roles()
+    query          = request.args.get("q", "").strip().lower()
+    category       = request.args.get("cat", "").strip()
+    categories     = sorted({r["category"] for r in roles_catalog})
+    filtered_roles = []
+
+    for r in roles_catalog:
+        matches_query = (
+            not query
+            or query in r["title"].lower()
+            or query in r["description"].lower()
+            or any(query in sk.lower() for sk in r["top_skills"])
+        )
+        if not category:
+            matches_cat = True
+        else:
+            role_cat_lower = r["category"].strip().lower()
+            allowed_cats   = [c.lower() for c in STEM_MAP.get(category, [category.lower()])]
+            matches_cat    = role_cat_lower in allowed_cats or any(
+                alias in role_cat_lower for alias in allowed_cats
+            )
+        if matches_query and matches_cat:
+            filtered_roles.append(r)
+
+    return render_template(
+        "roles.html",
+        profile=profile_data,
+        roles=filtered_roles,
+        categories=categories,
+        q=request.args.get("q", ""),
+        cat=category,
+    )
+
+
+@app.post("/select-role")
+def select_role():
+    role_id = request.form.get("role_id", "").strip()
+    if not role_id:
+        return redirect(url_for("roles"))
+    session["selected_role_id"] = role_id
+    return redirect(url_for("profile"))
+
 
 @app.get("/results")
 @login_required
@@ -381,7 +436,8 @@ def results():
     print("profile:", session.get("profile"))
     print("selected_role_id:", session.get("selected_role_id"))
     print("=====================")
-    profile_data = session.get("profile")
+
+    profile_data     = session.get("profile")
     selected_role_id = session.get("selected_role_id")
 
     if not profile_data:
@@ -390,16 +446,15 @@ def results():
         return redirect(url_for("roles"))
 
     roles_catalog = load_roles()
-    role = find_role_by_id(selected_role_id, roles_catalog)
+    role          = find_role_by_id(selected_role_id, roles_catalog)
     if not role:
         session.pop("selected_role_id", None)
         return redirect(url_for("roles"))
 
-    # ── Skill gap calculation ──────────────────────────
+    # ── Skill gap ──────────────────────────────────────
     user_skills = list(profile_data.get("skills", []) or [])
-
     existing_progress = session.get("progress", {})
-    completed_skills = existing_progress.get("completed", [])
+    completed_skills  = existing_progress.get("completed", [])
     if completed_skills:
         existing_norm = {normalize_skill(s) for s in user_skills}
         for s in completed_skills:
@@ -416,198 +471,46 @@ def results():
         if sk and sk not in user_skills_norm
     ]
 
-    graph_skills = get_graph_skills()
+    graph_skills        = get_graph_skills()
     pathfindable_skills = [s for s in missing_skills if s in graph_skills]
-    unsupported_skills = [s for s in missing_skills if s not in graph_skills]
+    unsupported_skills  = [s for s in missing_skills if s not in graph_skills]
+    scored_gaps         = score_skill_gaps(missing_skills, roles_catalog)
+    role_total          = max(len(role_top_skills), 1)
+    have_count          = role_total - len(missing_skills)
+    match_score         = int(round((have_count / role_total) * 100))
 
-    scored_gaps = score_skill_gaps(missing_skills, roles_catalog)
-
-    role_total  = max(len(role_top_skills), 1)
-    have_count  = role_total - len(missing_skills)
-    match_score = int(round((have_count / role_total) * 100))
-
-    # ── Certifications ────────────────────────────────
-    CERT_LIBRARY = [
-        # ── Computing / Software ──
-        {
-            "name": "Google Data Analytics Professional Certificate",
-            "provider": "Coursera",
-            "level": "Beginner–Intermediate",
-            "skills": ["SQL", "Data Visualization", "Spreadsheets", "Data Analysis"],
-            "tags": ["data", "analytics", "software"],
-            "link": "https://www.coursera.org/professional-certificates/google-data-analytics"
-        },
-        {
-            "name": "IBM Data Science Professional Certificate",
-            "provider": "Coursera",
-            "level": "Intermediate",
-            "skills": ["Python", "Machine Learning", "Data Analysis", "SQL"],
-            "tags": ["data", "software", "science"],
-            "link": "https://www.coursera.org/professional-certificates/ibm-data-science"
-        },
-        {
-            "name": "Microsoft Azure Fundamentals (AZ-900)",
-            "provider": "Microsoft",
-            "level": "Beginner",
-            "skills": ["Cloud", "Networking", "Security Basics"],
-            "tags": ["it", "security", "software"],
-            "link": "https://learn.microsoft.com/en-us/certifications/azure-fundamentals/"
-        },
-        {
-            "name": "CompTIA Security+",
-            "provider": "CompTIA",
-            "level": "Intermediate",
-            "skills": ["Security Basics", "Networking", "Incident Response", "Linux"],
-            "tags": ["security", "it"],
-            "link": "https://www.comptia.org/certifications/security"
-        },
-        {
-            "name": "AWS Certified Cloud Practitioner",
-            "provider": "AWS",
-            "level": "Beginner",
-            "skills": ["Cloud", "Networking", "Security Basics"],
-            "tags": ["it", "software"],
-            "link": "https://aws.amazon.com/certification/certified-cloud-practitioner/"
-        },
-        {
-            "name": "Google Project Management Certificate",
-            "provider": "Coursera",
-            "level": "Beginner–Intermediate",
-            "skills": ["Project Management", "Communication", "Teamwork"],
-            "tags": ["business", "software", "healthcare", "science", "engineering"],
-            "link": "https://www.coursera.org/professional-certificates/google-project-management"
-        },
-        {
-            "name": "Meta Front-End Developer Certificate",
-            "provider": "Coursera / Meta",
-            "level": "Beginner–Intermediate",
-            "skills": ["JavaScript", "HTML", "CSS", "React", "APIs"],
-            "tags": ["software", "it"],
-            "link": "https://www.coursera.org/professional-certificates/meta-front-end-developer"
-        },
-        {
-            "name": "Google IT Support Professional Certificate",
-            "provider": "Coursera / Google",
-            "level": "Beginner",
-            "skills": ["Networking", "Linux", "Security Basics", "Cloud"],
-            "tags": ["it", "security"],
-            "link": "https://www.coursera.org/professional-certificates/google-it-support"
-        },
-        # ── Engineering ──
-        {
-            "name": "AutoCAD Certified Professional",
-            "provider": "Autodesk",
-            "level": "Intermediate",
-            "skills": ["AutoCAD", "Technical Drawing", "CAD"],
-            "tags": ["engineering", "mechanical", "civil"],
-            "link": "https://www.autodesk.com/certification/all-certifications/autocad"
-        },
-        {
-            "name": "MATLAB Fundamentals",
-            "provider": "MathWorks",
-            "level": "Beginner–Intermediate",
-            "skills": ["MATLAB", "Simulation", "Signal Processing", "Data Analysis"],
-            "tags": ["engineering", "science", "physics"],
-            "link": "https://www.mathworks.com/learn/training/matlab-fundamentals.html"
-        },
-        {
-            "name": "Six Sigma Green Belt",
-            "provider": "ASQ",
-            "level": "Intermediate",
-            "skills": ["Quality Control", "Statistical Analysis", "Process Improvement"],
-            "tags": ["engineering", "mechanical", "industrial"],
-            "link": "https://asq.org/cert/six-sigma-green-belt"
-        },
-        {
-            "name": "PMP — Project Management Professional",
-            "provider": "PMI",
-            "level": "Advanced",
-            "skills": ["Project Management", "Communication", "Risk Management", "Teamwork"],
-            "tags": ["engineering", "software", "science", "business"],
-            "link": "https://www.pmi.org/certifications/project-management-pmp"
-        },
-        # ── Health / Medical Physics ──
-        {
-            "name": "Medical Imaging Fundamentals (edX)",
-            "provider": "edX",
-            "level": "Intermediate",
-            "skills": ["Medical Imaging", "Radiation Physics", "MATLAB", "Data Analysis"],
-            "tags": ["healthcare", "physics", "science"],
-            "link": "https://www.edx.org/learn/medical-imaging"
-        },
-        {
-            "name": "Radiation Protection Supervisor Certificate",
-            "provider": "IAEA / National Bodies",
-            "level": "Intermediate",
-            "skills": ["Radiation Safety", "Dosimetry", "Radiation Physics"],
-            "tags": ["healthcare", "physics", "science"],
-            "link": "https://www.iaea.org/resources/rpop/health-professionals/radiation-therapy/medical-physics"
-        },
-        {
-            "name": "Google Health Data Analytics",
-            "provider": "Coursera",
-            "level": "Intermediate",
-            "skills": ["Data Analysis", "Research", "Communication", "Excel"],
-            "tags": ["healthcare", "science", "data"],
-            "link": "https://www.coursera.org/learn/health-data-analytics"
-        },
-        # ── Science / Research ──
-        {
-            "name": "IBM Data Analyst Professional Certificate",
-            "provider": "Coursera / IBM",
-            "level": "Beginner–Intermediate",
-            "skills": ["Python", "SQL", "Excel", "Data Visualization", "Research"],
-            "tags": ["science", "data", "analytics"],
-            "link": "https://www.coursera.org/professional-certificates/ibm-data-analyst"
-        },
-        {
-            "name": "Research Methods and Statistics (Coursera)",
-            "provider": "Coursera",
-            "level": "Beginner–Intermediate",
-            "skills": ["Research", "Statistical Analysis", "Data Analysis", "Communication"],
-            "tags": ["science", "healthcare", "engineering"],
-            "link": "https://www.coursera.org/learn/research-methods"
-        },
-    ]
-
+    # ── Certifications ─────────────────────────────────
     role_category_tag = (role.get("category", "") or "").strip().lower()
-    missing_norm = {normalize_skill(s) for s in missing_skills}
-
+    missing_norm      = {normalize_skill(s) for s in missing_skills}
     recommended_certs = []
     for cert in CERT_LIBRARY:
         cert_skill_norm = {normalize_skill(s) for s in cert["skills"]}
-        covers_gap      = len(missing_norm.intersection(cert_skill_norm)) > 0
+        covers_gap      = bool(missing_norm.intersection(cert_skill_norm))
         category_match  = role_category_tag in [t.lower() for t in cert.get("tags", [])]
         if covers_gap or category_match:
             covered = list(missing_norm.intersection(cert_skill_norm))
             reason  = (
-                f"Helps you build: {', '.join(covered[:3])}."
-                if covered else
-                f"Recommended for {role.get('category','')} roles."
+                f"Helps you build: {', '.join(covered[:3])}." if covered
+                else f"Recommended for {role.get('category','')} roles."
             )
             recommended_certs.append({
-                "name":     cert["name"],
-                "provider": cert["provider"],
-                "level":    cert["level"],
-                "skills":   cert["skills"],
-                "reason":   reason,
-                "link":     cert.get("link", ""),
+                "name": cert["name"], "provider": cert["provider"],
+                "level": cert["level"], "skills": cert["skills"],
+                "reason": reason, "link": cert.get("link", ""),
             })
     recommended_certs = recommended_certs[:4]
 
-    # ── Dijkstra learning paths + YouTube ────────────
+    # ── Dijkstra paths ─────────────────────────────────
     from data import courses as course_catalog
-    course_lookup = {c["name"]: c for c in course_catalog}
-
-    optimize_for = profile_data.get("optimize_for", "balanced")
+    course_lookup  = {c["name"]: c for c in course_catalog}
+    optimize_for   = profile_data.get("optimize_for", "balanced")
     weight_presets = {
         "time":     {"weight_time": 0.8, "weight_difficulty": 0.1, "weight_cost": 0.1},
         "cost":     {"weight_time": 0.1, "weight_difficulty": 0.1, "weight_cost": 0.8},
         "balanced": {"weight_time": 0.4, "weight_difficulty": 0.3, "weight_cost": 0.3},
         "easy":     {"weight_time": 0.1, "weight_difficulty": 0.8, "weight_cost": 0.1},
     }
-    weights = weight_presets.get(optimize_for, weight_presets["balanced"])
-
+    weights        = weight_presets.get(optimize_for, weight_presets["balanced"])
     learning_paths = []
     for gap_skill in pathfindable_skills[:4]:
         path, cost = find_learning_path(graph, user_skills, gap_skill, **weights)
@@ -619,19 +522,16 @@ def results():
                 if course_name == "return_to_root" or course_name.startswith("prereq_check::"):
                     continue
                 course_data = course_lookup.get(course_name, {})
-
-                # YouTube: search per step
-                yt_query = f"{course_name} tutorial"
-                videos   = fetch_youtube_videos(yt_query, max_results=2)
-
+                videos      = fetch_youtube_videos(f"{course_name} tutorial", max_results=2)
                 steps.append({
-                    "from": path[i],
-                    "to": path[i + 1],
-                    "course": course_name,
-                    "provider": course_data.get("provider", ""),
-                    "ms_learn": course_data.get("ms_learn", ""),
+                    "from":           path[i],
+                    "to":             path[i + 1],
+                    "course":         course_name,
+                    "provider":       course_data.get("provider", ""),
+                    "edx_link":       course_data.get("edx_link", ""),
+                    "ms_learn":       course_data.get("ms_learn", ""),
                     "youtube_search": course_data.get("youtube", ""),
-                    "videos": videos,
+                    "videos":         videos,
                 })
             learning_paths.append({
                 "target_skill": gap_skill,
@@ -642,82 +542,68 @@ def results():
 
     recommended_learning = build_recommended_learning(learning_paths)
 
-    # YouTube: also fetch per skill gap (for the skill section)
+    # ── YouTube per skill ──────────────────────────────
     skill_videos = {}
     for gap in missing_skills[:4]:
-        skill_videos[gap] = fetch_youtube_videos(
-            f"{gap} tutorial for beginners", max_results=2
-        )
+        skill_videos[gap] = fetch_youtube_videos(f"{gap} tutorial for beginners", max_results=2)
 
-    # ── Job listings (CaribbeanJobs with safe fallback) ────────────
-    location = profile_data.get("location", "Remote") or "Remote"
+    # ── Job listings ───────────────────────────────────
+    location   = profile_data.get("location", "Remote") or "Remote"
     role_title = role.get("title", "")
     job_listings = []
-
     try:
         from adapters.caribbeanjobs import fetch_caribbean_jobs
         job_listings = fetch_caribbean_jobs(role_title, location=location) or []
     except Exception as e:
         print("CaribbeanJobs adapter error:", e)
-        job_listings = []
 
     if not job_listings:
         job_listings = [{
-            "title": f"{role_title} (Search on CaribbeanJobs)",
-            "company": "See live listings",
+            "title":    f"{role_title} (Search on CaribbeanJobs)",
+            "company":  "See live listings",
             "location": location,
-            "link": f"https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={role_title.replace(' ', '+')}",
-            "skills": role_top_skills[:3],
+            "link":     f"https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={role_title.replace(' ','+')}",
+            "skills":   role_top_skills[:3],
         }]
 
-    # ── Progress checklist ────────────────────────────
+    # ── Progress checklist ─────────────────────────────
     progress = session.get("progress")
     if not progress or progress.get("role_id") != selected_role_id:
-        session["progress"] = {
-            "role_id":   selected_role_id,
-            "skills":    missing_skills,
-            "completed": [],
-        }
+        session["progress"] = {"role_id": selected_role_id, "skills": missing_skills, "completed": []}
     else:
-        session["progress"]["skills"] = missing_skills
+        session["progress"]["skills"]    = missing_skills
         session["progress"]["completed"] = [
-            s for s in session["progress"].get("completed", [])
-            if s in missing_skills
+            s for s in session["progress"].get("completed", []) if s in missing_skills
         ]
 
     results_obj = {
-    "degree": profile_data.get("degree", ""),
-    "location": profile_data.get("location", ""),
-    "user_skills": user_skills,
-    "selected_role": role.get("title", ""),
-    "top_skills_in_jobs": role_top_skills,
-    "missing_skills": missing_skills,
-    "scored_gaps": scored_gaps,
-    "match_score": match_score,
-    "recommended_certs": recommended_certs,
-    "recommended_learning": recommended_learning,
-    "learning_paths": learning_paths,
-    "skill_videos": skill_videos,
-    "job_listings": job_listings,
-    "unsupported_skills": unsupported_skills,
+        "degree":               profile_data.get("degree", ""),
+        "location":             profile_data.get("location", ""),
+        "user_skills":          user_skills,
+        "selected_role":        role.get("title", ""),
+        "top_skills_in_jobs":   role_top_skills,
+        "missing_skills":       missing_skills,
+        "scored_gaps":          scored_gaps,
+        "match_score":          match_score,
+        "recommended_certs":    recommended_certs,
+        "recommended_learning": recommended_learning,
+        "learning_paths":       learning_paths,
+        "skill_videos":         skill_videos,
+        "job_listings":         job_listings,
+        "unsupported_skills":   unsupported_skills,
     }
+    return render_template("results.html", results=results_obj)
 
-    return render_template("results.html", results=results_obj)   
 
 @app.route("/progress", methods=["GET", "POST"])
 @login_required
 def progress():
     data = session.get("progress", {"skills": [], "completed": []})
-
     if request.method == "POST":
-        completed = request.form.getlist("completed")
-        # keep only items that are still in the checklist
-        allowed = set(data.get("skills", []))
-        data["completed"] = [c for c in completed if c in allowed]
+        completed          = request.form.getlist("completed")
+        allowed            = set(data.get("skills", []))
+        data["completed"]  = [c for c in completed if c in allowed]
         session["progress"] = data
-
-        # Also merge newly-completed skills into the profile so they
-        # persist across sessions and show up in results immediately
         profile = session.get("profile", {})
         if profile:
             existing = {normalize_skill(s) for s in profile.get("skills", [])}
@@ -726,9 +612,7 @@ def progress():
                     profile.setdefault("skills", []).append(s)
                     existing.add(normalize_skill(s))
             session["profile"] = profile
-
         return redirect(url_for("progress"))
-
     return render_template("progress.html", progress=data)
 
 
@@ -740,22 +624,13 @@ def survey():
         return redirect(url_for("profile"))
 
     selected_role_id = session.get("selected_role_id")
-    role = find_role_by_id(selected_role_id, load_roles()) if selected_role_id else None
-    all_role_skills = role.get("top_skills", []) if role else sorted({
+    role             = find_role_by_id(selected_role_id, load_roles()) if selected_role_id else None
+    all_role_skills  = role.get("top_skills", []) if role else sorted({
         skill for r in load_roles() for skill in r.get("top_skills", [])
     })
 
-    confirmed = set(normalize_skill(s) for s in profile_data.get("skills", []))
-
-    # Filter gaps to tech-relevant skills only
-    TECH_SKILLS = {
-    "Python", "SQL", "JavaScript", "Java", "HTML", "CSS", "Git",
-    "APIs", "Cloud", "Linux", "Machine Learning", "Data Visualization",
-    "Networking", "Security Basics", "Problem-solving", "MATLAB",
-    "Research", "Excel", "Statistics"
-    }
-    gaps = [s for s in all_role_skills 
-            if normalize_skill(s) not in confirmed and s in TECH_SKILLS]
+    confirmed = {normalize_skill(s) for s in profile_data.get("skills", [])}
+    gaps      = [s for s in all_role_skills if normalize_skill(s) not in confirmed]
 
     print("Confirmed skills:", list(confirmed))
     print("Gaps found:", gaps)
@@ -764,12 +639,11 @@ def survey():
     if gaps:
         try:
             degree = profile_data.get("degree", "")
-            major = profile_data.get("major", "")
-
+            major  = profile_data.get("major", "")
             client = Groq()
             prompt = f"""A Caribbean university student is studying {degree} majoring in {major}.
 They have confirmed these skills: {list(confirmed)}.
-They are missing these skills relevant to STEM tech careers: {gaps[:10]}.
+They are missing these skills relevant to STEM careers: {gaps[:10]}.
 
 Generate up to 6 concise survey questions ONLY about technical skills relevant to a {major} student.
 Do NOT ask about biology, medicine, or any field unrelated to their degree.
@@ -781,14 +655,12 @@ Return ONLY a valid JSON array, no markdown, no explanation:
     "scale_labels": {{"1": "No experience", "3": "Some experience", "5": "Proficient"}}
   }}
 ]"""
-
-            resp = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                max_tokens=1000,
+            resp      = client.chat.completions.create(
+                model="llama-3.3-70b-versatile", max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}]
             )
-            raw = resp.choices[0].message.content.strip()
-            raw = re.sub(r"^```json|^```|```$", "", raw, flags=re.MULTILINE).strip()
+            raw       = resp.choices[0].message.content.strip()
+            raw       = re.sub(r"^```json|^```|```$", "", raw, flags=re.MULTILINE).strip()
             questions = json.loads(raw)
         except Exception as e:
             print("Groq error:", e)
@@ -798,98 +670,75 @@ Return ONLY a valid JSON array, no markdown, no explanation:
     session["survey_gaps"] = gaps
     return render_template("survey.html", questions=questions, profile=profile_data)
 
-def build_recommended_learning(learning_paths):
-    items = []
-
-    for lp in learning_paths:
-        real_steps = []
-        for step in lp.get("steps", []):
-            course = step.get("course", "")
-            if not course or course == "return_to_root" or course.startswith("prereq_check::"):
-                continue
-            real_steps.append(step)
-
-        if not real_steps:
-            continue
-
-        final_step = real_steps[-1]
-
-        # Build visible path from actual step destinations only
-        learning_nodes = []
-        for step in real_steps:
-            to_node = step.get("to", "")
-            if to_node and to_node != "ROOT" and not str(to_node).startswith("GATE::"):
-                if not learning_nodes or learning_nodes[-1] != to_node:
-                    learning_nodes.append(to_node)
-
-        if not learning_nodes:
-            continue
-
-        prereqs = learning_nodes[:-1] if len(learning_nodes) > 1 else []
-
-        items.append({
-            "skill": lp.get("target_skill", ""),
-            "title": final_step.get("course", ""),
-            "provider": final_step.get("provider", "Learning Path"),
-            "format": "Guided path",
-            "link": final_step.get("ms_learn") or final_step.get("youtube_search") or "",
-            "path": learning_nodes,
-            "prereqs": prereqs,
-            "total_cost": round(lp.get("total_cost", 0), 1),
-        })
-
-    return items
 
 @app.route("/survey/submit", methods=["POST"])
 @login_required
 def survey_submit():
-    profile_data = session.get("profile", {})
-    answers = request.form
-
+    profile_data    = session.get("profile", {})
     newly_confirmed = [
-        skill for skill, score in answers.items()
+        skill for skill, score in request.form.items()
         if score.isdigit() and int(score) >= 3
     ]
-
-    existing = profile_data.get("skills", [])
+    existing      = profile_data.get("skills", [])
     existing_norm = {normalize_skill(s) for s in existing}
     for skill in newly_confirmed:
         if normalize_skill(skill) not in existing_norm:
             existing.append(skill)
-
     profile_data["skills"] = existing
-    session["profile"] = profile_data
+    session["profile"]     = profile_data
+    return redirect(url_for("loading"))
 
-    return redirect(url_for("loading"))  # ← change this
 
-#minimal route to set user type for demo purposes (not used in current flow but can be extended later)
 @app.route("/set-usertype", methods=["POST"])
 def set_usertype():
     session["user_type"] = request.form.get("user_type", "student")
     return redirect(url_for("roles"))
 
+
 @app.get("/reset")
 def reset():
-    session.clear()
-    return redirect(url_for("roles"))  # ← roles first
+    # Only clear pathway data, keep the user logged in
+    session.pop("profile", None)
+    session.pop("selected_role_id", None)
+    session.pop("progress", None)
+    session.pop("survey_gaps", None)
+    session.pop("flash", None)
+    session.pop("resume_notice", None)
+    return redirect(url_for("roles"))
+
 
 @app.get("/loading")
 def loading():
     return render_template("loading.html")
 
+
 # ── Firebase session bridge ───────────────────────────────────
-# Called by base.html after Firebase login so Flask knows who is logged in
 @app.post("/set-session")
 def set_session():
     data = request.get_json(silent=True) or {}
+    print("=== SET SESSION CALLED ===")
+    print("Data received:", data)
     session["user_id"]      = data.get("user_id")
     session["display_name"] = data.get("display_name")
-    return {"ok": True}
+    session.modified = True
+    print("Session after set:", dict(session))
+    return jsonify({"ok": True})
+
 
 @app.get("/logout")
 def logout():
     session.clear()
     return redirect(url_for("home"))
+
+
+@app.get("/debug-session")
+def debug_session():
+    return jsonify({
+        "user_id":      session.get("user_id"),
+        "display_name": session.get("display_name"),
+        "has_profile":  bool(session.get("profile")),
+    })
+
 
 if __name__ == "__main__":
     app.run(debug=True)

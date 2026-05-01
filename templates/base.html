@@ -81,8 +81,8 @@
       <div class="modal-divider">or</div>
 
       <div class="modal-tabs" role="tablist">
-        <button class="modal-tab active" id="tab-signin"   role="tab" aria-selected="true"  onclick="switchTab('signin')">Sign In</button>
-        <button class="modal-tab"        id="tab-register" role="tab" aria-selected="false" onclick="switchTab('register')">Create Account</button>
+        <button class="modal-tab active" id="tab-signin"   role="tab" aria-selected="true">Sign In</button>
+        <button class="modal-tab"        id="tab-register" role="tab" aria-selected="false">Create Account</button>
       </div>
 
       <!-- Sign In panel -->
@@ -269,6 +269,9 @@
       ${isSignin ? 'Continue with Google' : 'Sign up with Google'}`;
   }
 
+  document.getElementById('tab-signin')?.addEventListener('click',   () => switchTab('signin'));
+  document.getElementById('tab-register')?.addEventListener('click', () => switchTab('register'));
+
   /* ── Show error in modal ──────────────────────── */
   function showError(msg) {
     let el = document.getElementById('auth-error');
@@ -334,8 +337,16 @@
   }
 
   /* ── Watch auth state on every page ──────────── */
-  onAuthStateChanged(auth, user => {
-    if (user) setLoggedIn(user.displayName || user.email);
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      // Always sync Flask session on every page load
+      await notifyFlask(user.uid, user.displayName || user.email);
+      setLoggedIn(user.displayName || user.email);
+    } else {
+      // Firebase says not logged in — clear Flask session
+      sessionStorage.removeItem('sp_logged_in');
+      fetch('/logout', { credentials: 'same-origin' }).catch(() => {});
+    }
   });
 
   /* ── Google sign-in ───────────────────────────── */
@@ -345,7 +356,7 @@
       await notifyFlask(result.user.uid, result.user.displayName || result.user.email);
       closeModal();
       setLoggedIn(result.user.displayName || result.user.email);
-      window.location.href = "{{ url_for('profile') }}";
+      window.location.href = "{{ url_for('roles') }}";
     } catch(err) {
       showError('Google sign-in failed. Please try again.');
       console.error(err);
@@ -364,7 +375,7 @@
         await notifyFlask(result.user.uid, result.user.displayName || result.user.email);
         closeModal();
         setLoggedIn(result.user.displayName || result.user.email);
-        window.location.href = "{{ url_for('profile') }}";
+        window.location.href = "{{ url_for('roles') }}";
       } else {
         const name     = document.getElementById('reg-name').value;
         const email    = document.getElementById('reg-email').value;
@@ -373,7 +384,7 @@
         await notifyFlask(result.user.uid, name || result.user.email);
         closeModal();
         setLoggedIn(name || result.user.email);
-        window.location.href = "{{ url_for('profile') }}";
+        window.location.href = "{{ url_for('roles') }}";
       }
     } catch(err) {
       const messages = {

@@ -94,63 +94,83 @@ a roadmap view-->
   </section>
 
   <!-- Personalized Roadmap -->
-<section class="card rm3-roadmap-card">
-  <h2 class="rm3-section-title">Your Personalized Roadmap</h2>
+  <section class="card rm3-roadmap-card">
+    <h2 class="rm3-section-title">Your Personalized Roadmap</h2>
 
-  <div class="rm3-roadmap-grid">
-    <div class="rm3-steps-col">
-      {% if results.missing_skills %}
-        {% for skill in results.missing_skills[:3] %}
-          <div class="rm3-step-card">
-            <div class="rm3-step-badge">{{ loop.index }}
-              <span class="rm3-step-icon">
-                {% if loop.index == 1 %}
-                📍
-                {% elif loop.index == 2 %}
-                🗂️
-                {% elif loop.index == 3 %}
-                📊
-                {% else %}
-                🏆
-                {% endif %}
-              </span>
+    <div class="rm3-roadmap-grid">
+      <div class="rm3-steps-col">
+        {% if results.missing_skills %}
+          {% for skill in results.missing_skills[:3] %}
+            <div class="rm3-step-card">
+              <div class="rm3-step-badge">
+                <span class="rm3-step-icon">
+                  {% if loop.index == 1 %}📍
+                  {% elif loop.index == 2 %}🗂️
+                  {% elif loop.index == 3 %}📊
+                  {% else %}🏆
+                  {% endif %}
+                </span>
+              </div>
+              <div class="rm3-step-text">
+                <h3>Step {{ loop.index }}: Learn {{ skill }}</h3>
+                <p>
+                  {% set s = skill | lower %}
+                  {% if 'sql' in s or 'database' in s %}
+                    Understand how to query and manage structured data.
+                  {% elif 'python' in s %}
+                    Use Python for data cleaning, automation and analysis.
+                  {% elif 'data visual' in s %}
+                    Present insights using charts and dashboards.
+                  {% elif 'machine learning' in s %}
+                    Build predictive models and extract patterns from data.
+                  {% elif 'matlab' in s %}
+                    Apply numerical computing and simulation techniques.
+                  {% elif 'java' in s and 'javascript' not in s %}
+                    Build robust applications with Java fundamentals.
+                  {% elif 'javascript' in s or 'react' in s %}
+                    Create interactive web interfaces and applications.
+                  {% elif 'cloud' in s or 'aws' in s or 'azure' in s %}
+                    Deploy and manage applications in cloud environments.
+                  {% elif 'security' in s or 'cyber' in s %}
+                    Protect systems and data from modern threats.
+                  {% elif 'network' in s %}
+                    Understand how systems communicate and connect.
+                  {% elif 'research' in s or 'laboratory' in s %}
+                    Apply rigorous scientific methods in your field.
+                  {% elif 'medical imaging' in s or 'radiation' in s %}
+                    Apply clinical and imaging techniques in practice.
+                  {% elif 'autocad' in s or 'cad' in s %}
+                    Create technical drawings and engineering designs.
+                  {% elif 'statistics' in s %}
+                    Apply statistical methods to real-world data.
+                  {% else %}
+                    Build this skill to strengthen your alignment with {{ results.selected_role }} roles.
+                  {% endif %}
+                </p>
+              </div>
             </div>
+          {% endfor %}
+        {% endif %}
 
-            <div class="rm3-step-text">
-              <h3>Step {{ loop.index }}: Learn {{ skill }}</h3>
-              <p>
-                {% if skill == "SQL" %}
-                  Understand how to query and manage data.
-                {% elif skill == "Python" %}
-                  Use Python for data cleaning and analysis.
-                {% elif skill == "Data Visualization" %}
-                  Present insights using charts and dashboards.
-                {% else %}
-                  Build this skill to strengthen your alignment with {{ results.selected_role }} roles.
-                {% endif %}
-              </p>
-            </div>
+        <div class="rm3-step-card">
+          <div class="rm3-step-badge">
+            <span class="rm3-step-icon">🏆</span>
           </div>
-        {% endfor %}
-      {% endif %}
+          <div class="rm3-step-text">
+            <h3>Step {{ (results.missing_skills[:3] | length) + 1 }}: Get certified</h3>
+            <p>Validate your skills with industry-recognised certifications and structured learning.</p>
+          </div>
+        </div>
+      </div>
 
-      <div class="rm3-step-card">
-        <div class="rm3-step-badge">4</div>
-        <div class="rm3-step-text">
-          <h3>Step 4: Get certified</h3>
-          <p>Validate your skills with industry-recognized certifications and structured learning.</p>
+      <div class="rm3-visual-col">
+        <div class="rm3-road-graphic-card">
+          <div class="rm3-goal-pill">🏁 Goal</div>
+          <div class="rm3-road-graphic"></div>
         </div>
       </div>
     </div>
-
-    <div class="rm3-visual-col">
-      <div class="rm3-road-graphic-card">
-        <div class="rm3-goal-pill">🏁 Goal</div>
-        <div class="rm3-road-graphic"></div>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
   <!-- Recommended Resources -->
   <section class="rm2-resources-wrap">
@@ -168,30 +188,58 @@ a roadmap view-->
 
               <p class="rm2-resource-why">
                 <strong>Why this matters:</strong>
-                {% if skill == "SQL" %}
-                  SQL is essential for querying databases and working with structured data in {{ results.selected_role }} roles.
-                {% elif skill == "Python" %}
-                  Python is widely used for automation, data cleaning, analysis, and technical workflows in {{ results.selected_role }} roles.
-                {% elif skill == "Data Visualization" %}
-                  Data visualization helps you communicate findings clearly through charts, dashboards, and reports.
-                {% elif skill == "Machine Learning" %}
-                  Machine learning helps you build models and make data-driven predictions.
-                {% elif skill == "Cloud" or skill == "Cloud Fundamentals" or skill == "AWS" %}
-                  Cloud skills are important for deploying, scaling, and managing modern applications.
-                {% elif skill == "Networking" or skill == "Networking Basics" %}
-                  Networking helps you understand system communication, connectivity, and infrastructure.
-                {% elif skill == "Security Basics" or skill == "CompTIA Security+" %}
-                  Security knowledge helps protect systems, data, and users from threats.
+                {% set skill_lower = skill | lower %}
+                {% if 'sql' in skill_lower or 'database' in skill_lower %}
+                  SQL and database skills are essential for querying, managing and analysing structured data in {{ results.selected_role }} roles.
+                {% elif 'python' in skill_lower %}
+                  Python is the most widely used language for automation, data analysis, scripting and technical workflows in {{ results.selected_role }} roles.
+                {% elif 'machine learning' in skill_lower or 'ml' in skill_lower %}
+                  Machine learning enables you to build predictive models and extract patterns from data — a core competency for {{ results.selected_role }}.
+                {% elif 'data visual' in skill_lower or 'tableau' in skill_lower or 'power bi' in skill_lower %}
+                  Data visualisation lets you communicate findings clearly through charts, dashboards and reports — critical for stakeholder communication.
+                {% elif 'cloud' in skill_lower or 'aws' in skill_lower or 'azure' in skill_lower %}
+                  Cloud skills are required for deploying, scaling and managing modern applications and infrastructure in {{ results.selected_role }} environments.
+                {% elif 'network' in skill_lower %}
+                  Networking knowledge is fundamental to understanding how systems communicate and is a baseline requirement for {{ results.selected_role }} roles.
+                {% elif 'security' in skill_lower or 'cyber' in skill_lower or 'comptia' in skill_lower %}
+                  Security skills are critical for protecting systems, user data and infrastructure — increasingly required across all technology roles.
+                {% elif 'javascript' in skill_lower or 'react' in skill_lower or 'html' in skill_lower or 'css' in skill_lower %}
+                  Web development skills are essential for building interfaces and applications — a core part of the {{ results.selected_role }} skill set.
+                {% elif 'java' in skill_lower or 'c++' in skill_lower or 'c#' in skill_lower %}
+                  Strong programming fundamentals are a non-negotiable baseline for software development roles like {{ results.selected_role }}.
+                {% elif 'matlab' in skill_lower %}
+                  MATLAB is the standard tool for numerical computing, simulations and signal processing in engineering and scientific research.
+                {% elif 'autocad' in skill_lower or 'cad' in skill_lower or 'solidworks' in skill_lower %}
+                  CAD tools are essential for technical design and engineering drawings in {{ results.selected_role }} roles.
+                {% elif 'medical imaging' in skill_lower or 'radiation' in skill_lower or 'dosimetry' in skill_lower %}
+                  Medical physics skills are the technical core of {{ results.selected_role }} — required for clinical practice and research.
+                {% elif 'research' in skill_lower or 'laboratory' in skill_lower %}
+                  Research and laboratory skills demonstrate scientific rigour and are fundamental to evidence-based practice in {{ results.selected_role }}.
+                {% elif 'statistics' in skill_lower or 'probability' in skill_lower %}
+                  Statistical knowledge underpins data-driven decision making and is a key analytical skill for {{ results.selected_role }}.
+                {% elif 'linear algebra' in skill_lower or 'calculus' in skill_lower %}
+                  Mathematical foundations like linear algebra and calculus are the backbone of machine learning, engineering simulations and scientific modelling.
+                {% elif 'docker' in skill_lower or 'kubernetes' in skill_lower or 'devops' in skill_lower %}
+                  DevOps and containerisation skills are essential for modern software deployment and are increasingly required in technical roles.
+                {% elif 'agile' in skill_lower or 'scrum' in skill_lower or 'project management' in skill_lower %}
+                  Project management and agile methodologies are expected in most professional {{ results.selected_role }} environments.
+                {% elif 'communication' in skill_lower or 'teamwork' in skill_lower or 'leadership' in skill_lower %}
+                  Strong interpersonal skills are consistently ranked among the top requirements by Caribbean employers alongside technical competencies.
+                {% elif 'gis' in skill_lower or 'remote sensing' in skill_lower or 'environmental' in skill_lower %}
+                  Geospatial and environmental analysis skills are core to scientific and planning roles, especially in the Caribbean context.
+                {% elif 'bioinformatics' in skill_lower %}
+                  Bioinformatics combines programming and biology — a rapidly growing field that opens doors to genomics and medical research roles.
                 {% else %}
-                  This skill appears in the requirements for {{ results.selected_role }} and will improve your career readiness.
+                  <strong>{{ skill }}</strong> appears in the verified O*NET requirements for {{ results.selected_role }} and will directly improve your career readiness and match score.
                 {% endif %}
               </p>
 
               <div class="rm2-link-row">
                 {% if results.skill_videos and results.skill_videos.get(skill) %}
                   {% set vid = results.skill_videos.get(skill)[0] %}
-                  <a href="{{ vid.url }}" target="_blank" rel="noopener" class="rm2-link-pill">
-                    ▶ YouTube: {{ vid.title[:45] }}{% if vid.title|length > 45 %}...{% endif %}
+                  <a href="{{ vid.url }}" target="_blank" rel="noopener" class="rm2-video-thumb-link">
+                    <img src="{{ vid.thumbnail }}" alt="{{ vid.title }}" class="rm2-video-thumb-img" loading="lazy"/>
+                    <span class="rm2-video-thumb-label">▶ {{ vid.title[:45] }}{% if vid.title|length > 45 %}...{% endif %}</span>
                   </a>
                 {% endif %}
 
@@ -199,8 +247,26 @@ a roadmap view-->
                 {% if learning_match %}
                   {% set item = learning_match[0] %}
                   {% if item.link %}
-                    <a href="{{ item.link }}" target="_blank" rel="noopener" class="rm2-link-pill rm2-link-pill-alt">
-                      📘 {{ item.provider }}: {{ item.title }}
+                    <a href="{{ item.link }}" target="_blank" rel="noopener" class="rm2-resource-card-link">
+                      <div class="rm2-resource-card-thumb rm2-resource-card-thumb-course">
+                        {% if 'coursera' in item.link %}
+                          <img src="https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-96x96.png" alt="Coursera"/>
+                        {% elif 'edx' in item.link %}
+                          <img src="https://www.edx.org/favicon.ico" alt="edX"/>
+                        {% elif 'microsoft' in item.link or 'learn.microsoft' in item.link %}
+                          <img src="https://learn.microsoft.com/favicon.ico" alt="Microsoft Learn"/>
+                        {% elif 'khanacademy' in item.link %}
+                          <img src="https://www.khanacademy.org/favicon.ico" alt="Khan Academy"/>
+                        {% elif 'youtube' in item.link %}
+                          <img src="https://www.youtube.com/favicon.ico" alt="YouTube"/>
+                        {% else %}
+                          📘
+                        {% endif %}
+                      </div>
+                      <div class="rm2-resource-card-info">
+                        <span class="rm2-resource-card-provider">{{ item.provider }}</span>
+                        <span class="rm2-resource-card-title">{{ item.title }}</span>
+                      </div>
                     </a>
                   {% endif %}
                 {% endif %}
@@ -238,8 +304,30 @@ a roadmap view-->
 
               {% if cert.link %}
                 <div class="rm2-link-row">
-                  <a href="{{ cert.link }}" target="_blank" rel="noopener" class="rm2-link-pill rm2-link-pill-alt">
-                    🏆 View certification
+                  <a href="{{ cert.link }}" target="_blank" rel="noopener" class="rm2-resource-card-link">
+                    <div class="rm2-resource-card-thumb rm2-resource-card-thumb-cert">
+                      {% if 'comptia' in cert.provider | lower %}
+                        <img src="https://www.comptia.org/favicon.ico" alt="CompTIA"/>
+                      {% elif 'coursera' in cert.provider | lower %}
+                        <img src="https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-96x96.png" alt="Coursera"/>
+                      {% elif 'aws' in cert.provider | lower %}
+                        <img src="https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png" alt="AWS"/>
+                      {% elif 'microsoft' in cert.provider | lower %}
+                        <img src="https://learn.microsoft.com/favicon.ico" alt="Microsoft"/>
+                      {% elif 'google' in cert.provider | lower %}
+                        <img src="https://www.google.com/favicon.ico" alt="Google"/>
+                      {% elif 'edx' in cert.provider | lower %}
+                        <img src="https://www.edx.org/favicon.ico" alt="edX"/>
+                      {% elif 'autodesk' in cert.provider | lower %}
+                        <img src="https://www.autodesk.com/favicon.ico" alt="Autodesk"/>
+                      {% else %}
+                        🏆
+                      {% endif %}
+                    </div>
+                    <div class="rm2-resource-card-info">
+                      <span class="rm2-resource-card-provider">{{ cert.provider }}</span>
+                      <span class="rm2-resource-card-title">{{ cert.name }} · {{ cert.level }}</span>
+                    </div>
                   </a>
                 </div>
               {% endif %}
@@ -260,12 +348,10 @@ a roadmap view-->
              href="https://www.linkedin.com/jobs/search/?keywords={{ results.selected_role | urlencode }}&location={{ results.location | urlencode }}">
              LinkedIn Jobs
           </a>
-
           <a class="rm2-link-pill" target="_blank" rel="noopener"
              href="https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={{ results.selected_role | urlencode }}">
              CaribbeanJobs
           </a>
-
           <a class="rm2-link-pill" target="_blank" rel="noopener"
              href="https://jm.indeed.com/jobs?q={{ results.selected_role | urlencode }}">
              Indeed JM
@@ -284,6 +370,12 @@ a roadmap view-->
                       <span class="tag">{{ s }}</span>
                     {% endfor %}
                   </div>
+                {% endif %}
+                {% if job.link %}
+                  <a href="{{ job.link }}" target="_blank" rel="noopener"
+                     class="rm2-link-pill" style="margin-top:.75rem; display:inline-flex;">
+                    View listing →
+                  </a>
                 {% endif %}
               </div>
             {% endfor %}

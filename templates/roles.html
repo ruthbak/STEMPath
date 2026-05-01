@@ -22,13 +22,29 @@ career roles-->
       </div>
 
       <div class="field">
-        <label for="cat">Category</label>
-        <select id="cat" name="cat">
-          <option value="">All categories</option>
-          {% for c in categories %}
-            <option value="{{ c }}" {% if cat == c %}selected{% endif %}>{{ c }}</option>
-          {% endfor %}
-        </select>
+        <label>Category</label>
+        <div class="skill-categories" style="margin-bottom:0;">
+          <button type="submit" name="cat" value=""
+            class="skill-cat-btn {% if not cat %}active{% endif %}">
+            All
+          </button>
+          <button type="submit" name="cat" value="Science"
+            class="skill-cat-btn skill-cat-stem {% if cat=='Science' %}active{% endif %}">
+            🔬 Science
+          </button>
+          <button type="submit" name="cat" value="Technology"
+            class="skill-cat-btn skill-cat-stem {% if cat=='Technology' %}active{% endif %}">
+            💻 Technology
+          </button>
+          <button type="submit" name="cat" value="Engineering"
+            class="skill-cat-btn skill-cat-stem {% if cat=='Engineering' %}active{% endif %}">
+            ⚙️ Engineering
+          </button>
+          <button type="submit" name="cat" value="Mathematics"
+            class="skill-cat-btn skill-cat-stem {% if cat=='Mathematics' %}active{% endif %}">
+            📐 Mathematics
+          </button>
+        </div>
       </div>
 
       <div class="actions">
