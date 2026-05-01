@@ -1952,41 +1952,75 @@ body.light .rm2-accordion {
 /* ── YouTube thumbnail in resources ─────────────── */
 .rm2-video-thumb-link {
   display: flex;
-  align-items: center;
-  gap: .6rem;
+  position: relative;
+  flex-direction: column;
   text-decoration: none;
   background: rgba(248,113,113,0.07);
   border: 1px solid rgba(248,113,113,0.22);
-  border-radius: var(--radius-sm);
-  padding: .4rem .7rem .4rem .4rem;
+  border-radius: 10px;
+  overflow: hidden;
   transition: all var(--transition);
-  max-width: 100%;
+  max-width: 260px;
 }
 
 .rm2-video-thumb-link:hover {
   background: rgba(248,113,113,0.14);
   border-color: rgba(248,113,113,0.45);
-  transform: translateY(-1px);
+  transform: translateY(-3px) scale(1.01);
 }
 
 .rm2-video-thumb-img {
-  width: 80px;
-  height: 45px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 4px;
-  flex-shrink: 0;
+  display: block;
 }
 
 .rm2-video-thumb-label {
-  font-size: .78rem;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--text);
-  line-height: 1.35;
+  line-height: 1.4;
+  padding: .6rem .6rem .7rem;
+
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.rm2-video-thumb-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.4),
+    transparent 50%
+  );
+}
+
+.rm2-video-thumb-link::after {
+  content: "▶";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6rem;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  padding: .4rem .55rem;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.rm2-video-thumb-link:hover::after {
+  opacity: 1;
+}
+
+
 
 /* ── Course + Cert resource cards ───────────────── */
 .rm2-resource-card-link {
@@ -2005,7 +2039,7 @@ body.light .rm2-accordion {
 .rm2-resource-card-link:hover {
   border-color: var(--purple-border);
   background: var(--purple-glow);
-  transform: translateY(-1px);
+  transform: translateY(-3px) scale(1.01);
 }
 
 .rm2-resource-card-thumb {

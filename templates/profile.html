@@ -31,11 +31,8 @@
           {% set loc = profile.get('location','') %}
           <option value="">Select a location</option>
           <option value="Jamaica"       {{ 'selected' if loc=='Jamaica'       else '' }}>Jamaica</option>
-          <option value="Trinidad"      {{ 'selected' if loc=='Trinidad'      else '' }}>Trinidad & Tobago</option>
-          <option value="Barbados"      {{ 'selected' if loc=='Barbados'      else '' }}>Barbados</option>
           <option value="Caribbean"     {{ 'selected' if loc=='Caribbean'     else '' }}>Caribbean (General)</option>
           <option value="United States" {{ 'selected' if loc=='United States' else '' }}>United States</option>
-          <option value="Remote"        {{ 'selected' if loc=='Remote'        else '' }}>Remote</option>
         </select>
       </div>
 
