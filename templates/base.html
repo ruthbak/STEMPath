@@ -28,7 +28,6 @@
           <span class="icon-moon">🌙</span>
           <span class="icon-sun">☀️</span>
         </button>
-        <button type="button" class="btn btn-ghost btn-sm" id="toggle-text">A+</button>
       </div>
 
     </div>
@@ -200,18 +199,6 @@
     applyTheme(!document.body.classList.contains('light'));
   });
 
-  /* ── Large text toggle ────────────────────────── */
-  const textBtn = document.getElementById('toggle-text');
-
-  try {
-    if (localStorage.getItem('sp_large_text') === 'true') document.body.classList.add('large-text');
-  } catch(e) {}
-
-  textBtn?.addEventListener('click', () => {
-    document.body.classList.toggle('large-text');
-    try { localStorage.setItem('sp_large_text', document.body.classList.contains('large-text')); } catch(e) {}
-  });
-
   /* ── Modal open/close ─────────────────────────── */
   const modal        = document.getElementById('auth-modal');
   const closeBtn     = document.getElementById('modal-close');
@@ -331,7 +318,6 @@
           <div class="dots-dropdown" id="dots-dropdown">
             <a href="{{ url_for('progress') }}" class="dots-item">📊 Track Progress</a>
             <a href="{{ url_for('profile') }}"  class="dots-item">👤 My Profile</a>
-            <a href="#"                          class="dots-item">⚙️ Settings</a>
             <div class="dots-divider"></div>
             <button type="button" class="dots-item dots-signout" id="sign-out-btn">🚪 Sign Out</button>
           </div>
