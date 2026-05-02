@@ -12,20 +12,22 @@
 
   <div class="profile-cards-row">
 
-    <!-- My Profile (existing) -->
-    {% if progress and progress.skills %}
-    <div class="mini-profile-card">
-      <div class="mini-profile-icon">🎓</div>
-      <div class="mini-profile-info">
-        <strong>My Profile</strong>
-        <span class="muted">{{ session.get('profile', {}).get('degree', 'Your current profile') }}</span>
+    <!-- Saved Profiles -->
+    {% if profiles %}
+      {% for saved_profile in profiles %}
+      <div class="mini-profile-card">
+        <div class="mini-profile-icon">🎓</div>
+        <div class="mini-profile-info">
+          <strong>{{ saved_profile.name }}</strong>
+          <span class="muted">{{ saved_profile.degree or 'Your current profile' }}</span>
+        </div>
+        <a href="{{ url_for('open_profile', profile_id=saved_profile.id) }}" class="btn btn-ghost btn-sm">Edit</a>
       </div>
-      <a href="{{ url_for('profile') }}" class="btn btn-ghost btn-sm">Edit</a>
-    </div>
+      {% endfor %}
     {% endif %}
 
     <!-- Add Profile -->
-    <a href="{{ url_for('profile') }}" class="mini-profile-card mini-profile-add">
+    <a href="{{ url_for('new_profile') }}" class="mini-profile-card mini-profile-add">
       <div class="mini-profile-icon">➕</div>
       <div class="mini-profile-info">
         <strong>Add Profile</strong>

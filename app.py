@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, abort
 from functools import wraps
 import os
 import re
@@ -12,6 +12,16 @@ from groq import Groq
 from graph_builder import build_learning_graph
 from pathfinder import find_learning_path
 from data import courses
+from stempath_db import (
+    get_latest_profile,
+    get_profile,
+    get_progress,
+    get_user_profiles,
+    init_db,
+    save_profile,
+    save_progress,
+    upsert_user,
+)
 import urllib.request
 
 # Build graph once at startup
@@ -21,6 +31,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"]              = "dev-secret-key-change-me"
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"]   = False
+init_db()
 
 # ── Auth decorator ────────────────────────────────────────────
 def login_required(f):
@@ -320,6 +331,7 @@ ALLOWED_RESUME_EXTS = {".pdf", ".docx"}
 def profile():
     resume_notice = None
     if request.method == "POST":
+        user_id            = session.get("user_id")
         degree             = request.form.get("degree", "").strip()
         major              = request.form.get("major", "").strip()
         location           = request.form.get("location", "").strip()
@@ -331,6 +343,7 @@ def profile():
         user_skills  = [s.strip() for s in skills_raw.split(",")         if s.strip()]
         user_certs   = [c.strip() for c in certifications_raw.split(",") if c.strip()]
         user_courses = [c.strip() for c in courses_raw.split(",")        if c.strip()]
+        resume_path  = None
 
         roles_data   = load_roles()
         known_skills = sorted({skill for r in roles_data for skill in r.get("top_skills", [])})
@@ -346,6 +359,7 @@ def profile():
                 uploads_dir.mkdir(exist_ok=True)
                 save_path = uploads_dir / safe_name
                 resume_file.save(str(save_path))
+                resume_path = str(save_path)
                 try:
                     resume_skills = parse_resume_for_skills(str(save_path), known_skills)
                     before        = len(set(user_skills))
@@ -359,7 +373,7 @@ def profile():
                     resume_notice = "Resume saved but we couldn't extract skills from it."
                     print("Resume parsing error:", e)
 
-        session["profile"] = {
+        profile_data = {
             "degree":         degree,
             "major":          major,
             "location":       location,
@@ -369,23 +383,62 @@ def profile():
             "courses":        user_courses,
             "optimize_for":   request.form.get("optimize_for", "balanced"),
         }
+
+        saved_profile = save_profile(
+            user_id,
+            profile_data,
+            profile_id=session.get("active_profile_id"),
+            resume_path=resume_path,
+            create_new=session.pop("create_new_profile", False),
+        )
+
+        session["profile"] = saved_profile or profile_data
+        if saved_profile:
+            session["active_profile_id"] = saved_profile["id"]
         session["resume_notice"] = resume_notice
-        session["flash"]         = "✅ Profile saved successfully!"
+        session["flash"]         = "Profile saved successfully!"
 
         if session.get("selected_role_id"):
             return redirect(url_for("survey"))
         else:
             return redirect(url_for("roles"))
 
-    existing      = session.get("profile", {})
+    existing = get_latest_profile(session.get("user_id")) or session.get("profile", {})
+    if existing:
+        session["profile"] = existing
+        session["active_profile_id"] = existing.get("id")
     resume_notice = session.pop("resume_notice", None)
     return render_template("profile.html", profile=existing, resume_notice=resume_notice)
+
+
+@app.get("/profile/new")
+@login_required
+def new_profile():
+    session.pop("profile", None)
+    session.pop("active_profile_id", None)
+    session["create_new_profile"] = True
+    return redirect(url_for("profile"))
+
+
+@app.get("/profile/<int:profile_id>")
+@login_required
+def open_profile(profile_id):
+    profile_data = get_profile(session.get("user_id"), profile_id)
+    if not profile_data:
+        abort(403)
+
+    session["profile"] = profile_data
+    session["active_profile_id"] = profile_data["id"]
+    return redirect(url_for("profile"))
 
 
 @app.route("/roles", methods=["GET"])
 @login_required
 def roles():
-    profile_data   = session.get("profile", {})
+    profile_data   = get_latest_profile(session.get("user_id")) or session.get("profile", {})
+    if profile_data:
+        session["profile"] = profile_data
+        session["active_profile_id"] = profile_data.get("id")
     roles_catalog  = load_roles()
     query          = request.args.get("q", "").strip().lower()
     category       = request.args.get("cat", "").strip()
@@ -436,8 +489,10 @@ def results():
     print("profile:", session.get("profile"))
     print("selected_role_id:", session.get("selected_role_id"))
     print("=====================")
-
-    profile_data     = session.get("profile")
+    profile_data = get_latest_profile(session.get("user_id")) or session.get("profile")
+    if profile_data:
+        session["profile"] = profile_data
+        session["active_profile_id"] = profile_data.get("id")
     selected_role_id = session.get("selected_role_id")
 
     if not profile_data:
@@ -453,8 +508,13 @@ def results():
 
     # ── Skill gap ──────────────────────────────────────
     user_skills = list(profile_data.get("skills", []) or [])
-    existing_progress = session.get("progress", {})
-    completed_skills  = existing_progress.get("completed", [])
+
+    existing_progress = get_progress(
+        session.get("user_id"),
+        profile_id=session.get("active_profile_id"),
+        role_id=selected_role_id,
+    )
+    completed_skills = existing_progress.get("completed", [])
     if completed_skills:
         existing_norm = {normalize_skill(s) for s in user_skills}
         for s in completed_skills:
@@ -566,15 +626,36 @@ def results():
             "skills":   role_top_skills[:3],
         }]
 
-    # ── Progress checklist ─────────────────────────────
-    progress = session.get("progress")
+    # ── Progress checklist ────────────────────────────
+    progress = get_progress(
+        session.get("user_id"),
+        profile_id=session.get("active_profile_id"),
+        role_id=selected_role_id,
+    )
     if not progress or progress.get("role_id") != selected_role_id:
-        session["progress"] = {"role_id": selected_role_id, "skills": missing_skills, "completed": []}
+        progress = {
+            "role_id":   selected_role_id,
+            "skills":    missing_skills,
+            "completed": [],
+        }
+        progress = save_progress(
+            session.get("user_id"),
+            progress,
+            profile_id=session.get("active_profile_id"),
+        )
+        session["progress"] = progress
     else:
-        session["progress"]["skills"]    = missing_skills
-        session["progress"]["completed"] = [
-            s for s in session["progress"].get("completed", []) if s in missing_skills
+        progress["skills"] = missing_skills
+        progress["completed"] = [
+            s for s in progress.get("completed", [])
+            if s in missing_skills
         ]
+        progress = save_progress(
+            session.get("user_id"),
+            progress,
+            profile_id=session.get("active_profile_id"),
+        )
+        session["progress"] = progress
 
     results_obj = {
         "degree":               profile_data.get("degree", ""),
@@ -598,28 +679,57 @@ def results():
 @app.route("/progress", methods=["GET", "POST"])
 @login_required
 def progress():
-    data = session.get("progress", {"skills": [], "completed": []})
+    profile_id = session.get("active_profile_id")
+    selected_role_id = session.get("selected_role_id")
+    data = get_progress(
+        session.get("user_id"),
+        profile_id=profile_id,
+        role_id=selected_role_id,
+    )
+    if not data.get("skills") and session.get("progress"):
+        data = session.get("progress", {"skills": [], "completed": []})
+
     if request.method == "POST":
-        completed          = request.form.getlist("completed")
-        allowed            = set(data.get("skills", []))
-        data["completed"]  = [c for c in completed if c in allowed]
+        completed = request.form.getlist("completed")
+        # keep only items that are still in the checklist
+        allowed = set(data.get("skills", []))
+        data["completed"] = [c for c in completed if c in allowed]
+        if selected_role_id:
+            data["role_id"] = selected_role_id
+        data = save_progress(session.get("user_id"), data, profile_id=profile_id)
         session["progress"] = data
-        profile = session.get("profile", {})
+
+        # Also merge newly-completed skills into the profile so they
+        # persist across sessions and show up in results immediately
+        profile = get_latest_profile(session.get("user_id")) or session.get("profile", {})
         if profile:
             existing = {normalize_skill(s) for s in profile.get("skills", [])}
             for s in data["completed"]:
                 if normalize_skill(s) not in existing:
                     profile.setdefault("skills", []).append(s)
                     existing.add(normalize_skill(s))
+            saved_profile = save_profile(
+                session.get("user_id"),
+                profile,
+                profile_id=profile.get("id") or profile_id,
+            )
+            if saved_profile:
+                profile = saved_profile
+                session["active_profile_id"] = saved_profile["id"]
             session["profile"] = profile
         return redirect(url_for("progress"))
-    return render_template("progress.html", progress=data)
+
+    profiles = get_user_profiles(session.get("user_id"))
+    return render_template("progress.html", progress=data, profiles=profiles)
 
 
 @app.route("/survey", methods=["GET"])
 @login_required
 def survey():
-    profile_data = session.get("profile")
+    profile_data = get_latest_profile(session.get("user_id")) or session.get("profile")
+    if profile_data:
+        session["profile"] = profile_data
+        session["active_profile_id"] = profile_data.get("id")
     if not profile_data:
         return redirect(url_for("profile"))
 
@@ -674,7 +784,7 @@ Return ONLY a valid JSON array, no markdown, no explanation:
 @app.route("/survey/submit", methods=["POST"])
 @login_required
 def survey_submit():
-    profile_data    = session.get("profile", {})
+    profile_data = get_latest_profile(session.get("user_id")) or session.get("profile", {})
     newly_confirmed = [
         skill for skill, score in request.form.items()
         if score.isdigit() and int(score) >= 3
@@ -685,7 +795,15 @@ def survey_submit():
         if normalize_skill(skill) not in existing_norm:
             existing.append(skill)
     profile_data["skills"] = existing
-    session["profile"]     = profile_data
+    saved_profile = save_profile(
+        session.get("user_id"),
+        profile_data,
+        profile_id=profile_data.get("id") or session.get("active_profile_id"),
+    )
+    session["profile"] = saved_profile or profile_data
+    if saved_profile:
+        session["active_profile_id"] = saved_profile["id"]
+
     return redirect(url_for("loading"))
 
 
@@ -716,14 +834,44 @@ def loading():
 @app.post("/set-session")
 def set_session():
     data = request.get_json(silent=True) or {}
-    print("=== SET SESSION CALLED ===")
-    print("Data received:", data)
-    session["user_id"]      = data.get("user_id")
-    session["display_name"] = data.get("display_name")
-    session.modified = True
-    print("Session after set:", dict(session))
-    return jsonify({"ok": True})
+    user = upsert_user(
+        data.get("user_id"),
+        display_name=data.get("display_name"),
+        email=data.get("email"),
+        username=data.get("username"),
+        user_type=data.get("user_type"),
+    )
 
+    display_name = (
+        (user or {}).get("display_name")
+        or data.get("display_name")
+        or data.get("email")
+    )
+
+    session["user_id"]      = data.get("user_id")
+    session["display_name"] = display_name
+
+    existing_profile = get_latest_profile(data.get("user_id"))
+    if existing_profile:
+        session["profile"] = existing_profile
+        session["active_profile_id"] = existing_profile["id"]
+
+    selected_role_id = session.get("selected_role_id")
+    existing_progress = get_progress(
+        data.get("user_id"),
+        profile_id=session.get("active_profile_id"),
+        role_id=selected_role_id,
+    )
+    if existing_progress.get("skills"):
+        session["progress"] = existing_progress
+
+    if user:
+        session["db_user_id"] = user["id"]
+    return {
+        "ok": True,
+        "display_name": display_name,
+        "email": (user or {}).get("email") or data.get("email"),
+    }
 
 @app.get("/logout")
 def logout():

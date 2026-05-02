@@ -167,7 +167,7 @@
   ══════════════════════════════════════════════════════ -->
   <script type="module">
   import { initializeApp }       from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile }
     from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -290,22 +290,40 @@
      /set-session so Flask's @login_required lets the
      user through to protected pages like /profile.
   ─────────────────────────────────────────────────── */
-  async function notifyFlask(uid, displayName) {
-    await fetch('/set-session', {
+  async function notifyFlask(uid, displayName, extra = {}) {
+    const response = await fetch('/set-session', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ user_id: uid, display_name: displayName })
+      body:    JSON.stringify({
+        user_id: uid,
+        display_name: displayName,
+        email: extra.email || null,
+        username: extra.username || null,
+        user_type: extra.user_type || null
+      })
     });
+    return response.ok ? response.json() : {};
   }
 
   /* ── Update nav after login ───────────────────── */
+  function firstNameFrom(displayName) {
+    const cleaned = String(displayName || '').trim();
+    if (!cleaned) return 'there';
+    if (cleaned.includes('@')) return cleaned.split('@')[0];
+    return cleaned.split(/\s+/)[0];
+  }
+
   function setLoggedIn(displayName) {
     sessionStorage.setItem('sp_logged_in', 'true');
+    if (displayName && !String(displayName).includes('@')) {
+      try { localStorage.setItem('sp_display_name', displayName); } catch(e) {}
+    }
+    const firstName = firstNameFrom(displayName);
 
     const navAuth = document.querySelector('.nav-auth');
     if (navAuth) {
       navAuth.innerHTML = `
-        <span style="font-size:.82rem;color:var(--muted-light);">Hi, ${displayName.split(' ')[0]} 👋</span>
+        <span style="font-size:.82rem;color:var(--muted-light);">Hi, ${firstName} 👋</span>
         <div class="dots-menu-wrap">
           <button type="button" class="dots-btn" id="dots-btn" aria-label="Menu">
             <span></span><span></span><span></span>
@@ -329,6 +347,7 @@
       document.getElementById('sign-out-btn')?.addEventListener('click', () => {
         signOut(auth).then(() => {
           sessionStorage.removeItem('sp_logged_in');
+          try { localStorage.removeItem('sp_display_name'); } catch(e) {}
           fetch('/logout');
           location.reload();
         });
@@ -338,24 +357,31 @@
 
   /* ── Watch auth state on every page ──────────── */
   onAuthStateChanged(auth, async user => {
-    if (user) {
-      // Always sync Flask session on every page load
-      await notifyFlask(user.uid, user.displayName || user.email);
-      setLoggedIn(user.displayName || user.email);
-    } else {
-      // Firebase says not logged in — clear Flask session
+    if (!user) {
       sessionStorage.removeItem('sp_logged_in');
       fetch('/logout', { credentials: 'same-origin' }).catch(() => {});
+      return;
     }
+
+    let savedName = null;
+    try { savedName = localStorage.getItem('sp_display_name'); } catch(e) {}
+
+    const flaskUser = await notifyFlask(user.uid, user.displayName || null, {
+      email: user.email
+    });
+
+    setLoggedIn(flaskUser.display_name || user.displayName || savedName || user.email);
   });
 
   /* ── Google sign-in ───────────────────────────── */
   document.getElementById('google-btn')?.addEventListener('click', async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      await notifyFlask(result.user.uid, result.user.displayName || result.user.email);
+      const flaskUser = await notifyFlask(result.user.uid, result.user.displayName || result.user.email, {
+        email: result.user.email
+      });
       closeModal();
-      setLoggedIn(result.user.displayName || result.user.email);
+      setLoggedIn(flaskUser.display_name || result.user.displayName || result.user.email);
       window.location.href = "{{ url_for('roles') }}";
     } catch(err) {
       showError('Google sign-in failed. Please try again.');
@@ -372,18 +398,27 @@
         const email    = document.getElementById('signin-email').value;
         const password = document.getElementById('signin-password').value;
         const result   = await signInWithEmailAndPassword(auth, email, password);
-        await notifyFlask(result.user.uid, result.user.displayName || result.user.email);
+        const flaskUser = await notifyFlask(result.user.uid, result.user.displayName || null, {
+          email: result.user.email || email
+        });
         closeModal();
-        setLoggedIn(result.user.displayName || result.user.email);
+        setLoggedIn(flaskUser.display_name || result.user.displayName || result.user.email);
         window.location.href = "{{ url_for('roles') }}";
       } else {
         const name     = document.getElementById('reg-name').value;
+        const username = document.getElementById('reg-username').value;
         const email    = document.getElementById('reg-email').value;
         const password = document.getElementById('reg-password').value;
+        const userType = document.querySelector('input[name="user_type"]:checked')?.value || 'student';
         const result   = await createUserWithEmailAndPassword(auth, email, password);
-        await notifyFlask(result.user.uid, name || result.user.email);
+        await updateProfile(result.user, { displayName: name });
+        const flaskUser = await notifyFlask(result.user.uid, name || result.user.email, {
+          email: result.user.email || email,
+          username: username,
+          user_type: userType
+        });
         closeModal();
-        setLoggedIn(name || result.user.email);
+        setLoggedIn(flaskUser.display_name || name || result.user.email);
         window.location.href = "{{ url_for('roles') }}";
       }
     } catch(err) {
