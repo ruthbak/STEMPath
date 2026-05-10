@@ -1,3 +1,22 @@
+<!--
+  loading.html — Dijkstra Loading Animation
+  ==========================================
+  Animated interstitial page shown while the results are being computed.
+
+  Displays:
+    - Animated graph canvas (NetworkX-style nodes lighting up progressively)
+    - 4-step sequencer showing Dijkstra algorithm stages
+    - Progress bar advancing through the steps
+
+  Timing:
+    - Steps activate at 900ms, 1700ms, 2600ms, 3300ms
+    - Redirects to /results after 4600ms
+
+  Note: The actual Dijkstra computation happens in /results on the server.
+  This page exists purely for UX — to give the user feedback that their
+  pathway is being generated.
+-->
+
 {% extends "base.html" %}
 {% block title %}Computing your pathway… • STEMPath{% endblock %}
 

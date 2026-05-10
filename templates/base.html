@@ -1,4 +1,23 @@
-<!--This deals with authentication and sign ins-->
+<!--
+  base.html — Base Layout Template
+  ==================================
+  Master layout inherited by all STEMPath pages via {% extends "base.html" %}.
+
+  Provides:
+    - Site header with STEMPath branding and theme/text toggle controls
+    - Primary navigation with auth-aware Browse Roles link
+    - Firebase Authentication modal (Sign In / Create Account)
+    - Dark/light theme toggle persisted via localStorage
+    - Three-dot dropdown menu for authenticated users
+    - @login_required sync: notifyFlask() POSTs to /set-session after
+      every Firebase login so the Flask session stays in sync
+    - window.requireAuth() — guards protected nav links and buttons
+    - Footer and main content block
+
+  Authentication flow:
+    Firebase (client) → notifyFlask() → /set-session → Flask session
+-->
+
 
 <!DOCTYPE html>
 <html lang="en">

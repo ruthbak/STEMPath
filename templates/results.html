@@ -1,6 +1,28 @@
-<!--This is te results page that provides skill gap analysis + personalized
-recommendations for certifications, courses and learning resources, it has 
-a roadmap view-->
+<!--
+  results.html — Personalised Career Roadmap
+  ============================================
+  Displays the complete STEMPath career pathway output for the user's
+  selected role and academic profile.
+
+  Sections:
+    1. Topbar — role title, degree, location, optimize_for preference,
+       and current match score pill
+    2. Profile Summary — current skills, skill gaps, match score ring
+       (SVG with purple-to-cyan gradient, filled proportionally)
+    3. Personalized Roadmap — step cards for each missing skill (up to 3)
+       plus a Get Certified step; road graphic image on the right
+    4. Recommended Resources accordion:
+       - Skill Gaps to Address: why-it-matters text, embedded YouTube
+         videos (from Dijkstra path video nodes + Khan Academy),
+         course card with provider logo
+       - Certifications: matched from CERT_LIBRARY by skill overlap
+         and role category, with provider logo thumbnails
+       - Job Opportunities: live Caribbean job listings or fallback
+         search links (LinkedIn, CaribbeanJobs, Indeed JM)
+    5. Bottom actions — navigate, edit profile, track progress, print
+
+  Data: all content passed via results_obj dict from app.py /results route.
+-->
 
 {% extends "base.html" %}
 {% block title %}Your Roadmap • STEMPath{% endblock %}
@@ -15,6 +37,12 @@ a roadmap view-->
       <h1 class="rm2-page-title">{{ results.selected_role }}</h1>
       <p class="rm2-page-subtitle">
         {{ results.degree or "—" }} &nbsp;·&nbsp; {{ results.location or "—" }}
+        &nbsp;·&nbsp; Optimised for:
+        {% if results.optimize_for == 'time' %}⚡ Fastest
+        {% elif results.optimize_for == 'cost' %}💰 Cheapest
+        {% elif results.optimize_for == 'easy' %}🎯 Easiest
+        {% else %}⚖️ Balanced
+        {% endif %}
       </p>
     </div>
 
@@ -236,11 +264,22 @@ a roadmap view-->
 
               <div class="rm2-link-row">
                 {% if results.skill_videos and results.skill_videos.get(skill) %}
-                  {% set vid = results.skill_videos.get(skill)[0] %}
-                  <a href="{{ vid.url }}" target="_blank" rel="noopener" class="rm2-video-thumb-link">
-                    <img src="{{ vid.thumbnail }}" alt="{{ vid.title }}" class="rm2-video-thumb-img" loading="lazy"/>
-                    <span class="rm2-video-thumb-label">▶ {{ vid.title[:45] }}{% if vid.title|length > 45 %}...{% endif %}</span>
-                  </a>
+                  <div class="rm2-video-embeds">
+                    {% for vid in results.skill_videos.get(skill) %}
+                      <div class="rm2-video-embed-wrap">
+                        <iframe
+                          src="https://www.youtube.com/embed/{{ vid.video_id }}"
+                          title="{{ vid.title }}"
+                          frameborder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowfullscreen
+                          loading="lazy"
+                          class="rm2-video-embed">
+                        </iframe>
+                        <p class="rm2-video-embed-title">{{ vid.title[:60] }}{% if vid.title|length > 60 %}...{% endif %}</p>
+                      </div>
+                    {% endfor %}
+                  </div>
                 {% endif %}
 
                 {% set learning_match = (results.recommended_learning | selectattr('skill', 'equalto', skill) | list) %}
