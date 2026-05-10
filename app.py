@@ -23,6 +23,7 @@ from stempath_db import (
     upsert_user,
 )
 import urllib.request
+import urllib.parse
 
 # Build graph once at startup
 graph = build_learning_graph(courses)
@@ -186,11 +187,194 @@ def fetch_youtube_videos(query, max_results=2):
                 "url":       f"https://www.youtube.com/watch?v={vid_id}",
                 "thumbnail": thumb,
                 "video_id":  vid_id,
+                "embed_url": f"https://www.youtube.com/embed/{vid_id}",
             })
         return videos
     except Exception as e:
         print("YouTube API error:", e)
         return []
+
+
+def microsoft_learn_search_url(query):
+    return f"https://learn.microsoft.com/en-us/search/?terms={urllib.parse.quote(query)}"
+
+
+def _question_for_skill(skill, reason):
+    if reason == "validate_claimed":
+        question = (
+            f"You listed {skill}. How confident are you applying it in a "
+            "coursework, project, or workplace task?"
+        )
+    else:
+        question = (
+            f"{skill} is important for this career path. How much experience "
+            "do you currently have with it?"
+        )
+    return {
+        "skill": skill,
+        "reason": reason,
+        "question": question,
+        "scale_labels": {
+            "1": "No experience",
+            "3": "Some experience",
+            "5": "Proficient",
+        },
+    }
+
+
+def build_dynamic_survey_questions(profile_data, role):
+    role_skills = role.get("top_skills", []) if role else []
+    claimed_skills = profile_data.get("skills", []) or []
+    claimed_norm = {normalize_skill(s) for s in claimed_skills}
+
+    claimed_target_skills = [
+        skill for skill in role_skills
+        if normalize_skill(skill) in claimed_norm
+    ]
+    missing_target_skills = [
+        skill for skill in role_skills
+        if normalize_skill(skill) not in claimed_norm
+    ]
+
+    # The count is data-driven: validate up to three claimed role skills,
+    # then ask about the highest-priority gaps. This avoids a fixed survey size.
+    validate_count = min(3, len(claimed_target_skills))
+    gap_count = min(7 - validate_count, len(missing_target_skills))
+
+    questions = [
+        _question_for_skill(skill, "validate_claimed")
+        for skill in claimed_target_skills[:validate_count]
+    ]
+    questions.extend(
+        _question_for_skill(skill, "assess_gap")
+        for skill in missing_target_skills[:gap_count]
+    )
+
+    rationale = {
+        "claimed_target_count": len(claimed_target_skills),
+        "missing_target_count": len(missing_target_skills),
+        "validate_count": validate_count,
+        "gap_count": gap_count,
+        "total": len(questions),
+    }
+    return questions, rationale, missing_target_skills
+
+
+def build_graph_overview(graph):
+    skill_nodes = [
+        n for n in graph.nodes
+        if n != "ROOT" and not str(n).startswith("GATE::")
+    ]
+    gate_nodes = [n for n in graph.nodes if str(n).startswith("GATE::")]
+    edges = []
+    visual_edges = []
+    visual_nodes = set()
+    for source, target, data in graph.edges(data=True):
+        course = data.get("course", "")
+        if course == "return_to_root":
+            continue
+        visual_nodes.update([source, target])
+        edges.append({
+            "from": source,
+            "to": target,
+            "course": course,
+            "time": data.get("time", 0),
+            "difficulty": data.get("difficulty", 0),
+            "cost": data.get("cost", 0),
+            "is_gate_check": course.startswith("prereq_check::"),
+        })
+        visual_edges.append({
+            "from": source,
+            "to": target,
+            "course": course,
+            "is_gate_check": course.startswith("prereq_check::"),
+        })
+
+    prereq_targets = {edge["to"] for edge in visual_edges}
+    levels = {"ROOT": 0}
+    for node in visual_nodes:
+        if node not in levels:
+            levels[node] = 1 if node not in prereq_targets else 2
+
+    changed = True
+    while changed:
+        changed = False
+        for edge in visual_edges:
+            source_level = levels.get(edge["from"], 1)
+            target_level = levels.get(edge["to"], 1)
+            next_level = min(source_level + 1, 5)
+            if next_level > target_level:
+                levels[edge["to"]] = next_level
+                changed = True
+
+    grouped = {}
+    for node in visual_nodes:
+        grouped.setdefault(levels.get(node, 1), []).append(node)
+
+    graph_nodes = []
+    for level in sorted(grouped):
+        nodes = sorted(grouped[level])
+        for index, node in enumerate(nodes):
+            count = len(nodes)
+            graph_nodes.append({
+                "id": re.sub(r"[^a-zA-Z0-9_-]", "_", str(node)),
+                "label": str(node).replace("GATE::", "Gate: "),
+                "raw": node,
+                "level": level,
+                "x": 80 + (level * 165),
+                "y": 70 + (index + 1) * (420 / (count + 1)),
+                "type": (
+                    "root" if node == "ROOT"
+                    else "gate" if str(node).startswith("GATE::")
+                    else "skill"
+                ),
+            })
+    node_ids = {node["raw"]: node["id"] for node in graph_nodes}
+    node_lookup = {node["raw"]: node for node in graph_nodes}
+    graph_visual = {
+        "nodes": graph_nodes,
+        "layers": [
+            {
+                "level": level,
+                "title": "Start" if level == 0 else f"Layer {level}",
+                "nodes": [
+                    {
+                        "label": str(node).replace("GATE::", "Gate: "),
+                        "raw": node,
+                        "type": (
+                            "root" if node == "ROOT"
+                            else "gate" if str(node).startswith("GATE::")
+                            else "skill"
+                        ),
+                    }
+                    for node in sorted(grouped[level])
+                ],
+            }
+            for level in sorted(grouped)
+        ],
+        "edges": [
+            {
+                **edge,
+                "from_id": node_ids.get(edge["from"], ""),
+                "to_id": node_ids.get(edge["to"], ""),
+                "from_x": node_lookup.get(edge["from"], {}).get("x", 0),
+                "from_y": node_lookup.get(edge["from"], {}).get("y", 0),
+                "to_x": node_lookup.get(edge["to"], {}).get("x", 0),
+                "to_y": node_lookup.get(edge["to"], {}).get("y", 0),
+            }
+            for edge in visual_edges
+        ],
+    }
+
+    return {
+        "node_count": graph.number_of_nodes(),
+        "edge_count": graph.number_of_edges(),
+        "skill_nodes": sorted(skill_nodes),
+        "gate_nodes": sorted(gate_nodes),
+        "edges": sorted(edges, key=lambda e: (str(e["from"]), str(e["to"]), str(e["course"]))),
+        "visual": graph_visual,
+        "cost_formula": "time x weight_time + difficulty x weight_difficulty + cost x weight_cost",
+    }
 
 # ── Build recommended learning ────────────────────────────────
 def build_recommended_learning(learning_paths):
@@ -215,7 +399,7 @@ def build_recommended_learning(learning_paths):
             continue
         prereqs   = learning_nodes[:-1] if len(learning_nodes) > 1 else []
         edx_link  = final_step.get("edx_link") or final_step.get("edx", "")
-        ms_link   = final_step.get("ms_learn") or final_step.get("microsoft", "")
+        ms_link   = final_step.get("ms_learn_search") or final_step.get("ms_learn") or final_step.get("microsoft", "")
         best_link = edx_link or ms_link or ""
         if edx_link:
             provider = final_step.get("provider") or "edX"
@@ -575,56 +759,119 @@ def results():
     for gap_skill in pathfindable_skills[:4]:
         path, cost = find_learning_path(graph, user_skills, gap_skill, **weights)
         if path and len(path) > 1:
-            steps = []
+            steps       = []
+            graph_edges = []
             for i in range(len(path) - 1):
                 edge        = graph.get_edge_data(path[i], path[i + 1])
                 course_name = edge.get("course", "")
+                edge_cost   = (
+                    edge.get("time", 0) * weights["weight_time"]
+                    + edge.get("difficulty", 0) * weights["weight_difficulty"]
+                    + edge.get("cost", 0) * weights["weight_cost"]
+                )
+                graph_edges.append({
+                    "from":       path[i],
+                    "to":         path[i + 1],
+                    "course":     course_name,
+                    "time":       edge.get("time", 0),
+                    "difficulty": edge.get("difficulty", 0),
+                    "cost":       edge.get("cost", 0),
+                    "edge_cost":  round(edge_cost, 1),
+                    "is_hidden":  course_name == "return_to_root" or course_name.startswith("prereq_check::"),
+                })
                 if course_name == "return_to_root" or course_name.startswith("prereq_check::"):
                     continue
                 course_data = course_lookup.get(course_name, {})
-                videos      = fetch_youtube_videos(f"{course_name} tutorial", max_results=2)
+                video_query = f"{path[i + 1]} {course_name} beginner tutorial"
+                videos      = fetch_youtube_videos(video_query, max_results=3)
+                learn_query = f"{path[i + 1]} {course_name}"
                 steps.append({
                     "from":           path[i],
                     "to":             path[i + 1],
                     "course":         course_name,
                     "provider":       course_data.get("provider", ""),
                     "edx_link":       course_data.get("edx_link", ""),
-                    "ms_learn":       course_data.get("ms_learn", ""),
+                    "ms_learn":       microsoft_learn_search_url(learn_query),
+                    "ms_learn_search": microsoft_learn_search_url(learn_query),
                     "youtube_search": course_data.get("youtube", ""),
+                    "topics":         course_data.get("topics", []),
+                    "video_query":    video_query,
                     "videos":         videos,
+                    "time":           edge.get("time", 0),
+                    "difficulty":     edge.get("difficulty", 0),
+                    "cost":           edge.get("cost", 0),
+                    "edge_cost":      round(edge_cost, 1),
+                    "why_this_step":  (
+                        f"This course moves you from {path[i]} to {path[i + 1]} "
+                        f"and was selected because it is on the lowest-cost route "
+                        f"to {gap_skill} under your {optimize_for} preference."
+                    ),
                 })
             learning_paths.append({
                 "target_skill": gap_skill,
                 "path":         path,
+                "graph_edges":  graph_edges,
                 "steps":        steps,
                 "total_cost":   round(cost, 1),
+                "weights":      weights,
+                "optimize_for": optimize_for,
             })
 
     recommended_learning = build_recommended_learning(learning_paths)
 
-    # ── YouTube per skill ──────────────────────────────
+    # Videos now belong to ordered graph steps, not loose skill cards.
     skill_videos = {}
-    for gap in missing_skills[:4]:
-        skill_videos[gap] = fetch_youtube_videos(f"{gap} tutorial for beginners", max_results=2)
 
     # ── Job listings ───────────────────────────────────
     location   = profile_data.get("location", "Remote") or "Remote"
     role_title = role.get("title", "")
     job_listings = []
     try:
-        from adapters.caribbeanjobs import fetch_caribbean_jobs
-        job_listings = fetch_caribbean_jobs(role_title, location=location) or []
+        from adapters.caribbeanjobs import fetch_jobs
+        raw_jobs = fetch_jobs(role_title, location=location) or []
+        job_listings = [
+            {
+                "title": job.get("title", role_title),
+                "company": job.get("company", "CaribbeanJobs"),
+                "location": job.get("location", location),
+                "link": job.get("link") or job.get("url") or "",
+                "skills": role_top_skills[:3],
+                "source": "CaribbeanJobs",
+            }
+            for job in raw_jobs[:6]
+        ]
     except Exception as e:
         print("CaribbeanJobs adapter error:", e)
 
     if not job_listings:
-        job_listings = [{
-            "title":    f"{role_title} (Search on CaribbeanJobs)",
-            "company":  "See live listings",
-            "location": location,
-            "link":     f"https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={role_title.replace(' ','+')}",
-            "skills":   role_top_skills[:3],
-        }]
+        encoded_role     = urllib.parse.quote(role_title)
+        encoded_location = urllib.parse.quote(location)
+        job_listings = [
+            {
+                "title":    f"{role_title} roles",
+                "company":  "LinkedIn Jobs",
+                "location": location,
+                "link":     f"https://www.linkedin.com/jobs/search/?keywords={encoded_role}&location={encoded_location}",
+                "skills":   role_top_skills[:3],
+                "source":   "LinkedIn",
+            },
+            {
+                "title":    f"{role_title} openings",
+                "company":  "CaribbeanJobs",
+                "location": location,
+                "link":     f"https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={encoded_role}",
+                "skills":   role_top_skills[:3],
+                "source":   "CaribbeanJobs",
+            },
+            {
+                "title":    f"{role_title} listings",
+                "company":  "Indeed Jamaica",
+                "location": location,
+                "link":     f"https://jm.indeed.com/jobs?q={encoded_role}&l={encoded_location}",
+                "skills":   role_top_skills[:3],
+                "source":   "Indeed",
+            },
+        ]
 
     # ── Progress checklist ────────────────────────────
     progress = get_progress(
@@ -672,6 +919,7 @@ def results():
         "skill_videos":         skill_videos,
         "job_listings":         job_listings,
         "unsupported_skills":   unsupported_skills,
+        "graph_overview":       build_graph_overview(graph),
     }
     return render_template("results.html", results=results_obj)
 
@@ -735,74 +983,49 @@ def survey():
 
     selected_role_id = session.get("selected_role_id")
     role             = find_role_by_id(selected_role_id, load_roles()) if selected_role_id else None
-    all_role_skills  = role.get("top_skills", []) if role else sorted({
-        skill for r in load_roles() for skill in r.get("top_skills", [])
-    })
+    if not role:
+        return redirect(url_for("roles"))
 
-    confirmed = {normalize_skill(s) for s in profile_data.get("skills", [])}
-    gaps      = [s for s in all_role_skills if normalize_skill(s) not in confirmed]
+    questions, survey_meta, gaps = build_dynamic_survey_questions(profile_data, role)
 
-    print("Confirmed skills:", list(confirmed))
-    print("Gaps found:", gaps)
-
-    questions = []
-    if gaps:
-        try:
-            degree = profile_data.get("degree", "")
-            major  = profile_data.get("major", "")
-            client = Groq()
-            prompt = f"""A Caribbean university student is studying {degree} majoring in {major}.
-They have confirmed these skills: {list(confirmed)}.
-They are missing these skills relevant to STEM careers: {gaps[:10]}.
-
-Generate up to 6 concise survey questions ONLY about technical skills relevant to a {major} student.
-Do NOT ask about biology, medicine, or any field unrelated to their degree.
-Return ONLY a valid JSON array, no markdown, no explanation:
-[
-  {{
-    "skill": "skill name",
-    "question": "the question text",
-    "scale_labels": {{"1": "No experience", "3": "Some experience", "5": "Proficient"}}
-  }}
-]"""
-            resp      = client.chat.completions.create(
-                model="llama-3.3-70b-versatile", max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            raw       = resp.choices[0].message.content.strip()
-            raw       = re.sub(r"^```json|^```|```$", "", raw, flags=re.MULTILINE).strip()
-            questions = json.loads(raw)
-        except Exception as e:
-            print("Groq error:", e)
-            import traceback; traceback.print_exc()
-            questions = []
+    print("Survey claimed role skills:", survey_meta["claimed_target_count"])
+    print("Survey gaps found:", gaps)
+    print("Survey questions generated:", survey_meta["total"])
 
     session["survey_gaps"] = gaps
-    return render_template("survey.html", questions=questions, profile=profile_data)
+    session["survey_questions"] = questions
+    return render_template(
+        "survey.html",
+        questions=questions,
+        survey_meta=survey_meta,
+        role=role,
+        profile=profile_data,
+    )
 
 
 @app.route("/survey/submit", methods=["POST"])
 @login_required
 def survey_submit():
     profile_data = get_latest_profile(session.get("user_id")) or session.get("profile", {})
-    newly_confirmed = [
-        skill for skill, score in request.form.items()
-        if score.isdigit() and int(score) >= 3
-    ]
-    existing      = profile_data.get("skills", [])
-    existing_norm = {normalize_skill(s) for s in existing}
-    for skill in newly_confirmed:
-        if normalize_skill(skill) not in existing_norm:
-            existing.append(skill)
-    profile_data["skills"] = existing
-    saved_profile = save_profile(
-        session.get("user_id"),
-        profile_data,
-        profile_id=profile_data.get("id") or session.get("active_profile_id"),
-    )
-    session["profile"] = saved_profile or profile_data
-    if saved_profile:
-        session["active_profile_id"] = saved_profile["id"]
+    survey_scores = []
+    for key, score in request.form.items():
+        if not key.startswith("score_") or not score.isdigit():
+            continue
+        index = key.replace("score_", "", 1)
+        skill = request.form.get(f"skill_{index}", "").strip()
+        reason = request.form.get(f"reason_{index}", "").strip()
+        if skill:
+            survey_scores.append({
+                "skill": skill,
+                "reason": reason,
+                "score": int(score),
+            })
+
+    # Survey answers measure readiness/confidence. They do not mutate
+    # confirmed profile skills, because that would erase the skill gap and
+    # inflate the match score before the learner completes the roadmap.
+    session["survey_scores"] = survey_scores
+    session["profile"] = profile_data
 
     return redirect(url_for("loading"))
 
@@ -820,6 +1043,8 @@ def reset():
     session.pop("selected_role_id", None)
     session.pop("progress", None)
     session.pop("survey_gaps", None)
+    session.pop("survey_scores", None)
+    session.pop("survey_questions", None)
     session.pop("flash", None)
     session.pop("resume_notice", None)
     return redirect(url_for("roles"))

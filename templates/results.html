@@ -172,12 +172,236 @@ a roadmap view-->
     </div>
   </section>
 
+  <!-- Generated graph path -->
+  <section class="card rm4-path-card">
+    <div class="rm4-path-head">
+      <div>
+        <p class="section-label">Graph-generated plan</p>
+        <h2 class="rm2-section-title">Skill Gap Learning Path</h2>
+      </div>
+      <div class="rm4-graph-stats">
+        <span>{{ results.graph_overview.node_count }} nodes</span>
+        <span>{{ results.graph_overview.edge_count }} edges</span>
+      </div>
+    </div>
+
+    <div class="rm4-explain-grid">
+      <div class="rm4-explain-box">
+        <strong>Nodes</strong>
+        <p>Skills are graph nodes. <code>ROOT</code> means a beginner start. Gate nodes represent courses that require multiple prerequisites.</p>
+      </div>
+      <div class="rm4-explain-box">
+        <strong>Edges</strong>
+        <p>Course resources are edges. An edge connects the skill you have to the skill the course teaches.</p>
+      </div>
+      <div class="rm4-explain-box">
+        <strong>Cost</strong>
+        <p>{{ results.graph_overview.cost_formula }}. Dijkstra chooses the route with the lowest total cost.</p>
+      </div>
+    </div>
+
+    <details class="rm4-edge-details">
+      <summary>Show the full course graph that was built</summary>
+      <div class="rm4-full-graph">
+        <div>
+          <h3>Layered course graph</h3>
+          <div class="rm4-layered-graph" aria-label="Layered full course graph">
+            {% for layer in results.graph_overview.visual.layers %}
+              <section class="rm4-graph-layer">
+                <div class="rm4-layer-title">{{ layer.title }}</div>
+                <div class="rm4-layer-nodes">
+                  {% for node in layer.nodes %}
+                    <span class="rm4-layer-node rm4-layer-node-{{ node.type }}">
+                      {{ node.label }}
+                    </span>
+                  {% endfor %}
+                </div>
+              </section>
+            {% endfor %}
+          </div>
+          <div class="rm4-legend">
+            <span><i class="rm4-legend-root"></i>ROOT/start</span>
+            <span><i class="rm4-legend-skill"></i>Skill</span>
+            <span><i class="rm4-legend-gate"></i>Multi-prerequisite gate</span>
+          </div>
+        </div>
+        <div>
+          <h3>Course connections</h3>
+          <div class="rm4-connection-grid">
+            {% for edge in results.graph_overview.edges %}
+              <article class="rm4-connection-card {% if edge.is_gate_check %}rm4-connection-card-gate{% endif %}">
+                <div class="rm4-connection-flow">
+                  <span>{{ edge["from"] }}</span>
+                  <b>→</b>
+                  <span>{{ edge["to"].replace('GATE::', 'Gate: ') }}</span>
+                </div>
+                <p>{{ edge.course.replace('prereq_check::', 'Prerequisite check: ') }}</p>
+                {% if not edge.is_gate_check %}
+                  <div class="rm4-mini-stats">
+                    <span>Time {{ edge.time }}</span>
+                    <span>Difficulty {{ edge.difficulty }}</span>
+                    <span>Cost {{ edge.cost }}</span>
+                  </div>
+                {% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </details>
+
+    {% if results.learning_paths %}
+      {% for lp in results.learning_paths %}
+        <article class="rm4-path-block">
+          <div class="rm4-path-title-row">
+            <div>
+              <h3>Target skill: {{ lp.target_skill }}</h3>
+              <p>Optimized for {{ lp.optimize_for }}. Total path cost: {{ lp.total_cost }}</p>
+            </div>
+            <div class="rm4-weight-pill">
+              time {{ lp.weights["weight_time"] }} · difficulty {{ lp.weights["weight_difficulty"] }} · cost {{ lp.weights["weight_cost"] }}
+            </div>
+          </div>
+
+          <div class="rm4-node-path" aria-label="Graph nodes along this path">
+            {% for node in lp.path %}
+              <span class="rm4-node {% if node == 'ROOT' %}rm4-node-root{% elif 'GATE::' in node %}rm4-node-gate{% endif %}">
+                {{ node.replace('GATE::', 'Gate: ') }}
+              </span>
+              {% if not loop.last %}<span class="rm4-arrow">→</span>{% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="rm4-graph-viz" aria-label="Visual graph path for {{ lp.target_skill }}">
+            {% set node_count = lp.path | length %}
+            {% set hop = 840 / (node_count - 1) if node_count > 1 else 840 %}
+            <svg viewBox="0 0 1000 250" role="img">
+              <title>Shortest path to {{ lp.target_skill }}</title>
+              {% for edge in lp.graph_edges %}
+                {% set x1 = 80 + (loop.index0 * hop) %}
+                {% set x2 = 80 + (loop.index * hop) %}
+                <line
+                  x1="{{ x1 }}" y1="100" x2="{{ x2 }}" y2="100"
+                  class="{% if edge.is_hidden %}rm4-svg-edge-muted{% else %}rm4-svg-edge{% endif %}"
+                />
+                <text x="{{ (x1 + x2) / 2 }}" y="76" class="rm4-svg-cost">{{ edge.edge_cost }}</text>
+              {% endfor %}
+              {% for node in lp.path %}
+                {% set x = 80 + (loop.index0 * hop) %}
+                <circle
+                  cx="{{ x }}" cy="100" r="24"
+                  class="{% if node == 'ROOT' %}rm4-svg-node-root{% elif 'GATE::' in node %}rm4-svg-node-gate{% else %}rm4-svg-node{% endif %}"
+                />
+                <text x="{{ x }}" y="105" text-anchor="middle" class="rm4-svg-node-label">{{ loop.index }}</text>
+                <text x="{{ x }}" y="152" text-anchor="middle" class="rm4-svg-label">
+                  {{ node.replace('GATE::', 'Gate: ') }}
+                </text>
+              {% endfor %}
+            </svg>
+          </div>
+
+          <details class="rm4-edge-details">
+            <summary>Show edge costs and why this is shortest</summary>
+            <div class="rm4-edge-table-wrap">
+              <table class="rm4-edge-table">
+                <thead>
+                  <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Course edge</th>
+                    <th>Time</th>
+                    <th>Difficulty</th>
+                    <th>Cost</th>
+                    <th>Weighted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for edge in lp.graph_edges %}
+                    <tr class="{% if edge.is_hidden %}rm4-muted-row{% endif %}">
+                      <td>{{ edge["from"] }}</td>
+                      <td>{{ edge["to"].replace('GATE::', 'Gate: ') }}</td>
+                      <td>{{ edge.course }}</td>
+                      <td>{{ edge.time }}</td>
+                      <td>{{ edge.difficulty }}</td>
+                      <td>{{ edge.cost }}</td>
+                      <td>{{ edge.edge_cost }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          {% if lp.steps %}
+            <div class="rm4-playlist">
+              {% for step in lp.steps %}
+                <section class="rm4-step">
+                  <div class="rm4-step-meta">
+                    <span class="rm4-step-number">Step {{ loop.index }}</span>
+                    <h4>{{ step.course }}</h4>
+                    <p>{{ step.why_this_step }}</p>
+                    <div class="rm4-mini-stats">
+                      <span>Teaches {{ step.to }}</span>
+                      <span>Time {{ step.time }}</span>
+                      <span>Difficulty {{ step.difficulty }}</span>
+                      <span>Edge cost {{ step.edge_cost }}</span>
+                    </div>
+                    {% if step.topics %}
+                      <div class="rm4-topic-list" aria-label="Learning checkpoints">
+                        {% for topic in step.topics %}
+                          <span>{{ topic }}</span>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    <div class="rm4-link-row">
+                      {% if step.ms_learn_search %}
+                        <a href="{{ step.ms_learn_search }}" target="_blank" rel="noopener">Microsoft Learn search</a>
+                      {% endif %}
+                      {% if step.edx_link %}
+                        <a href="{{ step.edx_link }}" target="_blank" rel="noopener">edX</a>
+                      {% endif %}
+                      {% if step.youtube_search %}
+                        <a href="{{ step.youtube_search }}" target="_blank" rel="noopener">YouTube search</a>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <div class="rm4-video-grid">
+                    {% if step.videos %}
+                      {% for vid in step.videos %}
+                        <a class="rm4-video-card" href="{{ vid.url }}" target="_blank" rel="noopener">
+                          {% if vid.embed_url %}
+                            <iframe src="{{ vid.embed_url }}" title="{{ vid.title }}" loading="lazy" allowfullscreen></iframe>
+                          {% else %}
+                            <img src="{{ vid.thumbnail }}" alt="{{ vid.title }}" loading="lazy">
+                          {% endif %}
+                          <span>{{ vid.title }}</span>
+                        </a>
+                      {% endfor %}
+                    {% else %}
+                      <div class="rm4-video-empty">
+                        Add a <code>YOUTUBE_API_KEY</code> to embed ranked videos for the query:
+                        <strong>{{ step.video_query }}</strong>
+                      </div>
+                    {% endif %}
+                  </div>
+                </section>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    {% else %}
+      <p class="muted">No graph path was generated because the missing skills are not currently represented in the course graph.</p>
+    {% endif %}
+  </section>
+
   <!-- Recommended Resources -->
   <section class="rm2-resources-wrap">
     <h2 class="rm2-section-title">Recommended Resources</h2>
 
     <!-- Skills to develop -->
-    <details class="rm2-accordion" open>
+    <details class="rm2-accordion" hidden>
       <summary>Skills to Develop</summary>
       <div class="rm2-accordion-body">
 
@@ -281,7 +505,7 @@ a roadmap view-->
     </details>
 
     <!-- Certifications -->
-    <details class="rm2-accordion">
+    <details class="rm2-accordion" open>
       <summary>Certifications</summary>
       <div class="rm2-accordion-body">
         {% if results.recommended_certs %}
@@ -340,32 +564,28 @@ a roadmap view-->
     </details>
 
     <!-- Job opportunities -->
-    <details class="rm2-accordion">
+    <details class="rm2-accordion" open>
       <summary>Job Opportunities</summary>
       <div class="rm2-accordion-body">
-        <div class="rm2-job-links">
-          <a class="rm2-link-pill" target="_blank" rel="noopener"
-             href="https://www.linkedin.com/jobs/search/?keywords={{ results.selected_role | urlencode }}&location={{ results.location | urlencode }}">
-             LinkedIn Jobs
-          </a>
-          <a class="rm2-link-pill" target="_blank" rel="noopener"
-             href="https://www.caribbeanjobs.com/ShowResults.aspx?Keywords={{ results.selected_role | urlencode }}">
-             CaribbeanJobs
-          </a>
-          <a class="rm2-link-pill" target="_blank" rel="noopener"
-             href="https://jm.indeed.com/jobs?q={{ results.selected_role | urlencode }}">
-             Indeed JM
-          </a>
+        <div class="rm2-job-header">
+          <div>
+            <h3>{{ results.selected_role }}</h3>
+            <p>Use these listings to compare the roadmap skills against real employer language in {{ results.location or "your target location" }}.</p>
+          </div>
+          <span>{{ results.top_skills_in_jobs | length }} role skills tracked</span>
         </div>
 
         {% if results.job_listings %}
           <div class="rm2-job-cards">
             {% for job in results.job_listings %}
               <div class="rm2-job-card">
+                {% if job.source %}
+                  <span class="rm2-job-source">{{ job.source }}</span>
+                {% endif %}
                 <h4>{{ job.title }}</h4>
                 <p>{{ job.company }} · {{ job.location }}</p>
                 {% if job.skills %}
-                  <div class="tag-list" style="margin-top:.5rem;">
+                  <div class="rm2-job-skills">
                     {% for s in job.skills %}
                       <span class="tag">{{ s }}</span>
                     {% endfor %}
@@ -373,8 +593,8 @@ a roadmap view-->
                 {% endif %}
                 {% if job.link %}
                   <a href="{{ job.link }}" target="_blank" rel="noopener"
-                     class="rm2-link-pill" style="margin-top:.75rem; display:inline-flex;">
-                    View listing →
+                     class="rm2-job-action">
+                    View matched listings
                   </a>
                 {% endif %}
               </div>

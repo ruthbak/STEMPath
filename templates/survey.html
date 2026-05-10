@@ -53,14 +53,37 @@
     border-color: #7c3aed;
     color: #ffffff !important;
   }
+  .survey-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 1rem 0 1.25rem;
+  }
+  .survey-meta span {
+    border: 1px solid var(--purple-border);
+    background: var(--purple-glow);
+    color: var(--purple-light);
+    border-radius: var(--radius-xs);
+    padding: .3rem .65rem;
+    font-size: .78rem;
+    font-weight: 700;
+  }
 </style>
 
 <section class="card" aria-labelledby="survey-title">
   <h2 id="survey-title">Quick skill check</h2>
   <p class="muted">
-    Based on your profile and resume, we still need to clarify a few skills.
-    Rate yourself honestly — this shapes your pathway recommendations.
+    This survey is generated from your claimed skills and the target career:
+    <strong>{{ role.title if role else "your selected role" }}</strong>.
+    We validate skills you already listed and check your readiness for missing target skills.
   </p>
+  {% if survey_meta %}
+    <div class="survey-meta">
+      <span>{{ survey_meta.total }} dynamic questions</span>
+      <span>{{ survey_meta.validate_count }} claimed-skill checks</span>
+      <span>{{ survey_meta.gap_count }} gap checks</span>
+    </div>
+  {% endif %}
 
   {% if questions %}
   <form method="POST" action="{{ url_for('survey_submit') }}" class="form">
@@ -68,20 +91,30 @@
       <legend>Rate your proficiency (1 = none, 5 = proficient)</legend>
 
       {% for q in questions %}
+      {% set q_index = loop.index0 %}
       <div class="field" style="margin-bottom: 2rem;">
         <label style="font-weight:600; margin-bottom:.5rem; display:block;">
           {{ loop.index }}. {{ q.question }}
         </label>
-        <p class="muted" style="margin-bottom:.75rem;">Skill: <strong>{{ q.skill }}</strong></p>
+        <p class="muted" style="margin-bottom:.75rem;">
+          Skill: <strong>{{ q.skill }}</strong>
+          {% if q.reason == "validate_claimed" %}
+            · validating a skill you claimed
+          {% else %}
+            · checking a target-career gap
+          {% endif %}
+        </p>
 
         <div class="scale-row">
           {% for n in [1, 2, 3, 4, 5] %}
           <label class="scale-option">
-            <input type="radio" name="{{ q.skill | replace(' ', '_') }}" value="{{ n }}" required>
+            <input type="radio" name="score_{{ q_index }}" value="{{ n }}" required>
             <span class="scale-btn">{{ n }}</span>
           </label>
           {% endfor %}
         </div>
+        <input type="hidden" name="skill_{{ q_index }}" value="{{ q.skill }}">
+        <input type="hidden" name="reason_{{ q_index }}" value="{{ q.reason }}">
         <div class="scale-ends">
           <small class="muted">No experience</small>
           <small class="muted">Proficient</small>

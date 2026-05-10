@@ -13,6 +13,7 @@ courses = [
         "difficulty": 1,
         "cost": 0,
         "provider": "Coursera",
+        "topics": ["Syntax and variables", "Control flow", "Functions", "Files and data structures"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/beginner-python/",
         "youtube": "https://www.youtube.com/results?search_query=python+for+beginners+full+course"
     },
@@ -24,6 +25,7 @@ courses = [
         "difficulty": 1,
         "cost": 0,
         "provider": "edX",
+        "topics": ["Tables and relationships", "SELECT queries", "Filtering and sorting", "Joins and aggregates"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/get-started-querying-with-transact-sql/",
         "youtube": "https://www.youtube.com/results?search_query=sql+fundamentals+full+course"
     },
@@ -35,6 +37,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "edX",
+        "topics": ["Descriptive statistics", "Probability", "Distributions", "Hypothesis testing"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/data-science-know-your-data/",
         "youtube": "https://www.youtube.com/results?search_query=statistics+for+data+science+full+course"
     },
@@ -46,6 +49,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "Coursera",
+        "topics": ["Pandas dataframes", "Cleaning datasets", "Exploratory analysis", "Charts and dashboards"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/visualize-data-power-bi/",
         "youtube": "https://www.youtube.com/results?search_query=data+analysis+python+pandas+matplotlib+full+course"
     },
@@ -57,6 +61,7 @@ courses = [
         "difficulty": 3,
         "cost": 49,
         "provider": "edX",
+        "topics": ["Supervised learning", "Model training", "Evaluation metrics", "Overfitting and validation"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/introduction-machine-learning/",
         "youtube": "https://www.youtube.com/results?search_query=machine+learning+full+course+beginners"
     },
@@ -68,6 +73,7 @@ courses = [
         "difficulty": 3,
         "cost": 0,
         "provider": "Google",
+        "topics": ["Tensors", "Neural network layers", "Training loops", "Model evaluation"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/introduction-machine-learning/",
         "youtube": "https://www.youtube.com/results?search_query=tensorflow+full+course+beginners"
     },
@@ -79,6 +85,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "Cisco NetAcad",
+        "topics": ["IP addressing", "Routing basics", "Switching basics", "Network troubleshooting"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/implement-windows-server-networking/",
         "youtube": "https://www.youtube.com/results?search_query=networking+fundamentals+full+course"
     },
@@ -90,6 +97,7 @@ courses = [
         "difficulty": 1,
         "cost": 0,
         "provider": "edX",
+        "topics": ["Terminal navigation", "Files and directories", "Permissions", "Package management", "Shell basics"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/azure-linux/",
         "youtube": "https://www.youtube.com/results?search_query=linux+command+line+full+course+beginners"
     },
@@ -101,6 +109,7 @@ courses = [
         "difficulty": 3,
         "cost": 30,
         "provider": "CompTIA",
+        "topics": ["Threats and vulnerabilities", "Identity and access", "Network security", "Incident response"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/security-compliance-identity-fundamentals/",
         "youtube": "https://www.youtube.com/results?search_query=comptia+security+plus+full+course"
     },
@@ -112,6 +121,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "AWS / Microsoft Learn",
+        "topics": ["Cloud concepts", "Compute and storage", "Networking in cloud", "Pricing and governance"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/az-900-describe-cloud-concepts/",
         "youtube": "https://www.youtube.com/results?search_query=aws+cloud+practitioner+full+course"
     },
@@ -123,6 +133,7 @@ courses = [
         "difficulty": 1,
         "cost": 0,
         "provider": "GitHub",
+        "topics": ["Repositories", "Commits", "Branches", "Pull requests"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/intro-to-vc-git/",
         "youtube": "https://www.youtube.com/results?search_query=git+github+full+course+beginners"
     },
@@ -134,6 +145,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "edX",
+        "topics": ["HTTP basics", "Routes and endpoints", "JSON payloads", "Authentication basics"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/build-serverless-full-stack-apps-azure/",
         "youtube": "https://www.youtube.com/results?search_query=rest+api+development+python+full+course"
     },
@@ -145,6 +157,7 @@ courses = [
         "difficulty": 1,
         "cost": 0,
         "provider": "MDN / freeCodeCamp",
+        "topics": ["HTML structure", "CSS selectors", "Layout", "Responsive design"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/web-development-101/",
         "youtube": "https://www.youtube.com/results?search_query=html+css+full+course+beginners"
     },
@@ -156,6 +169,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "freeCodeCamp",
+        "topics": ["Variables and functions", "DOM manipulation", "Events", "Fetch and async basics"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/web-development-101/",
         "youtube": "https://www.youtube.com/results?search_query=javascript+full+course+beginners"
     },
@@ -167,6 +181,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "edX",
+        "topics": ["Classes and objects", "Control flow", "Collections", "Error handling"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/java-se-fundamentals/",
         "youtube": "https://www.youtube.com/results?search_query=java+programming+full+course+beginners"
     },
@@ -178,6 +193,7 @@ courses = [
         "difficulty": 2,
         "cost": 0,
         "provider": "Coursera",
+        "topics": ["Descriptive statistics", "Probability", "Sampling", "Statistical inference"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/data-science-know-your-data/",
         "youtube": "https://www.youtube.com/results?search_query=statistics+for+data+science+beginners"
     },
