@@ -1053,6 +1053,12 @@ def results():
     }
     weights        = weight_presets.get(optimize_for, weight_presets["balanced"])
     learning_paths = []
+    print("=== PATHWAY DEBUG ===", flush=True)
+    print(f"role: {role.get('title', '')}", flush=True)
+    print(f"optimize_for: {optimize_for}", flush=True)
+    print(f"weights: {weights}", flush=True)
+    print(f"user_skills: {user_skills}", flush=True)
+    print(f"pathfindable_skills: {pathfindable_skills[:4]}", flush=True)
     for gap_skill in pathfindable_skills[:4]:
         path, cost = find_learning_path(graph, user_skills, gap_skill, **weights)
         if path and len(path) > 1:
@@ -1110,6 +1116,28 @@ def results():
                         f"to {gap_skill} under your {optimize_for} preference."
                     ),
                 })
+            print(f"target_skill: {gap_skill}", flush=True)
+            print(f"  nodes: {' -> '.join(path)}", flush=True)
+            print(f"  total_weighted_cost: {round(cost, 1)}", flush=True)
+            if steps:
+                print("  visible_steps:", flush=True)
+                for idx, step in enumerate(steps, start=1):
+                    print(
+                        "    "
+                        f"{idx}. {step['from']} -> {step['to']} "
+                        f"via {step['course']} "
+                        f"(time={step['time']}, difficulty={step['difficulty']}, "
+                        f"cost={step['cost']}, edge_cost={step['edge_cost']})",
+                        flush=True,
+                    )
+            hidden_edges = [edge for edge in graph_edges if edge["is_hidden"]]
+            if hidden_edges:
+                print("  hidden_graph_edges:", flush=True)
+                for edge in hidden_edges:
+                    print(
+                        f"    {edge['from']} -> {edge['to']} via {edge['course']}",
+                        flush=True,
+                    )
             learning_paths.append({
                 "target_skill": gap_skill,
                 "path":         path,

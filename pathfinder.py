@@ -25,6 +25,14 @@ def find_learning_path(
         return None, float("inf")
 
     initial_acquired = {_norm(s) for s in current_skills if isinstance(s, str)}
+    relevant_nodes = {"ROOT", target_skill}
+    stack = [target_skill]
+    while stack:
+        node = stack.pop()
+        for pred in graph.predecessors(node):
+            if pred not in relevant_nodes:
+                relevant_nodes.add(pred)
+                stack.append(pred)
 
     start_nodes = []
     for s in current_skills:
@@ -61,6 +69,9 @@ def find_learning_path(
                 break
 
             for neighbor in graph.successors(current):
+                if neighbor not in relevant_nodes:
+                    continue
+
                 # Gate node: all non-gate predecessors must already be acquired
                 if str(neighbor).startswith("GATE::"):
                     required = {
