@@ -1896,6 +1896,45 @@ body.light .rm-card {
   animation: fadeUp .4s .13s ease both;
 }
 
+.rm4-optimize-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.rm4-optimize-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rm4-optimize-option span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.15rem;
+  padding: .45rem .85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: var(--muted-light);
+  background: var(--bg-card);
+  font-size: .84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+.rm4-optimize-option input:checked + span {
+  border-color: rgba(34,211,238,0.5);
+  background: rgba(34,211,238,0.1);
+  color: var(--cyan);
+}
+
+.rm4-optimize-option span:hover {
+  border-color: rgba(34,211,238,0.36);
+  color: var(--text);
+}
+
 .rm4-path-head,
 .rm4-path-title-row {
   display: flex;
@@ -3095,6 +3134,23 @@ body.light .rm2-accordion {
   border-radius: var(--radius-sm);
   background: rgba(155, 89, 245, 0.06);
   border: 1px solid var(--border);
+}
+
+.roadmap-step-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .55rem;
+}
+
+.roadmap-step-meta span {
+  padding: .22rem .5rem;
+  border: 1px solid rgba(34,211,238,0.22);
+  border-radius: var(--radius-xs);
+  background: rgba(34,211,238,0.07);
+  color: var(--cyan);
+  font-size: .72rem;
+  font-weight: 700;
 }
 
 .step-icon {

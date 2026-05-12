@@ -23,6 +23,21 @@ a roadmap view-->
     </div>
   </div>
 
+  <form class="rm4-optimize-form" method="get" action="{{ url_for('results') }}" aria-label="Path optimization preference">
+    {% for option in results.optimization_options %}
+      <label class="rm4-optimize-option">
+        <input
+          type="radio"
+          name="optimize_for"
+          value="{{ option.value }}"
+          {% if results.optimize_for == option.value %}checked{% endif %}
+          onchange="this.form.submit()"
+        >
+        <span>{{ option.label }}</span>
+      </label>
+    {% endfor %}
+  </form>
+
   <!-- Profile Summary -->
   <section class="card rm2-summary-card">
     <h2 class="rm2-section-title">Your Profile Summary</h2>
@@ -150,7 +165,7 @@ a roadmap view-->
           <div class="rm4-path-title-row">
             <div>
               <h3>Target skill: {{ lp.target_skill }}</h3>
-              <p>Prioritized for your {{ lp.optimize_for }} preference.</p>
+              <p>Prioritized for your {{ lp.optimize_for }} preference. Weighted score: {{ lp.total_cost }}</p>
             </div>
           </div>
 

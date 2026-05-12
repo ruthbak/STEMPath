@@ -623,6 +623,38 @@ def build_roadmap_steps(results, max_steps=8):
     seen_skills = set()
 
     selected_role = results.get("selected_role", "your selected career")
+    optimize_for = results.get("optimize_for", "balanced")
+
+    for learning_path in results.get("learning_paths", []):
+        target_skill = learning_path.get("target_skill", "")
+        for course_step in learning_path.get("steps", []):
+            skill = course_step.get("to") or target_skill
+            if not skill:
+                continue
+
+            skill_key = normalize_skill(skill)
+            if skill_key in seen_skills:
+                continue
+
+            seen_skills.add(skill_key)
+            roadmap_steps.append({
+                "skill": skill,
+                "icon": get_roadmap_icon(skill),
+                "course": course_step.get("course", ""),
+                "provider": course_step.get("provider", ""),
+                "time": course_step.get("time", 0),
+                "difficulty": course_step.get("difficulty", 0),
+                "cost": course_step.get("cost", 0),
+                "score": course_step.get("edge_cost", 0),
+                "preference": optimize_for,
+                "description": (
+                    f"Take {course_step.get('course', 'this course')} to build {skill}. "
+                    f"This step is selected for your {optimize_for} pathway."
+                )
+            })
+
+            if len(roadmap_steps) >= max_steps:
+                return roadmap_steps
 
     # Use actual missing skills first, not Dijkstra intermediate steps
     for skill in results.get("missing_skills", []):
@@ -930,6 +962,20 @@ def results():
     if not selected_role_id:
         return redirect(url_for("roles"))
 
+    requested_optimize_for = request.args.get("optimize_for", "").strip()
+    valid_optimizations = {"balanced", "time", "easy", "cost"}
+    if requested_optimize_for in valid_optimizations:
+        profile_data["optimize_for"] = requested_optimize_for
+        saved_profile = save_profile(
+            session.get("user_id"),
+            profile_data,
+            profile_id=profile_data.get("id") or session.get("active_profile_id"),
+        )
+        if saved_profile:
+            profile_data = saved_profile
+            session["active_profile_id"] = saved_profile["id"]
+        session["profile"] = profile_data
+
     roles_catalog = load_roles()
     role          = find_role_by_id(selected_role_id, roles_catalog)
     if not role:
@@ -1187,6 +1233,13 @@ def results():
         "survey_scores":        survey_scores,
         "survey_summary":       survey_summary,
         "graph_overview":       build_graph_overview(graph),
+        "optimize_for":         optimize_for,
+        "optimization_options": [
+            {"value": "balanced", "label": "Balanced"},
+            {"value": "time", "label": "Fastest"},
+            {"value": "easy", "label": "Easiest"},
+            {"value": "cost", "label": "Cheapest"},
+        ],
     }
     results_obj["roadmap_steps"] = build_roadmap_steps(results_obj)
     return render_template("results.html", results=results_obj)
