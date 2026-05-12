@@ -1,5 +1,22 @@
-<!-- This progress page provides a track skill acquisition checklist-->
+<!--
+  progress.html — Skill Acquisition Progress Tracker
+  ====================================================
+  Allows authenticated users to track which skill gaps they have
+  addressed since generating their pathway.
 
+  Features:
+    - Profile panel showing current degree and edit link
+    - Checklist of missing skills for the selected role
+    - Checking a skill and saving merges it into the user's profile,
+      reducing future skill gap calculations in /results
+    - Progress summary: completed / total count, percentage bar,
+      and projected match score if all remaining skills are completed
+
+  Session interaction:
+    - Reads from session['progress'] (role_id, skills, completed)
+    - On POST: updates completed list and merges into session['profile']
+-->
+    
 {% extends "base.html" %}
 {% block title %}Progress • STEMPath{% endblock %}
 
