@@ -27,6 +27,10 @@
   <h2 id="profile-panel-title">Your Profiles</h2>
   <p class="muted">Manage your academic and professional profiles.</p>
 
+  {% if session.get('flash') %}
+    <div class="flash-notice">{{ session.pop('flash') }}</div>
+  {% endif %}
+
   <div class="profile-cards-row">
 
     <!-- Saved Profiles -->
@@ -38,7 +42,14 @@
           <strong>{{ saved_profile.name }}</strong>
           <span class="muted">{{ saved_profile.degree or 'Your current profile' }}</span>
         </div>
-        <a href="{{ url_for('open_profile', profile_id=saved_profile.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+        <div class="mini-profile-actions">
+          <a href="{{ url_for('open_profile', profile_id=saved_profile.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+          <form method="post"
+                action="{{ url_for('delete_profile_route', profile_id=saved_profile.id) }}"
+                onsubmit="return confirm('Delete this profile? This will also remove its saved progress.');">
+            <button class="btn btn-ghost btn-sm btn-danger" type="submit">Delete</button>
+          </form>
+        </div>
       </div>
       {% endfor %}
     {% endif %}

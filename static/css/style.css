@@ -977,6 +977,25 @@ legend { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transf
   font-size: .9rem; font-weight: 600; color: var(--text);
 }
 
+.mini-profile-actions {
+  display: flex; align-items: center; gap: .45rem; flex-wrap: wrap;
+}
+
+.mini-profile-actions form {
+  margin: 0;
+}
+
+.btn-danger {
+  color: #f87171;
+  border-color: rgba(248,113,113,0.36);
+}
+
+.btn-danger:hover {
+  color: #fecaca;
+  border-color: rgba(248,113,113,0.68);
+  background: rgba(248,113,113,0.1);
+}
+
 /* ══════════════════════════════════════════════════════════
    TAG PICKER — profile page skills / certs / courses
 ══════════════════════════════════════════════════════════ */

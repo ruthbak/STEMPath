@@ -30,7 +30,7 @@ how it works, CTA-->
 
   <div class="hero-actions">
     {% if session.get('user_id') %}
-      <a class="btn" href="{{ url_for('reset') }}">Get Started</a>
+      <a class="btn" href="{{ url_for('new_profile') }}">Get Started</a>
     {% else %}
       <a class="btn" href="#" onclick="event.preventDefault(); openModal('register')">Get Started</a>
     {% endif %}
@@ -212,7 +212,7 @@ how it works, CTA-->
     </p>
     <div class="hero-actions">
       {% if session.get('user_id') %}
-        <a class="btn" href="{{ url_for('reset') }}">Start Now</a>
+        <a class="btn" href="{{ url_for('new_profile') }}">Start Now</a>
         <a class="btn btn-ghost" href="{{ url_for('roles') }}">Browse Roles</a>
       {% else %}
         <a class="btn" href="#" onclick="event.preventDefault(); openModal('register')">Start Now</a>

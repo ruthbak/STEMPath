@@ -13,6 +13,7 @@ from graph_builder import build_learning_graph
 from pathfinder import find_learning_path
 from data import courses
 from stempath_db import (
+    delete_profile as db_delete_profile,
     get_latest_profile,
     get_profile,
     get_progress,
@@ -661,6 +662,17 @@ ALLOWED_RESUME_EXTS = {".pdf", ".docx"}
 @login_required
 def profile():
     resume_notice = None
+    blank_profile = {
+        "degree": "",
+        "major": "",
+        "location": "",
+        "gpa": "",
+        "skills": [],
+        "certifications": [],
+        "courses": [],
+        "optimize_for": "balanced",
+    }
+
     if request.method == "POST":
         user_id            = session.get("user_id")
         degree             = request.form.get("degree", "").strip()
@@ -783,10 +795,14 @@ def profile():
         else:
             return redirect(url_for("roles"))
 
-    existing = get_latest_profile(session.get("user_id")) or session.get("profile", {})
+    if session.get("create_new_profile"):
+        existing = blank_profile
+    else:
+        existing = get_latest_profile(session.get("user_id")) or session.get("profile", {})
     if existing:
         session["profile"] = existing
-        session["active_profile_id"] = existing.get("id")
+        if existing.get("id"):
+            session["active_profile_id"] = existing.get("id")
     resume_notice = session.pop("resume_notice", None)
     selected_role = None
     selected_role_id = session.get("selected_role_id")
@@ -806,6 +822,11 @@ def profile():
 def new_profile():
     session.pop("profile", None)
     session.pop("active_profile_id", None)
+    session.pop("progress", None)
+    session.pop("survey_gaps", None)
+    session.pop("survey_scores", None)
+    session.pop("survey_summary", None)
+    session.pop("survey_questions", None)
     session["create_new_profile"] = True
     return redirect(url_for("profile"))
 
@@ -817,9 +838,32 @@ def open_profile(profile_id):
     if not profile_data:
         abort(403)
 
+    session.pop("create_new_profile", None)
     session["profile"] = profile_data
     session["active_profile_id"] = profile_data["id"]
     return redirect(url_for("profile"))
+
+
+@app.post("/profile/<int:profile_id>/delete")
+@login_required
+def delete_profile_route(profile_id):
+    deleted = db_delete_profile(session.get("user_id"), profile_id)
+    if deleted and session.get("active_profile_id") == profile_id:
+        session.pop("profile", None)
+        session.pop("active_profile_id", None)
+        session.pop("progress", None)
+        session.pop("survey_gaps", None)
+        session.pop("survey_scores", None)
+        session.pop("survey_summary", None)
+        session.pop("survey_questions", None)
+
+        latest_profile = get_latest_profile(session.get("user_id"))
+        if latest_profile:
+            session["profile"] = latest_profile
+            session["active_profile_id"] = latest_profile["id"]
+
+    session["flash"] = "Profile deleted." if deleted else "Profile could not be deleted."
+    return redirect(url_for("progress"))
 
 
 @app.route("/roles", methods=["GET"])
@@ -1341,7 +1385,7 @@ def set_session():
     session["display_name"] = display_name
 
     existing_profile = get_latest_profile(data.get("user_id"))
-    if existing_profile:
+    if existing_profile and not session.get("create_new_profile"):
         session["profile"] = existing_profile
         session["active_profile_id"] = existing_profile["id"]
 

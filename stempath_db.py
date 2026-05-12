@@ -155,6 +155,19 @@ def get_profile(firebase_uid, profile_id):
         return _profile_from_row(row)
 
 
+def delete_profile(firebase_uid, profile_id):
+    with get_db() as conn:
+        user = get_user(firebase_uid, conn=conn)
+        if not user:
+            return False
+
+        cur = conn.execute(
+            "DELETE FROM profiles WHERE id = ? AND user_id = ?",
+            (profile_id, user["id"]),
+        )
+        return cur.rowcount > 0
+
+
 def save_profile(firebase_uid, profile_data, profile_id=None, resume_path=None, create_new=False):
     with get_db() as conn:
         user = get_user(firebase_uid, conn=conn)
