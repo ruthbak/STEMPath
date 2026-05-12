@@ -1447,6 +1447,21 @@ body.light .rm-card {
   animation: fadeUp .3s ease both;
 }
 
+.resume-notice {
+  margin: .6rem 0 0;
+  color: var(--muted-light);
+  font-size: .9rem;
+}
+
+.resume-notice-error {
+  padding: .75rem .9rem;
+  border: 1px solid rgba(245,66,66,0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(245,66,66,0.08);
+  color: #ff8a8a;
+  font-weight: 700;
+}
+
 /* ── YouTube videos on roadmap stops ────────────── */
 .rm-videos { margin-top: .75rem; }
 

@@ -843,6 +843,31 @@ def profile():
                 resume_path = str(save_path)
                 try:
                     resume_skills = parse_resume_for_skills(str(save_path), known_skills)
+                    if not resume_skills:
+                        try:
+                            save_path.unlink(missing_ok=True)
+                        except OSError:
+                            pass
+                        profile_data = {
+                            "degree":         degree,
+                            "major":          major,
+                            "location":       location,
+                            "gpa":            gpa,
+                            "skills":         user_skills,
+                            "certifications": user_certs,
+                            "courses":        user_courses,
+                            "optimize_for":   request.form.get("optimize_for", "balanced"),
+                        }
+                        resume_notice = (
+                            "We couldn't find any recognizable skills in that resume. "
+                            "Please upload the correct PDF or DOCX resume, or add your skills manually before saving."
+                        )
+                        return render_template(
+                            "profile.html",
+                            profile=profile_data,
+                            resume_notice=resume_notice,
+                            resume_notice_type="error",
+                        ), 400
                     before        = len(set(user_skills))
                     user_skills   = sorted(set(user_skills) | set(resume_skills))
                     added         = max(0, len(set(user_skills)) - before)
@@ -851,8 +876,31 @@ def profile():
                         else "Resume parsed — no new skills found beyond what you entered."
                     )
                 except Exception as e:
-                    resume_notice = "Resume saved but we couldn't extract skills from it."
+                    try:
+                        save_path.unlink(missing_ok=True)
+                    except OSError:
+                        pass
+                    profile_data = {
+                        "degree":         degree,
+                        "major":          major,
+                        "location":       location,
+                        "gpa":            gpa,
+                        "skills":         user_skills,
+                        "certifications": user_certs,
+                        "courses":        user_courses,
+                        "optimize_for":   request.form.get("optimize_for", "balanced"),
+                    }
+                    resume_notice = (
+                        "We couldn't read skills from that file. Please upload the correct PDF or DOCX resume, "
+                        "or add your skills manually before saving."
+                    )
                     print("Resume parsing error:", e)
+                    return render_template(
+                        "profile.html",
+                        profile=profile_data,
+                        resume_notice=resume_notice,
+                        resume_notice_type="error",
+                    ), 400
 
         profile_data = {
             "degree":         degree,

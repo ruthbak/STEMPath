@@ -190,7 +190,9 @@
         </small>
       </div>
       {% if resume_notice %}
-        <p class="muted" style="margin-top:.5rem;">{{ resume_notice }}</p>
+        <p class="resume-notice {{ 'resume-notice-error' if resume_notice_type == 'error' else '' }}">
+          {{ resume_notice }}
+        </p>
       {% endif %}
     </fieldset>
 
