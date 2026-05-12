@@ -1,19 +1,5 @@
-<!--
-  roles.html — STEM Role Browser
-  ================================
-  Displays the O*NET-derived STEM roles catalog with search and
-  STEM category filtering.
-
-  Features:
-    - Free-text search across role title, description, and top_skills
-    - STEM pill filter buttons (Science / Technology / Engineering / Mathematics)
-      mapped via STEM_MAP in app.py to role category names in roles.json
-    - Role cards showing title, category, description, and top skills
-    - Select Role button POSTs to /select-role and redirects to /profile
-
-  Data source: data/roles.json generated from O*NET raw files by
-  import_onet_roles.py using SOC prefix filtering (15, 17, 19).
--->
+<!--This is the roles page that allows users to browse ad search STEM
+career roles-->
 
 {% extends "base.html" %}
 {% block title %}Choose a Role • STEMPath{% endblock %}

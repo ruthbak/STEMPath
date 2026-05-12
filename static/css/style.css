@@ -1,4 +1,4 @@
-/* ============================================================
+/*/* ============================================================
    STEMPath — style.css
    Theme: Dark cosmic purple + Light mode toggle
    Fonts: Syne (headings) + DM Sans (body)
@@ -593,7 +593,7 @@ legend { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transf
   border-top: none; border-left: none; transform: rotate(45deg);
 }
 .progress-bar { height: 10px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; margin-top: .7rem; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple-dim), var(--purple-light), var(--cyan)); border-radius: 99px; transition: width .7s cubic-bezier(.4,0,.2,1); min-width: 4px; width: var(--pct);}
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple-dim), var(--purple-light), var(--cyan)); border-radius: 99px; transition: width .7s cubic-bezier(.4,0,.2,1); min-width: 4px; }
 
 /* ══════════════════════════════════════════════════════════
    PRINT
@@ -2784,44 +2784,4 @@ body.light .rm2-accordion {
 /* ── Single job card fills full width ───────────── */
 .rm2-job-cards:has(.rm2-job-card:only-child) {
   grid-template-columns: 1fr;
-}
-
-
-/* ── Embedded YouTube videos ─────────────────────── */
-.rm2-video-embeds {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
-  margin-top: .6rem;
-}
-
-.rm2-video-embed-wrap {
-  flex: 1;
-  min-width: 200px;
-  max-width: 280px;
-  display: flex;
-  flex-direction: column;
-  gap: .3rem;
-}
-
-.rm2-video-embed {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: #000;
-}
-
-.rm2-video-embed-title {
-  font-size: .74rem;
-  color: var(--muted-light);
-  line-height: 1.35;
-  margin: 0;
-}
-
-@media (max-width: 600px) {
-  .rm2-video-embed-wrap {
-    min-width: 100%;
-    max-width: 100%;
-  }
 }
