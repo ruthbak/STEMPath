@@ -113,7 +113,9 @@ a roadmap view-->
         {% if results.roadmap_steps %}
           {% for step in results.roadmap_steps %}
             <div class="roadmap-step">
-              <div class="step-icon">{{ step.icon }}</div>
+              <div class="step-icon">
+                <span>{{ step.icon }}</span>
+              </div>
 
               <div class="step-content">
                 <h3>Step {{ loop.index }}: Learn {{ step.skill }}</h3>
