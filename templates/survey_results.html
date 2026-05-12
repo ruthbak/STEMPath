@@ -70,13 +70,12 @@
     border: 1px solid var(--border);
   }
   .survey-result-status.confirmed,
-  .survey-result-status.familiarity_shown {
+  .survey-result-status.confirmed {
     border-color: rgba(34,197,94,0.35);
     background: rgba(34,197,94,0.1);
     color: #86efac;
   }
-  .survey-result-status.needs_review,
-  .survey-result-status.learning_gap {
+  .survey-result-status.missing {
     border-color: rgba(245,197,66,0.35);
     background: rgba(245,197,66,0.1);
     color: #fde68a;
@@ -90,33 +89,24 @@
   <p class="section-label">Skill check results</p>
   <h2 id="survey-results-title">Your survey score</h2>
   <p class="muted">
-    This score is a readiness signal, not a final judgement. STEMPath keeps your
-    saved profile unchanged, but uses these answers to decide which claimed skills
-    should count as starting points and which gaps should be prioritized in the pathway.
+    Scores of 4 or 5 count as confirmed skills for this pathway. Scores of 1 to 3
+    stay in your missing-skill list so the roadmap can recommend learning resources.
   </p>
 
   <div class="survey-results-grid">
     <div class="survey-score-card">
       <strong>{{ survey_summary.percent }}%</strong>
-      <span>{{ survey_summary.correct }} of {{ survey_summary.total }} questions correct</span>
+      <span>{{ survey_summary.confirmed }} of {{ survey_summary.total }} skills confirmed</span>
     </div>
 
     <div class="survey-summary-pills">
       <div class="survey-pill">
         <b>{{ survey_summary.confirmed }}</b>
-        <span>claimed skills confirmed</span>
+        <span>confirmed skills</span>
       </div>
       <div class="survey-pill">
-        <b>{{ survey_summary.needs_review }}</b>
-        <span>claimed skills to review</span>
-      </div>
-      <div class="survey-pill">
-        <b>{{ survey_summary.familiarity_shown }}</b>
-        <span>gap skills with some evidence</span>
-      </div>
-      <div class="survey-pill">
-        <b>{{ survey_summary.learning_gap }}</b>
-        <span>gap skills to learn</span>
+        <b>{{ survey_summary.missing }}</b>
+        <span>still missing</span>
       </div>
     </div>
   </div>
@@ -130,21 +120,18 @@
       <article class="survey-result-card">
         <span class="survey-result-status {{ item.status }}">
           {% if item.status == "confirmed" %}
-            Confirmed signal
-          {% elif item.status == "needs_review" %}
-            Review this claimed skill
-          {% elif item.status == "familiarity_shown" %}
-            Some familiarity shown
+            Confirmed for this pathway
           {% else %}
-            Learning gap
+            Still missing
           {% endif %}
         </span>
         <h3>{{ item.skill }}</h3>
-        <p><strong>Your answer:</strong> {{ item.answer }}</p>
-        {% if not item.is_correct %}
-          <p><strong>Expected answer:</strong> {{ item.correct_answer }}</p>
+        <p><strong>Your confidence score:</strong> {{ item.score }} / 5</p>
+        {% if item.status == "confirmed" %}
+          <p>This skill will count as a starting skill when STEMPath builds your pathway.</p>
+        {% else %}
+          <p>This skill will remain in your roadmap as a learning gap.</p>
         {% endif %}
-        <p>{{ item.explanation }}</p>
       </article>
     {% endfor %}
   </div>

@@ -71,8 +71,8 @@ a roadmap view-->
             <span class="rm2-summary-icon">🧭</span>
             <div>
               <strong>Survey evidence:</strong>
-              {{ results.survey_summary.correct }} of {{ results.survey_summary.total }} checks correct.
-              Claimed skills marked for review are treated as gaps for this pathway, while gap skills with familiarity are prioritized later.
+              {{ results.survey_summary.confirmed }} of {{ results.survey_summary.total }} skills confirmed at confidence 4+.
+              Skills scored 1–3 are treated as missing for this pathway.
             </div>
           </div>
           {% endif %}

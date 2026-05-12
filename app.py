@@ -199,175 +199,26 @@ def microsoft_learn_search_url(query):
     return f"https://learn.microsoft.com/en-us/search/?terms={urllib.parse.quote(query)}"
 
 
-SKILL_CHECK_QUESTIONS = {
-    "python": {
-        "question": "What is the output of this Python code: for i in range(3): print(i)",
-        "options": ["0 1 2", "1 2 3", "0 1 2 3", "The code raises a syntax error"],
-        "answer": "0 1 2",
-        "explanation": "range(3) produces 0, 1, and 2.",
-    },
-    "sql": {
-        "question": "Which SQL clause is used to filter rows before grouping or sorting?",
-        "options": ["WHERE", "ORDER BY", "GROUP BY", "SELECT"],
-        "answer": "WHERE",
-        "explanation": "WHERE filters rows before GROUP BY and ORDER BY are applied.",
-    },
-    "statistics": {
-        "question": "Which measure best describes the middle value of an ordered dataset?",
-        "options": ["Median", "Range", "Variance", "Standard deviation"],
-        "answer": "Median",
-        "explanation": "The median is the middle value when observations are ordered.",
-    },
-    "machine learning": {
-        "question": "What is the main purpose of a train/test split?",
-        "options": [
-            "To evaluate a model on data it did not train on",
-            "To delete missing values",
-            "To make every feature numeric",
-            "To increase the number of rows",
-        ],
-        "answer": "To evaluate a model on data it did not train on",
-        "explanation": "A test set estimates how well the model generalizes to unseen data.",
-    },
-    "data visualization": {
-        "question": "Which chart is usually best for showing a trend over time?",
-        "options": ["Line chart", "Pie chart", "Box plot", "Scatter plot"],
-        "answer": "Line chart",
-        "explanation": "Line charts make changes over time easy to follow.",
-    },
-    "networking": {
-        "question": "Which OSI layer is responsible for IP addressing and routing?",
-        "options": ["Network layer", "Application layer", "Data link layer", "Physical layer"],
-        "answer": "Network layer",
-        "explanation": "Layer 3, the network layer, handles logical addressing and routing.",
-    },
-    "linux": {
-        "question": "Which Linux command lists files in the current directory?",
-        "options": ["ls", "cd", "pwd", "mkdir"],
-        "answer": "ls",
-        "explanation": "ls lists directory contents.",
-    },
-    "security basics": {
-        "question": "What does multi-factor authentication add to a login process?",
-        "options": [
-            "An extra proof of identity beyond a password",
-            "A faster internet connection",
-            "Automatic software updates",
-            "A public IP address",
-        ],
-        "answer": "An extra proof of identity beyond a password",
-        "explanation": "MFA requires another factor, such as a code or device, in addition to a password.",
-    },
-    "cloud": {
-        "question": "Which cloud model gives teams virtual servers, storage, and networking to manage?",
-        "options": ["IaaS", "SaaS", "HTML", "DNS"],
-        "answer": "IaaS",
-        "explanation": "Infrastructure as a Service provides compute, storage, and network resources.",
-    },
-    "git": {
-        "question": "Which Git command records staged changes in the repository history?",
-        "options": ["git commit", "git status", "git clone", "git branch"],
-        "answer": "git commit",
-        "explanation": "git commit saves staged changes as a new commit.",
-    },
-    "apis": {
-        "question": "In a REST API, which HTTP method is commonly used to retrieve data?",
-        "options": ["GET", "POST", "PATCH", "DELETE"],
-        "answer": "GET",
-        "explanation": "GET requests retrieve resources without modifying them.",
-    },
-    "javascript": {
-        "question": "Which JavaScript keyword declares a block-scoped variable?",
-        "options": ["let", "var", "def", "echo"],
-        "answer": "let",
-        "explanation": "let declares a variable scoped to the nearest block.",
-    },
-    "html": {
-        "question": "Which HTML element is used for the largest page heading?",
-        "options": ["h1", "head", "title", "section"],
-        "answer": "h1",
-        "explanation": "h1 represents the top-level heading in page content.",
-    },
-    "css": {
-        "question": "Which CSS property changes the text color of an element?",
-        "options": ["color", "font-style", "background-color", "display"],
-        "answer": "color",
-        "explanation": "The color property controls foreground text color.",
-    },
-    "java": {
-        "question": "Which Java keyword is used to define a class?",
-        "options": ["class", "def", "function", "module"],
-        "answer": "class",
-        "explanation": "Java uses the class keyword to define classes.",
-    },
-    "excel": {
-        "question": "Which Excel formula adds the values in cells A1 through A5?",
-        "options": ["=SUM(A1:A5)", "=ADD(A1-A5)", "=TOTAL(A1,A5)", "=COUNT(A1:A5)"],
-        "answer": "=SUM(A1:A5)",
-        "explanation": "SUM adds all numeric values in the selected range.",
-    },
-    "research": {
-        "question": "Why is a literature review useful before starting a research project?",
-        "options": [
-            "It shows what is already known and where gaps exist",
-            "It replaces the need for data collection",
-            "It guarantees the hypothesis is correct",
-            "It removes the need to cite sources",
-        ],
-        "answer": "It shows what is already known and where gaps exist",
-        "explanation": "A literature review helps position new work against existing evidence.",
-    },
-    "communication": {
-        "question": "What is the clearest way to present a technical recommendation to a non-technical audience?",
-        "options": [
-            "Start with the decision and explain the impact in plain language",
-            "Use as many acronyms as possible",
-            "Show only raw data tables",
-            "Avoid mentioning tradeoffs",
-        ],
-        "answer": "Start with the decision and explain the impact in plain language",
-        "explanation": "Good communication adapts the message to the audience.",
-    },
-    "matlab": {
-        "question": "In MATLAB, which symbol is commonly used for element-wise multiplication?",
-        "options": [".*", "*", "x", "mul()"],
-        "answer": ".*",
-        "explanation": ".* multiplies corresponding elements in arrays.",
-    },
-}
-
-
-def _skill_check_for(skill):
-    normalized = normalize_skill(skill)
-    if normalized in SKILL_CHECK_QUESTIONS:
-        return SKILL_CHECK_QUESTIONS[normalized]
-
-    for key, check in SKILL_CHECK_QUESTIONS.items():
-        if key in normalized or normalized in key:
-            return check
-
-    return {
-        "question": f"Which answer best shows practical understanding of {skill}?",
-        "options": [
-            f"I can explain when to use {skill} and apply it in a small task",
-            f"I have only heard the term {skill}",
-            f"{skill} is unrelated to technical work",
-            f"I would always skip {skill} in a project",
-        ],
-        "answer": f"I can explain when to use {skill} and apply it in a small task",
-        "explanation": f"This checks whether you can apply {skill}, not just recognize the term.",
-    }
-
-
 def _question_for_skill(skill, reason):
-    check = _skill_check_for(skill)
+    if reason == "validate_claimed":
+        question = (
+            f"You listed {skill}. How confident are you applying it in a "
+            "coursework, project, or workplace task?"
+        )
+    else:
+        question = (
+            f"{skill} is important for this career path. How much experience "
+            "do you currently have with it?"
+        )
     return {
         "skill": skill,
         "reason": reason,
-        "question": check["question"],
-        "options": check["options"],
-        "answer": check["answer"],
-        "explanation": check["explanation"],
+        "question": question,
+        "scale_labels": {
+            "1": "No experience",
+            "3": "Some experience",
+            "5": "Proficient",
+        },
     }
 
 
@@ -675,7 +526,7 @@ def role_matches_stem_category(role, category):
 
 def survey_status_by_skill(survey_scores):
     return {
-        normalize_skill(item.get("skill", "")): item.get("status")
+        normalize_skill(item.get("skill", "")): item
         for item in survey_scores or []
         if item.get("skill")
     }
@@ -686,11 +537,10 @@ def apply_survey_evidence_to_skills(user_skills, completed_skills, survey_scores
     Use survey evidence for pathway planning without rewriting the saved profile.
 
     - Completed progress skills always count.
-    - Claimed skills that failed validation are removed from Dijkstra start skills.
-    - Claimed skills that passed validation stay available.
-    - Correct answers for missing/gap skills show familiarity, but do not count as mastery.
+    - Scores 4 and 5 count as confirmed for this pathway.
+    - Scores 1 through 3 stay in the missing-skill set.
     """
-    status_by_norm = survey_status_by_skill(survey_scores)
+    survey_by_norm = survey_status_by_skill(survey_scores)
     completed_norm = {normalize_skill(s) for s in completed_skills or []}
     effective_skills = []
     effective_norm = set()
@@ -699,9 +549,17 @@ def apply_survey_evidence_to_skills(user_skills, completed_skills, survey_scores
         norm = normalize_skill(skill)
         if not norm:
             continue
-        if status_by_norm.get(norm) == "needs_review" and norm not in completed_norm:
+        survey_item = survey_by_norm.get(norm)
+        if survey_item and survey_item.get("score", 0) < 4 and norm not in completed_norm:
             continue
         if norm not in effective_norm:
+            effective_skills.append(skill)
+            effective_norm.add(norm)
+
+    for item in survey_scores or []:
+        skill = item.get("skill", "")
+        norm = normalize_skill(skill)
+        if item.get("score", 0) >= 4 and norm and norm not in effective_norm:
             effective_skills.append(skill)
             effective_norm.add(norm)
 
@@ -715,20 +573,13 @@ def apply_survey_evidence_to_skills(user_skills, completed_skills, survey_scores
 
 
 def prioritize_missing_skills_with_survey(missing_skills, survey_scores):
-    status_by_norm = survey_status_by_skill(survey_scores)
-    priority = {
-        "needs_review": 0,
-        "learning_gap": 0,
-        None: 1,
-        "familiarity_shown": 2,
-        "confirmed": 3,
-    }
+    survey_by_norm = survey_status_by_skill(survey_scores)
 
     return [
         skill for _, skill in sorted(
             enumerate(missing_skills),
             key=lambda item: (
-                priority.get(status_by_norm.get(normalize_skill(item[1])), 1),
+                survey_by_norm.get(normalize_skill(item[1]), {}).get("score", 0),
                 item[0],
             ),
         )
@@ -1390,50 +1241,35 @@ def survey():
 @login_required
 def survey_submit():
     profile_data = get_latest_profile(session.get("user_id")) or session.get("profile", {})
-    questions = session.get("survey_questions", [])
     survey_scores = []
 
-    for key, answer in request.form.items():
-        if not key.startswith("answer_"):
+    for key, score in request.form.items():
+        if not key.startswith("score_") or not score.isdigit():
             continue
-        index = key.replace("answer_", "", 1)
-        if not index.isdigit():
-            continue
-        q_index = int(index)
-        expected = questions[q_index].get("answer") if q_index < len(questions) else None
+        index = key.replace("score_", "", 1)
         skill = request.form.get(f"skill_{index}", "").strip()
         reason = request.form.get(f"reason_{index}", "").strip()
         if skill:
-            is_correct = bool(expected and answer == expected)
-            if reason == "validate_claimed" and is_correct:
+            score_value = int(score)
+            if score_value >= 4:
                 status = "confirmed"
-            elif reason == "validate_claimed":
-                status = "needs_review"
-            elif is_correct:
-                status = "familiarity_shown"
             else:
-                status = "learning_gap"
+                status = "missing"
 
             survey_scores.append({
                 "skill": skill,
                 "reason": reason,
-                "answer": answer,
-                "correct_answer": expected,
-                "is_correct": is_correct,
-                "explanation": questions[q_index].get("explanation", "") if q_index < len(questions) else "",
+                "score": score_value,
                 "status": status,
             })
 
-    correct_count = sum(1 for item in survey_scores if item["is_correct"])
+    confirmed_count = sum(1 for item in survey_scores if item["score"] >= 4)
     total_count = len(survey_scores)
     survey_summary = {
         "total": total_count,
-        "correct": correct_count,
-        "percent": int(round((correct_count / total_count) * 100)) if total_count else 0,
-        "confirmed": sum(1 for item in survey_scores if item["status"] == "confirmed"),
-        "needs_review": sum(1 for item in survey_scores if item["status"] == "needs_review"),
-        "familiarity_shown": sum(1 for item in survey_scores if item["status"] == "familiarity_shown"),
-        "learning_gap": sum(1 for item in survey_scores if item["status"] == "learning_gap"),
+        "confirmed": confirmed_count,
+        "missing": total_count - confirmed_count,
+        "percent": int(round((confirmed_count / total_count) * 100)) if total_count else 0,
     }
 
     session["survey_scores"] = survey_scores
