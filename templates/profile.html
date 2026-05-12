@@ -30,14 +30,23 @@
       <legend>Academic background</legend>
 
       <div class="field">
-        <label for="degree">Degree / Programme / Major</label>
-        <div class="single-autocomplete">
-          <input id="degree" name="degree" type="text" required
-                 value="{{ profile.get('degree','') }}"
-                 placeholder="e.g., BSc Computer Science"
-                 autocomplete="off">
-          <ul class="tag-dropdown" id="degree-dropdown"></ul>
+        <label>Degree / Programme / Major</label>
+        <div class="tag-picker" id="degree-picker">
+          <div class="tag-picker-tags" id="degree-tags"></div>
+          <div class="tag-picker-input-wrap">
+            <input
+              type="text"
+              class="tag-picker-input"
+              id="degree-input"
+              placeholder="Type to search, e.g. BSc Computer Science"
+              autocomplete="off"
+            />
+            <ul class="tag-dropdown" id="degree-dropdown"></ul>
+          </div>
         </div>
+        <input type="hidden" name="degree" id="degree-hidden"
+               value="{{ profile.get('degree','') }}">
+        <small class="muted">Add up to 2 degrees, programmes, or majors.</small>
       </div>
 
       <div class="field">
@@ -471,20 +480,30 @@ document.querySelectorAll('.skill-cat-btn').forEach(btn => {
 })();
 
 // ── Standard tag picker (certs + courses) ────────────────────
-function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
+function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options, maxItems = null) {
   const input    = document.getElementById(inputId);
   const dropdown = document.getElementById(dropdownId);
   const tagsWrap = document.getElementById(tagsId);
   const hidden   = document.getElementById(hiddenId);
+  const basePlaceholder = input.placeholder;
 
   let selected = hidden.value
     ? hidden.value.split(',').map(s => s.trim()).filter(Boolean)
     : [];
+  if (maxItems !== null) selected = selected.slice(0, maxItems);
 
   selected.forEach(s => renderTag(s, false));
   syncHidden();
 
   function syncHidden() { hidden.value = selected.join(', '); }
+  function atLimit() { return maxItems !== null && selected.length >= maxItems; }
+  function syncLimitState() {
+    if (maxItems === null) return;
+    const limited = atLimit();
+    input.disabled = limited;
+    input.placeholder = limited ? `Maximum ${maxItems} added` : basePlaceholder;
+    if (limited) closeDropdown();
+  }
 
   function renderTag(skill, animate = true) {
     const tag = document.createElement('div');
@@ -492,19 +511,30 @@ function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
     tag.innerHTML = `<span>${skill}</span><button type="button" class="tp-remove" aria-label="Remove ${skill}">✕</button>`;
     tag.querySelector('.tp-remove').addEventListener('click', () => {
       tag.classList.add('tp-tag-removing');
-      setTimeout(() => { tag.remove(); selected = selected.filter(s => s !== skill); syncHidden(); }, 180);
+      setTimeout(() => {
+        tag.remove();
+        selected = selected.filter(s => s !== skill);
+        syncHidden();
+        syncLimitState();
+      }, 180);
     });
     tagsWrap.appendChild(tag);
+    syncLimitState();
   }
 
   function addTag(skill) {
     const trimmed = skill.trim();
-    if (!trimmed || selected.includes(trimmed)) return;
+    if (!trimmed || selected.includes(trimmed) || atLimit()) return;
     selected.push(trimmed); renderTag(trimmed, true); syncHidden();
     input.value = ''; closeDropdown();
+    syncLimitState();
   }
 
   function showDropdown(query) {
+    if (atLimit()) {
+      closeDropdown();
+      return;
+    }
     const q = query.toLowerCase();
     const matches = options.filter(o => o.toLowerCase().includes(q) && !selected.includes(o)).slice(0, 8);
     dropdown.innerHTML = '';
@@ -547,67 +577,27 @@ function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
       tagsWrap.lastElementChild?.querySelector('.tp-remove')?.click();
     }
   });
+  syncLimitState();
 }
 
+createTagPicker('degree-input',  'degree-dropdown',  'degree-tags',  'degree-hidden',  PROGRAMME_OPTIONS, 2);
 createTagPicker('certs-input',   'certs-dropdown',   'certs-tags',   'certs-hidden',   CERT_OPTIONS);
 createTagPicker('courses-input', 'courses-dropdown', 'courses-tags', 'courses-hidden', COURSE_OPTIONS);
 
-// Single-value autocomplete for degree / programme / major.
-(function() {
-  const input = document.getElementById('degree');
-  const dropdown = document.getElementById('degree-dropdown');
-
-  if (!input || !dropdown) return;
-
-  function setValue(value) {
-    input.value = value.trim();
-    closeDropdown();
+document.getElementById('profile-form')?.addEventListener('submit', e => {
+  const degreeHidden = document.getElementById('degree-hidden');
+  const degreeInput = document.getElementById('degree-input');
+  degreeInput?.setCustomValidity('');
+  if (degreeHidden && degreeInput && !degreeHidden.value.trim()) {
+    e.preventDefault();
+    degreeInput.disabled = false;
+    degreeInput.focus();
+    degreeInput.setCustomValidity('Add at least one degree, programme, or major.');
+    degreeInput.reportValidity();
+    degreeInput.addEventListener('input', () => degreeInput.setCustomValidity(''), { once: true });
   }
+});
 
-  function showDropdown(query) {
-    const q = query.trim().toLowerCase();
-    const matches = PROGRAMME_OPTIONS
-      .filter(option => !q || option.toLowerCase().includes(q))
-      .slice(0, 10);
-
-    dropdown.innerHTML = '';
-
-    matches.forEach(match => {
-      const li = document.createElement('li');
-      li.className = 'tp-option';
-      const idx = match.toLowerCase().indexOf(q);
-      li.innerHTML = (idx >= 0 && q)
-        ? `${match.slice(0, idx)}<strong>${match.slice(idx, idx + q.length)}</strong>${match.slice(idx + q.length)}`
-        : match;
-      li.addEventListener('mousedown', e => {
-        e.preventDefault();
-        setValue(match);
-      });
-      dropdown.appendChild(li);
-    });
-
-    dropdown.classList.toggle('open', matches.length > 0);
-  }
-
-  function closeDropdown() {
-    dropdown.classList.remove('open');
-    dropdown.innerHTML = '';
-  }
-
-  input.addEventListener('input', () => showDropdown(input.value));
-  input.addEventListener('focus', () => showDropdown(input.value));
-  input.addEventListener('blur', () => setTimeout(closeDropdown, 150));
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const first = dropdown.querySelector('.tp-option');
-      if (first && dropdown.classList.contains('open')) {
-        e.preventDefault();
-        setValue(first.textContent);
-      }
-    }
-    if (e.key === 'Escape') closeDropdown();
-  });
-})();
 </script>
 
 {% endblock %}

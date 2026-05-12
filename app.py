@@ -734,6 +734,70 @@ def prioritize_missing_skills_with_survey(missing_skills, survey_scores):
         )
     ]
 
+"""The pathway roadmap """
+def get_roadmap_icon(skill):
+    skill = (skill or "").lower()
+
+    icon_rules = {
+        ("python",): "🐍",
+        ("linux",): "🐧",
+        ("excel", "spreadsheet"): "📊",
+        ("research", "laboratory", "lab"): "🔬",
+        ("statistics", "probability", "math", "calculus", "linear algebra"): "➗",
+        ("sql", "database"): "🗄️",
+        ("data", "analytics", "visualization", "tableau", "power bi"): "📈",
+        ("machine learning", "ai", "artificial intelligence"): "🤖",
+        ("cloud", "aws", "azure"): "☁️",
+        ("security", "cyber"): "🔒",
+        ("network",): "🌐",
+        ("web", "html", "css", "javascript", "react"): "💻",
+        ("matlab",): "📐",
+        ("physics",): "⚛️",
+        ("radiation", "dosimetry", "medical imaging"): "🩻",
+        ("cad", "autocad", "solidworks", "design"): "🛠️",
+        ("engineering",): "⚙️",
+        ("communication", "leadership", "teamwork"): "🗣️",
+    }
+
+    for keywords, icon in icon_rules.items():
+        if any(keyword in skill for keyword in keywords):
+            return icon
+
+    return "📍"
+
+
+def build_roadmap_steps(results, max_steps=8):
+    roadmap_steps = []
+    seen_skills = set()
+
+    selected_role = results.get("selected_role", "your selected career")
+
+    # Use actual missing skills first, not Dijkstra intermediate steps
+    for skill in results.get("missing_skills", []):
+        if not skill:
+            continue
+
+        skill_key = skill.strip().lower()
+
+        if skill_key in seen_skills:
+            continue
+
+        seen_skills.add(skill_key)
+
+        roadmap_steps.append({
+            "skill": skill,
+            "icon": get_roadmap_icon(skill),
+            "description": (
+                f"Build this skill to strengthen your alignment with "
+                f"{selected_role} roles."
+            )
+        })
+
+        if len(roadmap_steps) >= max_steps:
+            break
+
+    return roadmap_steps
+
 # ── Routes ────────────────────────────────────────────────────
 @app.get("/")
 def home():
@@ -749,6 +813,7 @@ def profile():
     if request.method == "POST":
         user_id            = session.get("user_id")
         degree             = request.form.get("degree", "").strip()
+        degree             = ", ".join([d.strip() for d in degree.split(",") if d.strip()][:2])
         major              = request.form.get("major", "").strip()
         location           = request.form.get("location", "").strip()
         gpa                = request.form.get("gpa", "").strip()
@@ -1180,6 +1245,7 @@ def results():
         "survey_summary":       survey_summary,
         "graph_overview":       build_graph_overview(graph),
     }
+    results_obj["roadmap_steps"] = build_roadmap_steps(results_obj)
     return render_template("results.html", results=results_obj)
 
 

@@ -1062,16 +1062,6 @@ legend { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transf
 
 .tag-picker-input::placeholder { color: var(--muted); }
 
-/* Single text input autocomplete using the same menu style as tag pickers */
-.single-autocomplete {
-  position: relative;
-}
-
-.single-autocomplete .tag-dropdown {
-  width: 100%;
-  max-width: none;
-}
-
 /* Dropdown */
 .tag-dropdown {
   position: absolute; top: calc(100% + 4px); left: 0;
@@ -3042,4 +3032,85 @@ body.light .rm2-accordion {
 /* ── Single job card fills full width ───────────── */
 .rm2-job-cards:has(.rm2-job-card:only-child) {
   grid-template-columns: 1fr;
+}
+
+/* ── Personalized roadmap panel ───────────────────── */
+.roadmap-panel {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.roadmap-layout {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.roadmap-steps {
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+}
+
+.roadmap-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .95rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(155, 89, 245, 0.06);
+  border: 1px solid var(--border);
+}
+
+.step-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  background: radial-gradient(circle at top left, #c4b5fd, #8b5cf6);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
+}
+
+.step-content h3 {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: .15rem;
+}
+
+.step-content p {
+  color: var(--muted-light);
+  font-size: .84rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.roadmap-visual {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  min-height: 300px;
+  background: rgba(155, 89, 245, 0.04);
+}
+
+.roadmap-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Mobile */
+@media (max-width: 850px) {
+  .roadmap-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .roadmap-visual {
+    min-height: 240px;
+  }
 }

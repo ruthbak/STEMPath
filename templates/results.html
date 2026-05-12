@@ -104,6 +104,34 @@ a roadmap view-->
     </div>
   </section>
 
+  <!--Roadmap Panel-->
+  <section class="card roadmap-panel">
+    <h2 class="rm2-section-title">Your Personalized Roadmap</h2>
+
+    <div class="roadmap-layout">
+      <div class="roadmap-steps">
+        {% if results.roadmap_steps %}
+          {% for step in results.roadmap_steps %}
+            <div class="roadmap-step">
+              <div class="step-icon">{{ step.icon }}</div>
+
+              <div class="step-content">
+                <h3>Step {{ loop.index }}: Learn {{ step.skill }}</h3>
+                <p>{{ step.description }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="muted">No personalized roadmap steps were generated yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="roadmap-visual">
+        <img src="{{ url_for('static', filename='images/roadmap-panel.png') }}" alt="Career roadmap visual">
+      </div>
+    </div>
+  </section>
+
   <!-- Recommended courses and videos -->
   <section class="card rm4-path-card">
     <div class="rm4-path-head">
