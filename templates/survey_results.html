@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Survey Results • STEMPath{% endblock %}
+
+{% block content %}
+<style>
+  .survey-results-grid {
+    display: grid;
+    grid-template-columns: minmax(180px, .45fr) minmax(0, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .survey-score-card {
+    border: 1px solid var(--purple-border);
+    border-radius: var(--radius-sm);
+    background: var(--purple-glow);
+    padding: 1rem;
+    text-align: center;
+  }
+  .survey-score-card strong {
+    display: block;
+    color: var(--text);
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: .35rem;
+  }
+  .survey-score-card span,
+  .survey-result-card p {
+    color: var(--muted-light);
+    font-size: .84rem;
+    line-height: 1.55;
+  }
+  .survey-summary-pills,
+  .survey-result-list {
+    display: grid;
+    gap: .65rem;
+  }
+  .survey-summary-pills {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .survey-pill,
+  .survey-result-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.03);
+    padding: .85rem;
+  }
+  .survey-pill b {
+    display: block;
+    color: var(--text);
+    font-size: 1.15rem;
+  }
+  .survey-pill span,
+  .survey-result-status {
+    color: var(--muted-light);
+    font-size: .78rem;
+    font-weight: 700;
+  }
+  .survey-result-card h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .98rem;
+    color: var(--text);
+    margin-bottom: .35rem;
+  }
+  .survey-result-status {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: var(--radius-xs);
+    padding: .2rem .5rem;
+    margin-bottom: .55rem;
+    border: 1px solid var(--border);
+  }
+  .survey-result-status.confirmed,
+  .survey-result-status.familiarity_shown {
+    border-color: rgba(34,197,94,0.35);
+    background: rgba(34,197,94,0.1);
+    color: #86efac;
+  }
+  .survey-result-status.needs_review,
+  .survey-result-status.learning_gap {
+    border-color: rgba(245,197,66,0.35);
+    background: rgba(245,197,66,0.1);
+    color: #fde68a;
+  }
+  @media (max-width: 700px) {
+    .survey-results-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<section class="card" aria-labelledby="survey-results-title">
+  <p class="section-label">Skill check results</p>
+  <h2 id="survey-results-title">Your survey score</h2>
+  <p class="muted">
+    This score is a readiness signal, not a final judgement. STEMPath keeps your
+    saved profile unchanged, but uses these answers to decide which claimed skills
+    should count as starting points and which gaps should be prioritized in the pathway.
+  </p>
+
+  <div class="survey-results-grid">
+    <div class="survey-score-card">
+      <strong>{{ survey_summary.percent }}%</strong>
+      <span>{{ survey_summary.correct }} of {{ survey_summary.total }} questions correct</span>
+    </div>
+
+    <div class="survey-summary-pills">
+      <div class="survey-pill">
+        <b>{{ survey_summary.confirmed }}</b>
+        <span>claimed skills confirmed</span>
+      </div>
+      <div class="survey-pill">
+        <b>{{ survey_summary.needs_review }}</b>
+        <span>claimed skills to review</span>
+      </div>
+      <div class="survey-pill">
+        <b>{{ survey_summary.familiarity_shown }}</b>
+        <span>gap skills with some evidence</span>
+      </div>
+      <div class="survey-pill">
+        <b>{{ survey_summary.learning_gap }}</b>
+        <span>gap skills to learn</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card" aria-labelledby="survey-breakdown-title">
+  <h2 id="survey-breakdown-title">Question breakdown</h2>
+
+  <div class="survey-result-list">
+    {% for item in survey_scores %}
+      <article class="survey-result-card">
+        <span class="survey-result-status {{ item.status }}">
+          {% if item.status == "confirmed" %}
+            Confirmed signal
+          {% elif item.status == "needs_review" %}
+            Review this claimed skill
+          {% elif item.status == "familiarity_shown" %}
+            Some familiarity shown
+          {% else %}
+            Learning gap
+          {% endif %}
+        </span>
+        <h3>{{ item.skill }}</h3>
+        <p><strong>Your answer:</strong> {{ item.answer }}</p>
+        {% if not item.is_correct %}
+          <p><strong>Expected answer:</strong> {{ item.correct_answer }}</p>
+        {% endif %}
+        <p>{{ item.explanation }}</p>
+      </article>
+    {% endfor %}
+  </div>
+
+  <div class="actions">
+    <a class="btn" href="{{ url_for('loading') }}">Generate my pathway →</a>
+    <a class="btn btn-ghost" href="{{ url_for('survey') }}">Retake skill check</a>
+  </div>
+</section>
+{% endblock %}

@@ -5,50 +5,52 @@
 
 {% block content %}
 <style>
-  .scale-option {
+  .answer-option {
     cursor: pointer;
+    display: block;
+    margin-bottom: .55rem;
   }
-  .scale-option input[type="radio"] {
+  .answer-option input[type="radio"] {
     position: absolute;
     opacity: 0;
     width: 0;
     height: 0;
   }
-  .scale-btn {
+  .answer-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    width: 100%;
+    min-height: 44px;
+    border-radius: var(--radius-xs);
     border: 2px solid var(--border, #3a3530);
-    font-weight: 700;
-    font-size: 15px;
+    font-weight: 600;
+    font-size: .9rem;
     background: transparent;
     color: inherit;
+    padding: .7rem .85rem;
     transition: all 0.15s ease;
   }
-  .scale-option:hover .scale-btn {
+  .answer-option:hover .answer-btn {
     border-color: #8b5cf6;
     color: #8b5cf6;
   }
-  .scale-option input[type="radio"]:checked + .scale-btn {
+  .answer-option input[type="radio"]:checked + .answer-btn {
     background: #8b5cf6;
     border-color: #8b5cf6;
     color: #ffffff !important;
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
   }
   /* Light mode overrides */
-  body.light .scale-btn {
+  body.light .answer-btn {
     border-color: #c4b8f0;
     color: #3b2f6b;
   }
-  body.light .scale-option:hover .scale-btn {
+  body.light .answer-option:hover .answer-btn {
     border-color: #7c3aed;
     color: #7c3aed;
     background: #ede9fe;
   }
-  body.light .scale-option input[type="radio"]:checked + .scale-btn {
+  body.light .answer-option input[type="radio"]:checked + .answer-btn {
     background: #7c3aed;
     border-color: #7c3aed;
     color: #ffffff !important;
@@ -75,7 +77,8 @@
   <p class="muted">
     This survey is generated from your claimed skills and the target career:
     <strong>{{ role.title if role else "your selected role" }}</strong>.
-    We validate skills you already listed and check your readiness for missing target skills.
+    Answer short skill checks so STEMPath can estimate your readiness. One answer
+    does not automatically prove mastery; it helps guide your pathway.
   </p>
   {% if survey_meta %}
     <div class="survey-meta">
@@ -88,7 +91,7 @@
   {% if questions %}
   <form method="POST" action="{{ url_for('survey_submit') }}" class="form">
     <fieldset>
-      <legend>Rate your proficiency (1 = none, 5 = proficient)</legend>
+      <legend>Answer each skill check</legend>
 
       {% for q in questions %}
       {% set q_index = loop.index0 %}
@@ -105,26 +108,22 @@
           {% endif %}
         </p>
 
-        <div class="scale-row">
-          {% for n in [1, 2, 3, 4, 5] %}
-          <label class="scale-option">
-            <input type="radio" name="score_{{ q_index }}" value="{{ n }}" required>
-            <span class="scale-btn">{{ n }}</span>
+        <div class="answer-list">
+          {% for option in q.options %}
+          <label class="answer-option">
+            <input type="radio" name="answer_{{ q_index }}" value="{{ option }}" required>
+            <span class="answer-btn">{{ option }}</span>
           </label>
           {% endfor %}
         </div>
         <input type="hidden" name="skill_{{ q_index }}" value="{{ q.skill }}">
         <input type="hidden" name="reason_{{ q_index }}" value="{{ q.reason }}">
-        <div class="scale-ends">
-          <small class="muted">No experience</small>
-          <small class="muted">Proficient</small>
-        </div>
       </div>
       {% endfor %}
     </fieldset>
 
     <div class="actions">
-      <button class="btn" type="submit">Generate my pathway →</button>
+      <button class="btn" type="submit">See my survey results →</button>
       <a class="btn btn-ghost" href="{{ url_for('loading') }}">Skip to results</a>
     </div>
   </form>
