@@ -1125,10 +1125,17 @@ def results():
         )
         session["progress"] = progress
     else:
-        progress["skills"] = missing_skills
+        tracked_skills = list(progress.get("skills", []))
+        tracked_norm = {normalize_skill(s) for s in tracked_skills}
+        for s in missing_skills:
+            if normalize_skill(s) not in tracked_norm:
+                tracked_skills.append(s)
+                tracked_norm.add(normalize_skill(s))
+
+        progress["skills"] = tracked_skills
         progress["completed"] = [
             s for s in progress.get("completed", [])
-            if s in missing_skills
+            if normalize_skill(s) in tracked_norm
         ]
         progress = save_progress(
             session.get("user_id"),
@@ -1175,9 +1182,19 @@ def progress():
 
     if request.method == "POST":
         completed = request.form.getlist("completed")
-        # keep only items that are still in the checklist
-        allowed = set(data.get("skills", []))
-        data["completed"] = [c for c in completed if c in allowed]
+        # Keep previously completed skills when the user saves new ones later.
+        allowed = {normalize_skill(s) for s in data.get("skills", [])}
+        merged_completed = list(data.get("completed", []))
+        completed_norm = {normalize_skill(s) for s in merged_completed}
+        for c in completed:
+            c_norm = normalize_skill(c)
+            if c_norm in allowed and c_norm not in completed_norm:
+                merged_completed.append(c)
+                completed_norm.add(c_norm)
+        data["completed"] = [
+            c for c in merged_completed
+            if normalize_skill(c) in allowed
+        ]
         if selected_role_id:
             data["role_id"] = selected_role_id
         data = save_progress(session.get("user_id"), data, profile_id=profile_id)
