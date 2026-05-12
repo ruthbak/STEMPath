@@ -1,7 +1,8 @@
 skills = [
     "Python", "SQL", "Statistics", "Machine Learning",
     "Data Visualization", "Networking", "Linux",
-    "Security Basics", "Cloud", "Git", "APIs", "TensorFlow"
+    "Security Basics", "Cloud", "Git", "APIs", "TensorFlow",
+    "Excel", "JavaScript", "Java", "HTML", "CSS"
 ]
 
 courses = [
@@ -196,5 +197,173 @@ courses = [
         "topics": ["Descriptive statistics", "Probability", "Sampling", "Statistical inference"],
         "ms_learn": "https://learn.microsoft.com/en-us/training/paths/data-science-know-your-data/",
         "youtube": "https://www.youtube.com/results?search_query=statistics+for+data+science+beginners"
+    },
+    {
+        "name": "Excel Foundations",
+        "teaches": ["Excel"],
+        "prerequisites": [],
+        "time": 12,
+        "difficulty": 1,
+        "cost": 0,
+        "provider": "Microsoft Learn",
+        "topics": ["Formulas", "Tables", "Charts", "Basic analysis"],
+        "ms_learn": "https://learn.microsoft.com/en-us/training/browse/?terms=excel",
+        "youtube": "https://www.youtube.com/results?search_query=excel+fundamentals+course"
+    },
+    {
+        "name": "Cloud Automation Fast Track",
+        "teaches": ["Cloud"],
+        "prerequisites": ["Python"],
+        "time": 15,
+        "difficulty": 3,
+        "cost": 45,
+        "provider": "Cloud Bootcamp",
+        "topics": ["Cloud scripting", "Automation", "Deployments", "CLI tools"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=cloud%20automation%20python",
+        "youtube": "https://www.youtube.com/results?search_query=cloud+automation+python+course"
+    },
+    {
+        "name": "Linux to Cloud Foundations",
+        "teaches": ["Cloud"],
+        "prerequisites": ["Linux"],
+        "time": 55,
+        "difficulty": 1,
+        "cost": 0,
+        "provider": "Microsoft Learn / Linux Foundation",
+        "topics": ["Linux servers", "Cloud hosting", "VMs", "Cloud administration"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=linux%20cloud%20fundamentals",
+        "youtube": "https://www.youtube.com/results?search_query=linux+cloud+fundamentals"
+    },
+    {
+        "name": "Applied Machine Learning Bootcamp",
+        "teaches": ["Machine Learning"],
+        "prerequisites": ["Python"],
+        "time": 25,
+        "difficulty": 3,
+        "cost": 150,
+        "provider": "Bootcamp",
+        "topics": ["Supervised learning", "Model training", "Evaluation", "Applied ML projects"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=applied%20machine%20learning",
+        "youtube": "https://www.youtube.com/results?search_query=applied+machine+learning+python+bootcamp"
+    },
+    {
+        "name": "Linux Security Foundations",
+        "teaches": ["Security Basics"],
+        "prerequisites": ["Linux"],
+        "time": 80,
+        "difficulty": 1,
+        "cost": 0,
+        "provider": "Linux Foundation",
+        "topics": ["Linux permissions", "User access", "Firewalls", "Security hardening"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=linux%20security%20basics",
+        "youtube": "https://www.youtube.com/results?search_query=linux+security+basics"
+    },
+    {
+        "name": "Cybersecurity Fast Track",
+        "teaches": ["Security Basics"],
+        "prerequisites": ["Cloud"],
+        "time": 20,
+        "difficulty": 3,
+        "cost": 80,
+        "provider": "Cybersecurity Bootcamp",
+        "topics": ["Threats", "IAM", "Cloud security", "Incident response"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=cybersecurity%20fundamentals",
+        "youtube": "https://www.youtube.com/results?search_query=cybersecurity+fast+track"
+    },
+    {
+        "name": "SQL Dashboard Studio",
+        "teaches": ["Data Visualization"],
+        "prerequisites": ["SQL"],
+        "time": 10,
+        "difficulty": 3,
+        "cost": 35,
+        "provider": "Tableau / Power BI Lab",
+        "topics": ["SQL summaries", "Dashboard layout", "Charts", "Stakeholder reporting"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=sql%20dashboard%20data%20visualization",
+        "youtube": "https://www.youtube.com/results?search_query=sql+dashboard+data+visualization+course"
+    },
+    {
+        "name": "Excel Dashboard Essentials",
+        "teaches": ["Data Visualization"],
+        "prerequisites": ["Excel"],
+        "time": 45,
+        "difficulty": 1,
+        "cost": 0,
+        "provider": "Microsoft Learn",
+        "topics": ["Pivot charts", "Conditional formatting", "Dashboards", "Storytelling"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=excel%20dashboard%20visualization",
+        "youtube": "https://www.youtube.com/results?search_query=excel+dashboard+data+visualization"
+    },
+    {
+        "name": "JavaScript API Client Projects",
+        "teaches": ["APIs"],
+        "prerequisites": ["JavaScript"],
+        "time": 18,
+        "difficulty": 2,
+        "cost": 0,
+        "provider": "freeCodeCamp",
+        "topics": ["Fetch", "JSON", "Async requests", "API authentication"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=javascript%20api%20fetch",
+        "youtube": "https://www.youtube.com/results?search_query=javascript+api+fetch+course"
+    },
+    {
+        "name": "Java API Services",
+        "teaches": ["APIs"],
+        "prerequisites": ["Java"],
+        "time": 35,
+        "difficulty": 3,
+        "cost": 40,
+        "provider": "edX",
+        "topics": ["REST services", "Controllers", "JSON responses", "Service testing"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=java%20rest%20api",
+        "youtube": "https://www.youtube.com/results?search_query=java+rest+api+course"
+    },
+    {
+        "name": "API Quickstart with GitHub Tools",
+        "teaches": ["APIs"],
+        "prerequisites": ["Git"],
+        "time": 12,
+        "difficulty": 2,
+        "cost": 35,
+        "provider": "Developer Bootcamp",
+        "topics": ["API clients", "GitHub API", "Tokens", "Request testing"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=api%20quickstart%20github",
+        "youtube": "https://www.youtube.com/results?search_query=api+quickstart+github+tools"
+    },
+    {
+        "name": "SQL API Integration Basics",
+        "teaches": ["APIs"],
+        "prerequisites": ["SQL"],
+        "time": 40,
+        "difficulty": 1,
+        "cost": 0,
+        "provider": "edX",
+        "topics": ["Data endpoints", "Query parameters", "JSON data", "API-backed reports"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=sql%20api%20integration",
+        "youtube": "https://www.youtube.com/results?search_query=sql+api+integration+basics"
+    },
+    {
+        "name": "TensorFlow Fast Track",
+        "teaches": ["TensorFlow"],
+        "prerequisites": ["Python"],
+        "time": 28,
+        "difficulty": 4,
+        "cost": 120,
+        "provider": "Deep Learning Bootcamp",
+        "topics": ["Tensors", "Keras models", "Training loops", "Deployment"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=tensorflow%20python",
+        "youtube": "https://www.youtube.com/results?search_query=tensorflow+python+fast+track"
+    },
+    {
+        "name": "Cloud ML Deployment",
+        "teaches": ["TensorFlow"],
+        "prerequisites": ["Cloud"],
+        "time": 45,
+        "difficulty": 2,
+        "cost": 0,
+        "provider": "Google Cloud Skills Boost",
+        "topics": ["Model hosting", "Cloud notebooks", "Inference endpoints", "Monitoring"],
+        "ms_learn": "https://learn.microsoft.com/en-us/search/?terms=cloud%20machine%20learning%20deployment",
+        "youtube": "https://www.youtube.com/results?search_query=cloud+machine+learning+deployment+course"
     },
 ]
