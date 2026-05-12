@@ -37,7 +37,6 @@
 
         <div class="nav-links">
           <a href="{{ url_for('home') }}" class="nav-link">Home</a>
-          <a href="#how-it-works"         class="nav-link">How It Works</a>
           <!-- Protected — opens modal if not logged in -->
           <a href="{{ url_for('roles') }}" class="nav-link" onclick="requireAuth(event, this.href); return false;">Browse Roles</a>
         </div>

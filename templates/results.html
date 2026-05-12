@@ -65,6 +65,17 @@ a roadmap view-->
               <strong>Match score:</strong> {{ results.match_score }}%
             </div>
           </div>
+
+          {% if results.survey_summary and results.survey_summary.total %}
+          <div class="rm2-summary-item">
+            <span class="rm2-summary-icon">🧭</span>
+            <div>
+              <strong>Survey evidence:</strong>
+              {{ results.survey_summary.correct }} of {{ results.survey_summary.total }} checks correct.
+              Claimed skills marked for review are treated as gaps for this pathway, while gap skills with familiarity are prioritized later.
+            </div>
+          </div>
+          {% endif %}
         </div>
       </div>
 
@@ -93,162 +104,15 @@ a roadmap view-->
     </div>
   </section>
 
-  <!-- Personalized Roadmap -->
-  <section class="card rm3-roadmap-card">
-    <h2 class="rm3-section-title">Your Personalized Roadmap</h2>
-
-    <div class="rm3-roadmap-grid">
-      <div class="rm3-steps-col">
-        {% if results.missing_skills %}
-          {% for skill in results.missing_skills[:3] %}
-            <div class="rm3-step-card">
-              <div class="rm3-step-badge">
-                <span class="rm3-step-icon">
-                  {% if loop.index == 1 %}📍
-                  {% elif loop.index == 2 %}🗂️
-                  {% elif loop.index == 3 %}📊
-                  {% else %}🏆
-                  {% endif %}
-                </span>
-              </div>
-              <div class="rm3-step-text">
-                <h3>Step {{ loop.index }}: Learn {{ skill }}</h3>
-                <p>
-                  {% set s = skill | lower %}
-                  {% if 'sql' in s or 'database' in s %}
-                    Understand how to query and manage structured data.
-                  {% elif 'python' in s %}
-                    Use Python for data cleaning, automation and analysis.
-                  {% elif 'data visual' in s %}
-                    Present insights using charts and dashboards.
-                  {% elif 'machine learning' in s %}
-                    Build predictive models and extract patterns from data.
-                  {% elif 'matlab' in s %}
-                    Apply numerical computing and simulation techniques.
-                  {% elif 'java' in s and 'javascript' not in s %}
-                    Build robust applications with Java fundamentals.
-                  {% elif 'javascript' in s or 'react' in s %}
-                    Create interactive web interfaces and applications.
-                  {% elif 'cloud' in s or 'aws' in s or 'azure' in s %}
-                    Deploy and manage applications in cloud environments.
-                  {% elif 'security' in s or 'cyber' in s %}
-                    Protect systems and data from modern threats.
-                  {% elif 'network' in s %}
-                    Understand how systems communicate and connect.
-                  {% elif 'research' in s or 'laboratory' in s %}
-                    Apply rigorous scientific methods in your field.
-                  {% elif 'medical imaging' in s or 'radiation' in s %}
-                    Apply clinical and imaging techniques in practice.
-                  {% elif 'autocad' in s or 'cad' in s %}
-                    Create technical drawings and engineering designs.
-                  {% elif 'statistics' in s %}
-                    Apply statistical methods to real-world data.
-                  {% else %}
-                    Build this skill to strengthen your alignment with {{ results.selected_role }} roles.
-                  {% endif %}
-                </p>
-              </div>
-            </div>
-          {% endfor %}
-        {% endif %}
-
-        <div class="rm3-step-card">
-          <div class="rm3-step-badge">
-            <span class="rm3-step-icon">🏆</span>
-          </div>
-          <div class="rm3-step-text">
-            <h3>Step {{ (results.missing_skills[:3] | length) + 1 }}: Get certified</h3>
-            <p>Validate your skills with industry-recognised certifications and structured learning.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rm3-visual-col">
-        <div class="rm3-road-graphic-card">
-          <div class="rm3-goal-pill">🏁 Goal</div>
-          <div class="rm3-road-graphic"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Generated graph path -->
+  <!-- Recommended courses and videos -->
   <section class="card rm4-path-card">
     <div class="rm4-path-head">
       <div>
-        <p class="section-label">Graph-generated plan</p>
-        <h2 class="rm2-section-title">Skill Gap Learning Path</h2>
-      </div>
-      <div class="rm4-graph-stats">
-        <span>{{ results.graph_overview.node_count }} nodes</span>
-        <span>{{ results.graph_overview.edge_count }} edges</span>
+        <p class="section-label">Learning resources</p>
+        <h2 class="rm2-section-title">Recommended Courses & Videos</h2>
+        <p class="muted">Follow these course steps for the skills your selected role still needs.</p>
       </div>
     </div>
-
-    <div class="rm4-explain-grid">
-      <div class="rm4-explain-box">
-        <strong>Nodes</strong>
-        <p>Skills are graph nodes. <code>ROOT</code> means a beginner start. Gate nodes represent courses that require multiple prerequisites.</p>
-      </div>
-      <div class="rm4-explain-box">
-        <strong>Edges</strong>
-        <p>Course resources are edges. An edge connects the skill you have to the skill the course teaches.</p>
-      </div>
-      <div class="rm4-explain-box">
-        <strong>Cost</strong>
-        <p>{{ results.graph_overview.cost_formula }}. Dijkstra chooses the route with the lowest total cost.</p>
-      </div>
-    </div>
-
-    <details class="rm4-edge-details">
-      <summary>Show the full course graph that was built</summary>
-      <div class="rm4-full-graph">
-        <div>
-          <h3>Layered course graph</h3>
-          <div class="rm4-layered-graph" aria-label="Layered full course graph">
-            {% for layer in results.graph_overview.visual.layers %}
-              <section class="rm4-graph-layer">
-                <div class="rm4-layer-title">{{ layer.title }}</div>
-                <div class="rm4-layer-nodes">
-                  {% for node in layer.nodes %}
-                    <span class="rm4-layer-node rm4-layer-node-{{ node.type }}">
-                      {{ node.label }}
-                    </span>
-                  {% endfor %}
-                </div>
-              </section>
-            {% endfor %}
-          </div>
-          <div class="rm4-legend">
-            <span><i class="rm4-legend-root"></i>ROOT/start</span>
-            <span><i class="rm4-legend-skill"></i>Skill</span>
-            <span><i class="rm4-legend-gate"></i>Multi-prerequisite gate</span>
-          </div>
-        </div>
-        <div>
-          <h3>Course connections</h3>
-          <div class="rm4-connection-grid">
-            {% for edge in results.graph_overview.edges %}
-              <article class="rm4-connection-card {% if edge.is_gate_check %}rm4-connection-card-gate{% endif %}">
-                <div class="rm4-connection-flow">
-                  <span>{{ edge["from"] }}</span>
-                  <b>→</b>
-                  <span>{{ edge["to"].replace('GATE::', 'Gate: ') }}</span>
-                </div>
-                <p>{{ edge.course.replace('prereq_check::', 'Prerequisite check: ') }}</p>
-                {% if not edge.is_gate_check %}
-                  <div class="rm4-mini-stats">
-                    <span>Time {{ edge.time }}</span>
-                    <span>Difficulty {{ edge.difficulty }}</span>
-                    <span>Cost {{ edge.cost }}</span>
-                  </div>
-                {% endif %}
-              </article>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </details>
 
     {% if results.learning_paths %}
       {% for lp in results.learning_paths %}
@@ -256,81 +120,9 @@ a roadmap view-->
           <div class="rm4-path-title-row">
             <div>
               <h3>Target skill: {{ lp.target_skill }}</h3>
-              <p>Optimized for {{ lp.optimize_for }}. Total path cost: {{ lp.total_cost }}</p>
-            </div>
-            <div class="rm4-weight-pill">
-              time {{ lp.weights["weight_time"] }} · difficulty {{ lp.weights["weight_difficulty"] }} · cost {{ lp.weights["weight_cost"] }}
+              <p>Prioritized for your {{ lp.optimize_for }} preference.</p>
             </div>
           </div>
-
-          <div class="rm4-node-path" aria-label="Graph nodes along this path">
-            {% for node in lp.path %}
-              <span class="rm4-node {% if node == 'ROOT' %}rm4-node-root{% elif 'GATE::' in node %}rm4-node-gate{% endif %}">
-                {{ node.replace('GATE::', 'Gate: ') }}
-              </span>
-              {% if not loop.last %}<span class="rm4-arrow">→</span>{% endif %}
-            {% endfor %}
-          </div>
-
-          <div class="rm4-graph-viz" aria-label="Visual graph path for {{ lp.target_skill }}">
-            {% set node_count = lp.path | length %}
-            {% set hop = 840 / (node_count - 1) if node_count > 1 else 840 %}
-            <svg viewBox="0 0 1000 250" role="img">
-              <title>Shortest path to {{ lp.target_skill }}</title>
-              {% for edge in lp.graph_edges %}
-                {% set x1 = 80 + (loop.index0 * hop) %}
-                {% set x2 = 80 + (loop.index * hop) %}
-                <line
-                  x1="{{ x1 }}" y1="100" x2="{{ x2 }}" y2="100"
-                  class="{% if edge.is_hidden %}rm4-svg-edge-muted{% else %}rm4-svg-edge{% endif %}"
-                />
-                <text x="{{ (x1 + x2) / 2 }}" y="76" class="rm4-svg-cost">{{ edge.edge_cost }}</text>
-              {% endfor %}
-              {% for node in lp.path %}
-                {% set x = 80 + (loop.index0 * hop) %}
-                <circle
-                  cx="{{ x }}" cy="100" r="24"
-                  class="{% if node == 'ROOT' %}rm4-svg-node-root{% elif 'GATE::' in node %}rm4-svg-node-gate{% else %}rm4-svg-node{% endif %}"
-                />
-                <text x="{{ x }}" y="105" text-anchor="middle" class="rm4-svg-node-label">{{ loop.index }}</text>
-                <text x="{{ x }}" y="152" text-anchor="middle" class="rm4-svg-label">
-                  {{ node.replace('GATE::', 'Gate: ') }}
-                </text>
-              {% endfor %}
-            </svg>
-          </div>
-
-          <details class="rm4-edge-details">
-            <summary>Show edge costs and why this is shortest</summary>
-            <div class="rm4-edge-table-wrap">
-              <table class="rm4-edge-table">
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Course edge</th>
-                    <th>Time</th>
-                    <th>Difficulty</th>
-                    <th>Cost</th>
-                    <th>Weighted</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for edge in lp.graph_edges %}
-                    <tr class="{% if edge.is_hidden %}rm4-muted-row{% endif %}">
-                      <td>{{ edge["from"] }}</td>
-                      <td>{{ edge["to"].replace('GATE::', 'Gate: ') }}</td>
-                      <td>{{ edge.course }}</td>
-                      <td>{{ edge.time }}</td>
-                      <td>{{ edge.difficulty }}</td>
-                      <td>{{ edge.cost }}</td>
-                      <td>{{ edge.edge_cost }}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </details>
 
           {% if lp.steps %}
             <div class="rm4-playlist">
@@ -339,12 +131,12 @@ a roadmap view-->
                   <div class="rm4-step-meta">
                     <span class="rm4-step-number">Step {{ loop.index }}</span>
                     <h4>{{ step.course }}</h4>
-                    <p>{{ step.why_this_step }}</p>
+                    <p>This course helps you build <strong>{{ step.to }}</strong> for {{ results.selected_role }}.</p>
                     <div class="rm4-mini-stats">
                       <span>Teaches {{ step.to }}</span>
                       <span>Time {{ step.time }}</span>
                       <span>Difficulty {{ step.difficulty }}</span>
-                      <span>Edge cost {{ step.edge_cost }}</span>
+                      <span>Cost {{ step.cost }}</span>
                     </div>
                     {% if step.topics %}
                       <div class="rm4-topic-list" aria-label="Learning checkpoints">
@@ -380,8 +172,13 @@ a roadmap view-->
                       {% endfor %}
                     {% else %}
                       <div class="rm4-video-empty">
-                        Add a <code>YOUTUBE_API_KEY</code> to embed ranked videos for the query:
+                        Video embeds are unavailable right now. Use the YouTube search link for:
                         <strong>{{ step.video_query }}</strong>
+                        {% if step.youtube_search %}
+                          <div class="rm4-link-row" style="margin-top:.65rem;">
+                            <a href="{{ step.youtube_search }}" target="_blank" rel="noopener">Open YouTube search</a>
+                          </div>
+                        {% endif %}
                       </div>
                     {% endif %}
                   </div>
@@ -392,7 +189,7 @@ a roadmap view-->
         </article>
       {% endfor %}
     {% else %}
-      <p class="muted">No graph path was generated because the missing skills are not currently represented in the course graph.</p>
+      <p class="muted">No course pathway was generated because the missing skills are not currently represented in the learning catalog.</p>
     {% endif %}
   </section>
 
