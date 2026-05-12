@@ -824,7 +824,17 @@ def profile():
         session["profile"] = existing
         session["active_profile_id"] = existing.get("id")
     resume_notice = session.pop("resume_notice", None)
-    return render_template("profile.html", profile=existing, resume_notice=resume_notice)
+    selected_role = None
+    selected_role_id = session.get("selected_role_id")
+    if selected_role_id:
+        selected_role = find_role_by_id(selected_role_id, load_roles())
+
+    return render_template(
+        "profile.html",
+        profile=existing,
+        resume_notice=resume_notice,
+        selected_role=selected_role,
+    )
 
 
 @app.get("/profile/new")
@@ -1018,11 +1028,17 @@ def results():
                 video_query = f"{path[i + 1]} {course_name} beginner tutorial"
                 videos      = fetch_youtube_videos(video_query, max_results=3)
                 learn_query = f"{path[i + 1]} {course_name}"
+                course_link = (
+                    course_data.get("edx_link", "")
+                    or course_data.get("ms_learn", "")
+                    or microsoft_learn_search_url(learn_query)
+                )
                 steps.append({
                     "from":           path[i],
                     "to":             path[i + 1],
                     "course":         course_name,
                     "provider":       course_data.get("provider", ""),
+                    "course_link":    course_link,
                     "edx_link":       course_data.get("edx_link", ""),
                     "ms_learn":       microsoft_learn_search_url(learn_query),
                     "ms_learn_search": microsoft_learn_search_url(learn_query),

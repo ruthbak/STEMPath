@@ -132,55 +132,78 @@ a roadmap view-->
                     <span class="rm4-step-number">Step {{ loop.index }}</span>
                     <h4>{{ step.course }}</h4>
                     <p>This course helps you build <strong>{{ step.to }}</strong> for {{ results.selected_role }}.</p>
-                    <div class="rm4-mini-stats">
-                      <span>Teaches {{ step.to }}</span>
-                      <span>Time {{ step.time }}</span>
-                      <span>Difficulty {{ step.difficulty }}</span>
-                      <span>Cost {{ step.cost }}</span>
-                    </div>
-                    {% if step.topics %}
-                      <div class="rm4-topic-list" aria-label="Learning checkpoints">
-                        {% for topic in step.topics %}
-                          <span>{{ topic }}</span>
-                        {% endfor %}
+
+                    {% if step.course_link %}
+                      <div class="rm4-step-section">
+                        <div class="rm4-step-section-head">
+                          <span>Selected course</span>
+                        </div>
+                        <a class="rm4-selected-course" href="{{ step.course_link }}" target="_blank" rel="noopener">
+                          <span class="rm4-selected-course-thumb">
+                            {% if 'microsoft' in step.provider|lower %}
+                              <img src="https://learn.microsoft.com/favicon.ico" alt="" loading="lazy">
+                            {% elif 'edx' in step.provider|lower %}
+                              <img src="https://www.edx.org/favicon.ico" alt="" loading="lazy">
+                            {% elif 'coursera' in step.provider|lower %}
+                              <img src="https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-96x96.png" alt="" loading="lazy">
+                            {% elif 'google' in step.provider|lower %}
+                              <img src="https://www.google.com/favicon.ico" alt="" loading="lazy">
+                            {% elif 'aws' in step.provider|lower %}
+                              <img src="https://a0.awsstatic.com/libra-css/images/logos/aws_logo_smile_1200x630.png" alt="" loading="lazy">
+                            {% else %}
+                              <b>{{ (step.provider or 'C')[:1] }}</b>
+                            {% endif %}
+                          </span>
+                          <span class="rm4-selected-course-copy">
+                            <b>{{ step.course }}</b>
+                            <small>{{ step.provider or 'Course resource' }} · opens the course for this step</small>
+                          </span>
+                        </a>
                       </div>
                     {% endif %}
-                    <div class="rm4-link-row">
-                      {% if step.ms_learn_search %}
-                        <a href="{{ step.ms_learn_search }}" target="_blank" rel="noopener">Microsoft Learn search</a>
-                      {% endif %}
-                      {% if step.edx_link %}
-                        <a href="{{ step.edx_link }}" target="_blank" rel="noopener">edX</a>
-                      {% endif %}
-                      {% if step.youtube_search %}
-                        <a href="{{ step.youtube_search }}" target="_blank" rel="noopener">YouTube search</a>
-                      {% endif %}
-                    </div>
+
+                    {% if step.topics %}
+                      <div class="rm4-step-section">
+                        <div class="rm4-step-section-head">
+                          <span>Learning checkpoints</span>
+                        </div>
+                        <div class="rm4-topic-list" aria-label="Learning checkpoints">
+                          {% for topic in step.topics %}
+                            <span>{{ topic }}</span>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endif %}
                   </div>
 
-                  <div class="rm4-video-grid">
-                    {% if step.videos %}
-                      {% for vid in step.videos %}
-                        <a class="rm4-video-card" href="{{ vid.url }}" target="_blank" rel="noopener">
-                          {% if vid.embed_url %}
-                            <iframe src="{{ vid.embed_url }}" title="{{ vid.title }}" loading="lazy" allowfullscreen></iframe>
-                          {% else %}
-                            <img src="{{ vid.thumbnail }}" alt="{{ vid.title }}" loading="lazy">
-                          {% endif %}
-                          <span>{{ vid.title }}</span>
-                        </a>
-                      {% endfor %}
-                    {% else %}
-                      <div class="rm4-video-empty">
-                        Video embeds are unavailable right now. Use the YouTube search link for:
-                        <strong>{{ step.video_query }}</strong>
-                        {% if step.youtube_search %}
-                          <div class="rm4-link-row" style="margin-top:.65rem;">
+                  <div class="rm4-resource-panel">
+                    <div class="rm4-step-section-head">
+                      <span>Suggested video lessons</span>
+                    </div>
+                    <p class="rm4-resource-help">These mini previews open YouTube lessons matched to the step.</p>
+
+                    <div class="rm4-video-grid">
+                      {% if step.videos %}
+                        {% for vid in step.videos %}
+                          <a class="rm4-video-card" href="{{ vid.url }}" target="_blank" rel="noopener">
+                            {% if vid.embed_url %}
+                              <iframe src="{{ vid.embed_url }}" title="{{ vid.title }}" loading="lazy" allowfullscreen></iframe>
+                            {% else %}
+                              <img src="{{ vid.thumbnail }}" alt="{{ vid.title }}" loading="lazy">
+                            {% endif %}
+                            <span>{{ vid.title }}</span>
+                          </a>
+                        {% endfor %}
+                      {% else %}
+                        <div class="rm4-video-empty">
+                          Video embeds are unavailable right now. Use the YouTube search link for:
+                          <strong>{{ step.video_query }}</strong>
+                          {% if step.youtube_search %}
                             <a href="{{ step.youtube_search }}" target="_blank" rel="noopener">Open YouTube search</a>
-                          </div>
-                        {% endif %}
-                      </div>
-                    {% endif %}
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    </div>
                   </div>
                 </section>
               {% endfor %}

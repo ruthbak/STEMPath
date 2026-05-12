@@ -10,6 +10,17 @@
     Add what you already have — then upload a resume if you want. STEMPath will merge everything.
   </p>
 
+  {% if selected_role %}
+    <div class="profile-target-banner" aria-label="Selected target role">
+      <div>
+        <span class="section-label">Your selected target</span>
+        <strong>{{ selected_role.title }}</strong>
+        <span>{{ selected_role.category }}</span>
+      </div>
+      <a class="btn btn-ghost" href="{{ url_for('roles') }}">Change target</a>
+    </div>
+  {% endif %}
+
   {% if session.get('flash') %}
     <div class="flash-notice">{{ session.pop('flash') }}</div>
   {% endif %}
@@ -20,9 +31,13 @@
 
       <div class="field">
         <label for="degree">Degree / Programme / Major</label>
-        <input id="degree" name="degree" type="text" required
-               value="{{ profile.get('degree','') }}"
-               placeholder="e.g., BSc Computer Science">
+        <div class="single-autocomplete">
+          <input id="degree" name="degree" type="text" required
+                 value="{{ profile.get('degree','') }}"
+                 placeholder="e.g., BSc Computer Science"
+                 autocomplete="off">
+          <ul class="tag-dropdown" id="degree-dropdown"></ul>
+        </div>
       </div>
 
       <div class="field">
@@ -276,6 +291,21 @@ const COURSE_OPTIONS = [
   "Thermodynamics","Fluid Mechanics","Circuit Analysis","Structural Analysis",
 ];
 
+const PROGRAMME_OPTIONS = [
+  "BSc Computer Science","BSc Information Technology","BSc Software Engineering",
+  "BSc Data Science","BSc Cybersecurity","BSc Computer Engineering",
+  "BSc Electrical Engineering","BSc Mechanical Engineering","BSc Civil Engineering",
+  "BSc Biomedical Engineering","BSc Environmental Science","BSc Biology",
+  "BSc Chemistry","BSc Physics","BSc Mathematics","BSc Statistics",
+  "BSc Actuarial Science","BSc Medical Physics","BSc Biotechnology",
+  "BSc Bioinformatics","BSc Geographic Information Systems","BSc Nursing",
+  "Associate Degree in Computer Science","Associate Degree in Information Technology",
+  "Associate Degree in Engineering","Diploma in Computer Science",
+  "Diploma in Information Technology","Certificate in Cybersecurity",
+  "MSc Computer Science","MSc Data Science","MSc Cybersecurity",
+  "MSc Engineering","MSc Environmental Science",
+];
+
 // Active state definitions
 let activeMainCategory = 'all';
 let activeSubCategory = null;
@@ -382,6 +412,8 @@ document.querySelectorAll('.skill-cat-btn').forEach(btn => {
     dropdown.innerHTML = '';
 
     // Category header when browsing a specific category with no query
+    const activeCategory = activeSubCategory || activeMainCategory;
+
     if (!q && activeCategory !== 'all') {
       const header = document.createElement('li');
       header.className = 'tp-option-header';
@@ -519,6 +551,63 @@ function createTagPicker(inputId, dropdownId, tagsId, hiddenId, options) {
 
 createTagPicker('certs-input',   'certs-dropdown',   'certs-tags',   'certs-hidden',   CERT_OPTIONS);
 createTagPicker('courses-input', 'courses-dropdown', 'courses-tags', 'courses-hidden', COURSE_OPTIONS);
+
+// Single-value autocomplete for degree / programme / major.
+(function() {
+  const input = document.getElementById('degree');
+  const dropdown = document.getElementById('degree-dropdown');
+
+  if (!input || !dropdown) return;
+
+  function setValue(value) {
+    input.value = value.trim();
+    closeDropdown();
+  }
+
+  function showDropdown(query) {
+    const q = query.trim().toLowerCase();
+    const matches = PROGRAMME_OPTIONS
+      .filter(option => !q || option.toLowerCase().includes(q))
+      .slice(0, 10);
+
+    dropdown.innerHTML = '';
+
+    matches.forEach(match => {
+      const li = document.createElement('li');
+      li.className = 'tp-option';
+      const idx = match.toLowerCase().indexOf(q);
+      li.innerHTML = (idx >= 0 && q)
+        ? `${match.slice(0, idx)}<strong>${match.slice(idx, idx + q.length)}</strong>${match.slice(idx + q.length)}`
+        : match;
+      li.addEventListener('mousedown', e => {
+        e.preventDefault();
+        setValue(match);
+      });
+      dropdown.appendChild(li);
+    });
+
+    dropdown.classList.toggle('open', matches.length > 0);
+  }
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+    dropdown.innerHTML = '';
+  }
+
+  input.addEventListener('input', () => showDropdown(input.value));
+  input.addEventListener('focus', () => showDropdown(input.value));
+  input.addEventListener('blur', () => setTimeout(closeDropdown, 150));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const first = dropdown.querySelector('.tp-option');
+      if (first && dropdown.classList.contains('open')) {
+        e.preventDefault();
+        setValue(first.textContent);
+      }
+    }
+    if (e.key === 'Escape') closeDropdown();
+  });
+})();
 </script>
 
 {% endblock %}
